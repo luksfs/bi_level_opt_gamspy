@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environments
+venv/
+.env
+
+# Data files
+*.csv
+*.xlsx
+*.mat
+*.gdx
+
+# Results and logs
+results/
+logs/
+*.log
+
+# Plots
+*.png
+*.pdf
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Folders
+__pycache__/
+venv/
+# results/
+# data/
