@@ -76,9 +76,12 @@ PARAMETERS
     steam_cost
     cooling_cost
     cost_fe_par
+    
+
+    
 ;
 
-SCALAR R_cost "Gas constant J K-1 kmol-1" /8.314463e3/;
+*SCALAR R_cost "Gas constant J K-1 kmol-1" /8.314463e3/;
 SCALAR Elapsed_time;
 
 
@@ -222,7 +225,7 @@ EQUATIONS
 
 * Macro for make it easier to write the equations
 $macro Tr(i,j) ( T(j)/Tc(i) )
-$macro Betav(j) ( b(j) * P(j) ) / ( R*T(j) )
+$macro Betav(j) ( ( b(j) * P(j) ) / ( R*T(j) ) )
 $macro qv(j) ( a(j) / (b(j)*R*T(j) ) )
 
 * Complete model
@@ -718,7 +721,15 @@ obj_def ..
 *        obj =E= Qr + Dcol_max;
     obj =E= Profit;
 
-
+*test
+Parameter
+    tao_nrtl_par(i, k, j)
+    g_nrtl_par(i, k, j)
+    Xg_par(i, j)
+    
+    qv_par(j)
+    Betav_par(j)
+    Tr_par(i, j);
 
 MODEL MESHR_Rigorous /
 psat_def,
@@ -931,7 +942,7 @@ MESHR_Rigorous.scaleopt = 1;
 
     
 *    * Set scalar values from loop indices
-* Best solution overwall
+* Best solution overall
 Ns = 10;
 NFE = 5;
 NFB = 7;
@@ -940,12 +951,12 @@ NR2 = 5;
 NR3 = 7;
 
 ** Best solution within constraints
-Ns = 10;
-NFE = 5;
-NFB = 7;
-NR1 = 5;
-NR2 = 6;
-NR3 = 7;
+*Ns = 10;
+*NFE = 5;
+*NFB = 7;
+*NR1 = 5;
+*NR2 = 6;
+*NR3 = 7;
 
 * Test solution
 *Ns = 7;
@@ -961,8 +972,8 @@ NR3 = 7;
 option NLP = CONOPT;
 SOLVE MESHR_Rigorous USING NLP MINIMIZING obj;
 
-option NLP = Baron;
-SOLVE MESHR_Rigorous USING NLP MINIMIZING obj;
+*option NLP = Baron;
+*SOLVE MESHR_Rigorous USING NLP MINIMIZING obj;
     
 
 *  Calculate derived values
@@ -983,8 +994,20 @@ ETBE_rev = (- CostETBE*Breb.l)*F_factor* 8150 * 60;
 area_cond_par = (Qc.l*FH_factor/60) / ( (150/0.17611) * (10 / log((Tcond.l-303.15)/(Tcond.l-313.15))) ) * 10.7639;
 area_reb_par = (Qr.l*FH_factor/60) / ( (250/0.17611) * (433.15 - Treb.l) ) * 10.7639;
     
+tao_nrtl_par(i, k, j)$(ord(j) <= Ns) = b_nrtl(i,k) / T.l(j);
+g_nrtl_par(i, k, j)$(ord(j) <= Ns) = (exp(-c_nrtl(i,k) * ( b_nrtl(i,k) / T.l(j) ) ) );
+Xg_par(i, j)$(ord(j) <= Ns) = x.l(i,j)*gamma_nrtl.l(i,j);
 
+* ( x(i,j)*gamma_nrtl(i,j) ) 
+*$macro tao_nrtl(i,k,j)  ( b_nrtl(i,k) / T(j) )
+*$macro g_nrtl(i,k,j) (exp(-c_nrtl(i,k) * ( b_nrtl(i,k) / T(j) ) ) )
+*$macro Tr(i,j) ( T(j)/Tc(i) )
+*$macro Betav(j) ( b(j) * P(j) ) / ( R*T(j) )
+*$macro qv(j) ( a(j) / (b(j)*R*T(j) ) )
 
+qv_par(j)$(ord(j) <= Ns) =  a.l(j) / ( b.l(j)*R*T.l(j) );
+Betav_par(j)$(ord(j) <= Ns) = (b.l(j) * P(j) ) / ( R*T.l(j) );
+Tr_par(i, j)$(ord(j) <= Ns) = T.l(j)/Tc(i);
 * Final summary
 DISPLAY "Successful solves:", count_s;
 DISPLAY "Failed solves:", count_f;

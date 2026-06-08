@@ -2,6 +2,7 @@ import gamspy as gp
 import gamspy.math as gmath
 import numpy as np
 import pandas as pd
+import sys
 
 Ns  = 10
 NFE = 5
@@ -53,7 +54,7 @@ Tmin[...] = 330
 Tmax = gp.Parameter(m, name="Tmax", description="Maximum temperature limit")
 Tmax[...] = 410
 
-R = gp.Parameter(m, name="R", records=8314.463, description="Gas constant J K-1 kmol-1")
+R = gp.Parameter(m, name="R", records=8.314463, description="Gas constant J K-1 kmol-1")
 
 # reaction coefficient
 # v_i = {"1": 0, "2": -1, "3": -1, "4": 1}
@@ -103,10 +104,17 @@ Hform = gp.Parameter(
     records=[("1", -500), ("2", -234950), ("3", -17100), ("4", -313900)]
 )
 
+Omega_a = gp.Parameter(m, name="Omega_a", description="SRK parameter", records=0.42747)
+Omega_b = gp.Parameter(m, name="Omega_b", description="SRK parameter", records=0.08664)
+
 # Uninitialized indexed parameters (Computed later via Equations or assignments)
 kappa = gp.Parameter(m, name="kappa", domain=[i], description="SRK equation parameter")
 ac = gp.Parameter(m, name="ac", domain=[i], description="Component-specific parameter")
 bii = gp.Parameter(m, name="bii", domain=[i], description="SRK b-parameter")
+
+kappa[i] = 0.480 + 1.574 * w[i] - 0.176 * w[i]**2
+ac[i] = Omega_a * (R * Tc[i])**2 / Pc[i]
+bii[i] = Omega_b * R * Tc[i] / Pc[i]
 
 # Feed Enthalpy [J/mol]
 hfb_d_val = -21481.62933928521
@@ -239,14 +247,14 @@ psat_def[i, j] = (
 # ---------------------------------------------------------------------------- #
 # Macros (Implemented as Python functions returning GAMSPY expressions)
 # ---------------------------------------------------------------------------- #
-def Tr(i, j):
-    return T[j] / Tc[i]
+def Tr(i_, j_): 
+    return T[j_] / Tc[i_]
 
-def Betav(j):
-    return (b[j] * P[j]) / (R * T[j])
+def Betav(j_): 
+    return (b[j_] * P[j_]) / (R * T[j_])
 
-def qv(j):
-    return a[j] / (b[j] * R * T[j])
+def qv(j_): 
+    return a[j_] / (b[j_] * R * T[j_])
 
 # ---------------------------------------------------------------------------- #
 # Equations Declaration
@@ -266,7 +274,7 @@ dadT_eq          = gp.Equation(m, name="dadT_eq", domain=[j])
 # Equations Definition
 # ---------------------------------------------------------------------------- #
 # Define the domain condition $(ord(j) <= Ns) for cleaner syntax below
-cond_j = j.where[gp.Ord(j) <= Ns]
+# cond_j = j.where[gp.Ord(j) <= Ns]
 
 cubic_eos[j] = (
     -Z[j] + 1 + Betav(j) - qv(j) * Betav(j) * (Z[j] - Betav(j)) / (Z[j] * (Z[j] + Betav(j))) == 0
@@ -359,11 +367,10 @@ K_part = gp.Variable(m, name="K_part", type="positive", domain=[i, j])
 # ---------------------------------------------------------------------------- #
 # Macros (Implemented as Functions)
 # ---------------------------------------------------------------------------- #
-def tao_nrtl(i_, k_, j_):
+def tao_nrtl(i_, k_, j_): 
     return b_nrtl[i_, k_] / T[j_]
 
-def g_nrtl(i_, k_, j_):
-    # Reusing the tao_nrtl function keeps the code DRY
+def g_nrtl(i_, k_, j_): 
     return gmath.exp(-c_nrtl[i_, k_] * tao_nrtl(i_, k_, j_))
 
 # ---------------------------------------------------------------------------- #
@@ -375,7 +382,7 @@ K_equation          = gp.Equation(m, name="K_equation", domain=[i, j])
 # ---------------------------------------------------------------------------- #
 # Equations Definition
 # ---------------------------------------------------------------------------- #
-cond_j = j.where[gp.Ord(j) <= Ns]
+# cond_j = j.where[gp.Ord(j) <= Ns]
 
 Compute_gamma[i, j] = gamma_nrtl[i, j] == gmath.exp(
     gp.Sum(h, x[h, j] * tao_nrtl(h, i, j) * g_nrtl(h, i, j)) /
@@ -500,10 +507,10 @@ v_mol_i  = gp.Variable(m, name="v_mol_i", type="positive", domain=[i, j])
 # ---------------------------------------------------------------------------- #
 # Macros -> Python Functions
 # ---------------------------------------------------------------------------- #
-def Betav_p(i_, j_):
+def Betav_p(i_, j_): 
     return (bii[i_] * P[j_]) / (R * Tb[i_])
 
-def qv_p(i_):
+def qv_p(i_): 
     return ai_Tb[i_] / (bii[i_] * R * Tb[i_])
 
 # ---------------------------------------------------------------------------- #
@@ -526,7 +533,7 @@ calc_Hl      = gp.Equation(m, name="calc_Hl", domain=[j])
 # Equations Definition
 # ---------------------------------------------------------------------------- #
 # Using the cond_j ( $(ord(j) <= Ns) ) previously established:
-cond_j = j.where[gp.Ord(j) <= Ns]
+# cond_j = j.where[gp.Ord(j) <= Ns]
 
 calc_DH_ig[i, j] = DH_ig[i, j] == (
     C_ig[i, "1"] * (T[j] - T0)
@@ -593,7 +600,7 @@ k_rate   = gp.Variable(m, name="k_rate", domain=[j])
 k_A      = gp.Variable(m, name="k_A", domain=[j])
 Rxn_Rate = gp.Variable(m, name="Rxn_Rate", domain=[j])
 
-def Xg(i_, j_):
+def Xg(i_, j_): 
     return x[i_, j_] * gamma_nrtl[i_, j_]
 
 # ---------------------------------------------------------------------------- #
@@ -1033,23 +1040,82 @@ Mw_mix.lo[j] = 45; Mw_mix.up[j] = 103; Mw_mix.scale[j] = 10
 
 D_col.lo[j] = 0.001; D_col.up[j] = 2; D_col.l[j] = 0.03; D_col.scale[j] = 0.1
 Dcol_max.lo[...] = 0.001; Dcol_max.up[...] = 2
+# ============================================================================ #
+# CRITICAL INITIALIZATIONS: Mimicking GAMS Default States
+# ============================================================================ #
 
+# 1. Column Profiles (Flat starts to prevent mass-balance singularities)
+T.l[j] = 350
+Tcond.l[...] = 330
+Treb.l[...] = 400
+L.l[j] = 0.5
+V.l[j] = 0.5
+V.l["1"] = 0.1  # Do not start condenser vapor at exact 0
+x.l[i, j] = 0.25
+y.l[i, j] = 0.25
+
+# 2. Phase Equilibrium (K_part * x = y -> 1.0 * 0.25 = 0.25)
+K_part.l[i, j] = 1.0
+logPsat.l[i, j] = 11.5  
+gamma_nrtl.l[i, j] = 1.0
+phi.l[i, j] = 1.0
+
+# 3. SRK & Mixture Properties
+alpha_ij.l[i, j] = 1.0
+aii.l[i, j] = 2.0
+a.l[j] = 2.0
+b.l[j] = 1e-4
+dadT_ii.l[i, j] = -0.005
+dadT.l[j] = -0.005
+Z.l[j] = 0.822
+Zvi.l[i, j] = 0.9
+v_mol.l[j] = 0.003
+v_mol_i.l[i, j] = 0.003
+Mw_mix.l[j] = 60.0
+
+# 4. Kinetics
+K_eq.l[j] = 10.0
+k_rate.l[j] = 100.0
+k_A.l[j] = 10.0
+Rxn_Rate.l[j] = 0.0
+
+# 5. Enthalpies (Crucial: prevents gradients from spiking by 10^8 on step 1)
+DH_ig.l[i, j] = 5000.0
+Hvi.l[i, j] = -150000.0
+Hv.l[j] = 100.0
+DH_liq.l[i, j] = 1000.0
+HR_pure.l[i, j] = -2000.0
+Hv_Tbi_P.l[i, j] = -150000.0
+Hli.l[i, j] = -180000.0
+Hl.l[j] = 100.0
 
 # 1. Define the Model
 meshr_model = gp.Model(
     container=m,
     name="MESHR_Optimization",
-    equations=m.getEquations(), 
-    problem="NLP",              
-    sense=gp.Sense.MIN,         
-    objective=obj               
+    equations=m.getEquations(),
+    problem="NLP",          
+    sense=gp.Sense.MIN,        
+    objective=obj              
 )
 
-# 2. Solve the Model using the Options object
+# 2. Solve the Model
 meshr_model.solve(
-    solver="CONOPT", 
-    options=gp.Options(enable_scaling=True)
+    solver="BARON", 
+    # Global GAMS engine settings
+    options=gp.Options(
+        time_limit=1000,         # Correct mapping for GAMS 'reslim'
+        enable_scaling=True
+    ),
+    # Solver-specific parameters (passed directly to CONOPT/BARON)
+    solver_options={
+        "threads": 6,           # Thread count
+    },
+    output=sys.stdout
 )
+# options=gp.Options(
+#     optfile=1  # Tells GAMS to look for a file named conopt.opt
+# )
 
 print(f"Solver Status: {meshr_model.status}")
 print(f"Final Objective Value: {obj.toValue()}")
@@ -1059,9 +1125,61 @@ print(f"Final Objective Value: {obj.toValue()}")
 # Print the solver status to ensure it solved optimally
 print(f"Solver Status: {meshr_model.status}")
 
+# 2. Extract and print the exact violations
+print("\n--- ANALYZING INFEASIBILITIES ---")
+infeasibilities = meshr_model.computeInfeasibilities()
+
+for name, df in infeasibilities.items():
+    if not df.empty:
+        print(f"\nViolation found in: {name}")
+        print(df)
 # Print the final objective value using .toValue()
 print(f"Final Objective Value: {obj.toValue()}")
 
 # You can access the final values of any other variable using .records
 # For example, to view the liquid flow rates across all trays:
 # print(L.records)
+import matplotlib.pyplot as plt
+
+# Grab the data
+df = T.records
+# Convert stage index to numeric for plotting
+df['j'] = df['j'].astype(int) 
+
+# Plot
+plt.figure(figsize=(8, 5))
+plt.plot(df['j'], df['level'], marker='o', linestyle='-')
+plt.title("Optimized Temperature Profile")
+plt.xlabel("Stage Number")
+plt.ylabel("Temperature (K)")
+plt.grid(True)
+plt.show()
+
+import os
+
+# Create an output directory if it doesn't exist
+output_dir = "optimization_results"
+os.makedirs(output_dir, exist_ok=True)
+
+# Define your list of variables
+results_to_export = {
+    "L": L,
+    "V": V,
+    "x": x,
+    "y": y,
+    "T": T,
+    "Qr": Qr,
+    "Qc": Qc,
+    "D": D,
+    "Dcol_max": Dcol_max
+}
+
+# Loop through and export each one
+for name, var in results_to_export.items():
+    # .records returns the Pandas DataFrame
+    df = var.records
+    
+    # Save to CSV
+    filename = os.path.join(output_dir, f"{name}_results.csv")
+    df.to_csv(filename, index=False)
+    print(f"Exported {name} to {filename}")
