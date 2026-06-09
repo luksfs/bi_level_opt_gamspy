@@ -1,4 +1,4 @@
-GAMS 51.2.1  5fb43f63 Oct 13, 2025          WEX-WEI x86 64bit/MS Windows - 06/08/26 15:30:01 Page 1
+GAMS 51.2.1  5fb43f63 Oct 13, 2025          WEX-WEI x86 64bit/MS Windows - 06/09/26 11:01:22 Page 1
 Rective ditillation - Exhaustive - CONOPT-BARON scaling ON - 3 reactive trays - could be separated
 C o m p i l a t i o n
 
@@ -938,7 +938,7 @@ C o m p i l a t i o n
  934   
  935  * Set solver options once before the loop
  936  option reslim = 1000;
- 937  option optcr = 1e-4;
+ 937  option optcr = 1e-8;
  938  option threads = 12;
  939  MESHR_Rigorous.scaleopt = 1;
  940  *Avoiding writing lst
@@ -1015,7 +1015,7 @@ C o m p i l a t i o n
 1011  * Final summary
 1012  DISPLAY "Successful solves:", count_s;
 1013  DISPLAY "Failed solves:", count_f;
-1014   
+1014  DISPLAY "Fobj:", obj.l;
 1015   
 1016  Elapsed_time = timeElapsed;
 1017  Display   Elapsed_time
@@ -1026,8 +1026,8 @@ C o m p i l a t i o n
 **** STRAY NAME eq_AreaReb OF TYPE EQU  
 
 
-COMPILATION TIME     =        0.000 SECONDS      7 MB  51.2.1 5fb43f63 WEX-WEI
-GAMS 51.2.1  5fb43f63 Oct 13, 2025          WEX-WEI x86 64bit/MS Windows - 06/08/26 15:30:01 Page 2
+COMPILATION TIME     =        0.016 SECONDS      7 MB  51.2.1 5fb43f63 WEX-WEI
+GAMS 51.2.1  5fb43f63 Oct 13, 2025          WEX-WEI x86 64bit/MS Windows - 06/09/26 11:01:22 Page 2
 Rective ditillation - Exhaustive - CONOPT-BARON scaling ON - 3 reactive trays - could be separated
 Equation Listing    SOLVE MESHR_Rigorous Using NLP From line 973
 
@@ -1526,7 +1526,7 @@ eq_OP_cost..  - 109.383815757906*Qc - 1313.76328979073*Qr - 54908.343*FE + 92612
 
 obj_def..  - Profit + obj =E= 0 ; (LHS = 0)
      
-GAMS 51.2.1  5fb43f63 Oct 13, 2025          WEX-WEI x86 64bit/MS Windows - 06/08/26 15:30:01 Page 3
+GAMS 51.2.1  5fb43f63 Oct 13, 2025          WEX-WEI x86 64bit/MS Windows - 06/09/26 11:01:22 Page 3
 Rective ditillation - Exhaustive - CONOPT-BARON scaling ON - 3 reactive trays - could be separated
 Column Listing      SOLVE MESHR_Rigorous Using NLP From line 973
 
@@ -2671,7 +2671,7 @@ obj
                 (.LO, .L, .UP, .M = -INF, 0, +INF, 0)
         1       obj_def
 
-GAMS 51.2.1  5fb43f63 Oct 13, 2025          WEX-WEI x86 64bit/MS Windows - 06/08/26 15:30:01 Page 4
+GAMS 51.2.1  5fb43f63 Oct 13, 2025          WEX-WEI x86 64bit/MS Windows - 06/09/26 11:01:22 Page 4
 Rective ditillation - Exhaustive - CONOPT-BARON scaling ON - 3 reactive trays - could be separated
 Range Statistics    SOLVE MESHR_Rigorous Using NLP From line 973
 
@@ -2682,7 +2682,7 @@ RHS       [min, max] : [ 2.096E-01, 2.180E+07] - Zero values observed as well
 Bound     [min, max] : [ 1.000E-05, 2.494E+06] - Zero values observed as well
 Matrix    [min, max] : [ 1.000E-05, 1.000E+06] - Zero values observed as well
 
-GAMS 51.2.1  5fb43f63 Oct 13, 2025          WEX-WEI x86 64bit/MS Windows - 06/08/26 15:30:01 Page 5
+GAMS 51.2.1  5fb43f63 Oct 13, 2025          WEX-WEI x86 64bit/MS Windows - 06/09/26 11:01:22 Page 5
 Rective ditillation - Exhaustive - CONOPT-BARON scaling ON - 3 reactive trays - could be separated
 Model Statistics    SOLVE MESHR_Rigorous Using NLP From line 973
 
@@ -2695,8 +2695,8 @@ NON ZERO ELEMENTS         3,419     NON LINEAR N-Z          2,171
 CODE LENGTH              33,404     CONSTANT POOL             178
 
 
-GENERATION TIME      =        0.016 SECONDS      8 MB  51.2.1 5fb43f63 WEX-WEI
-GAMS 51.2.1  5fb43f63 Oct 13, 2025          WEX-WEI x86 64bit/MS Windows - 06/08/26 15:30:01 Page 6
+GENERATION TIME      =        0.000 SECONDS      8 MB  51.2.1 5fb43f63 WEX-WEI
+GAMS 51.2.1  5fb43f63 Oct 13, 2025          WEX-WEI x86 64bit/MS Windows - 06/09/26 11:01:22 Page 6
 Rective ditillation - Exhaustive - CONOPT-BARON scaling ON - 3 reactive trays - could be separated
 Solution Report     SOLVE MESHR_Rigorous Using NLP From line 973
 
@@ -2711,7 +2711,7 @@ Solution Report     SOLVE MESHR_Rigorous Using NLP From line 973
 **** MODEL STATUS      2 Locally Optimal
 **** OBJECTIVE VALUE                0.0167
 
- RESOURCE USAGE, LIMIT          0.625      1000.000
+ RESOURCE USAGE, LIMIT          0.609      1000.000
  ITERATION COUNT, LIMIT       139    2147483647
  EVALUATION ERRORS              0             0
  
@@ -2736,11 +2736,11 @@ Solution Report     SOLVE MESHR_Rigorous Using NLP From line 973
  ** Optimal solution. Reduced gradient less than tolerance.
  
  
- CONOPT time Total                            0.620 seconds
-   of which: Function evaluations             0.350 = 56.5%
-             1st Derivative evaluations       0.053 =  8.5%
-             Directional 2nd Deriv(Hess)      0.005 =  0.8%
-             Interval derivative evals        0.015 =  2.4%
+ CONOPT time Total                            0.603 seconds
+   of which: Function evaluations             0.342 = 56.7%
+             1st Derivative evaluations       0.066 = 10.9%
+             Directional 2nd Deriv(Hess)      0.002 =  0.3%
+             Interval derivative evals        0.014 =  2.3%
  
 
 ---- EQU psat_def  
@@ -4893,7 +4893,7 @@ Solution Report     SOLVE MESHR_Rigorous Using NLP From line 973
                              0 INFEASIBLE
                              0  UNBOUNDED
                              0     ERRORS
-GAMS 51.2.1  5fb43f63 Oct 13, 2025          WEX-WEI x86 64bit/MS Windows - 06/08/26 15:30:01 Page 7
+GAMS 51.2.1  5fb43f63 Oct 13, 2025          WEX-WEI x86 64bit/MS Windows - 06/09/26 11:01:22 Page 7
 Rective ditillation - Exhaustive - CONOPT-BARON scaling ON - 3 reactive trays - could be separated
 E x e c u t i o n
 
@@ -4904,10 +4904,13 @@ E x e c u t i o n
 ----   1013 Failed solves:
             PARAMETER count_f              =        0.000  
 
-----   1017 PARAMETER Elapsed_time         =        0.681  
+----   1014 Fobj:
+            VARIABLE obj.L                 =        0.017  
+
+----   1017 PARAMETER Elapsed_time         =        0.665  
 
 
-EXECUTION TIME       =        0.672 SECONDS      8 MB  51.2.1 5fb43f63 WEX-WEI
+EXECUTION TIME       =        0.641 SECONDS      8 MB  51.2.1 5fb43f63 WEX-WEI
 
 
 USER: Argimiro R. Secchi, Single User License        G250917+0003Ac-WIN

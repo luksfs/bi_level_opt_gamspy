@@ -934,7 +934,7 @@ v_AreaReb.up = 5;
 
 * Set solver options once before the loop
 option reslim = 1000;
-option optcr = 1e-4;
+option optcr = 1e-8;
 option threads = 12;
 MESHR_Rigorous.scaleopt = 1;
 *Avoiding writing lst
@@ -1011,7 +1011,7 @@ Tr_par(i, j)$(ord(j) <= Ns) = T.l(j)/Tc(i);
 * Final summary
 DISPLAY "Successful solves:", count_s;
 DISPLAY "Failed solves:", count_f;
-
+DISPLAY "Fobj:", obj.l;
 
 Elapsed_time = timeElapsed;
 Display   Elapsed_time

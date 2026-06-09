@@ -1089,28 +1089,42 @@ Hv_Tbi_P.l[i, j] = -150000.0
 Hli.l[i, j] = -180000.0
 Hl.l[j] = 100.0
 
+#####################################################
+# VALIDATION
+# int
+# Whether to enable all validations of GAMSPy. Set to 1 by default.
+# GAMSPy validations are essential during development. Setting VALIDATION to 0 should only be done to improve the performance by skipping the validation steps after you are convinced that your model works as intended.
+gp.set_options({"DOMAIN_VALIDATION": 1})
+#######################################################
+
+##
 # 1. Define the Model
 meshr_model = gp.Model(
     container=m,
     name="MESHR_Optimization",
     equations=m.getEquations(),
-    problem="NLP",          
-    sense=gp.Sense.MIN,        
-    objective=obj              
+    problem="NLP",
+    sense=gp.Sense.MIN,
+    objective=obj
+)
+
+# define solver options 
+
+options = gp.Options(
+    relative_optimality_gap=1e-10,
+    absolute_optimality_gap=0,
+    time_limit=3600,
+    threads=6,
 )
 
 # 2. Solve the Model
 meshr_model.solve(
-    solver="BARON", 
+    solver="CONOPT", 
     # Global GAMS engine settings
     options=gp.Options(
         time_limit=1000,         # Correct mapping for GAMS 'reslim'
         enable_scaling=True
     ),
-    # Solver-specific parameters (passed directly to CONOPT/BARON)
-    solver_options={
-        "threads": 6,           # Thread count
-    },
     output=sys.stdout
 )
 # options=gp.Options(
