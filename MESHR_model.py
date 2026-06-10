@@ -1111,7 +1111,7 @@ meshr_model = gp.Model(
 # define solver options 
 
 options = gp.Options(
-    relative_optimality_gap=1e-10,
+    relative_optimality_gap=1e-4,
     absolute_optimality_gap=0,
     time_limit=3600,
     threads=6,
@@ -1119,7 +1119,7 @@ options = gp.Options(
 
 # 2. Solve the Model
 meshr_model.solve(
-    solver="CONOPT", 
+    solver="BARON", 
     # Global GAMS engine settings
     options=gp.Options(
         time_limit=1000,         # Correct mapping for GAMS 'reslim'

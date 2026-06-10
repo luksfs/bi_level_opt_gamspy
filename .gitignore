@@ -37,3 +37,4 @@ venv/
 *.log
 *.lxi
 *.gdx
+MESHR_model_clear.lst
