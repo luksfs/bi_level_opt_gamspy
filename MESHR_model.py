@@ -371,7 +371,8 @@ def tao_nrtl(i_, k_, j_):
     return b_nrtl[i_, k_] / T[j_]
 
 def g_nrtl(i_, k_, j_): 
-    return gmath.exp(-c_nrtl[i_, k_] * tao_nrtl(i_, k_, j_))
+    # return gmath.exp(-c_nrtl[i_, k_] * tao_nrtl(i_, k_, j_))
+    return gmath.exp(-c_nrtl[i_, k_] * ( b_nrtl[i_, k_] / T[j_] ) )
 
 # ---------------------------------------------------------------------------- #
 # Equations Declaration
@@ -1112,20 +1113,20 @@ meshr_model = gp.Model(
 
 options = gp.Options(
     relative_optimality_gap=1e-4,
-    absolute_optimality_gap=0,
+    # absolute_optimality_gap=0,
     time_limit=3600,
     threads=6,
 )
 
 # 2. Solve the Model
 meshr_model.solve(
-    solver="BARON", 
+    solver="CONOPT", 
     # Global GAMS engine settings
     options=gp.Options(
         time_limit=1000,         # Correct mapping for GAMS 'reslim'
         enable_scaling=True
     ),
-    output=sys.stdout
+    # output=sys.stdout
 )
 # options=gp.Options(
 #     optfile=1  # Tells GAMS to look for a file named conopt.opt
