@@ -972,8 +972,12 @@ NR3 = 7;
 option NLP = CONOPT;
 SOLVE MESHR_Rigorous USING NLP MINIMIZING obj;
 
-*option NLP = Baron;
-*SOLVE MESHR_Rigorous USING NLP MINIMIZING obj;
+Elapsed_time = timeElapsed;
+Display   Elapsed_time
+
+
+option NLP = Baron;
+SOLVE MESHR_Rigorous USING NLP MINIMIZING obj;
     
 
 *  Calculate derived values
