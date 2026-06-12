@@ -12,14 +12,42 @@ class ReactiveDistillationModel:
         max_stages defines the absolute maximum size of the column matrix.
         """
         self.m = gp.Container()
-        self.max_stages = max_stages
+        # self.max_stages = max_stages
         
-        print("Compiling MESHR Superstructure (This only happens once)...")
+        # print("Compiling MESHR Superstructure (This only happens once)...")
+        # self._build_sets()
+        # self._build_parameters()
+        # self._build_variables()
+        # # self._build_equations()
+        # self._initialize_bounds_and_scales()
+
+    def compile_model(self, Ns, NFE, NFB, reactive_trays):
+        
+        # print("Compiling MESHR Superstructure (This only happens once)...")
+        self.Ns = Ns
+        # self.Ns[...] = Ns
+
+        
+        
+
         self._build_sets()
         self._build_parameters()
         self._build_variables()
-        self._build_equations()
+        # self._build_equations()
+        self._build_equations_less_generic()
         self._initialize_bounds_and_scales()
+        
+        self.is_FE[...] = 0
+        self.is_FB[...] = 0
+        self.is_reactive[...] = 0
+        
+        self.is_FE[str(NFE)] = 1
+        self.is_FB[str(NFB)] = 1
+        for rt in reactive_trays:
+            self.is_reactive[str(rt)] = 1
+
+        # self.update_config(Ns, NFE, NFB, reactive_trays)
+        
         
         # Compile the Model object
         self.model = gp.Model(
@@ -33,9 +61,11 @@ class ReactiveDistillationModel:
         )
         print("Compilation complete.")
 
+
     def _build_sets(self):
         self.i = gp.Set(self.m, name="i", records=[str(x) for x in range(1, 5)])
-        self.j = gp.Set(self.m, name="j", records=[str(x) for x in range(1, self.max_stages + 1)])
+        # self.j = gp.Set(self.m, name="j", records=[str(x) for x in range(1, self.max_stages + 1)])
+        self.j = gp.Set(self.m, name="j", records=[str(x) for x in range(1, self.Ns + 1)])
         self.c = gp.Set(self.m, name="c", records=[str(x) for x in range(1, 8)])
         self.cc = gp.Set(self.m, name="cc", records=[str(x) for x in range(1, 6)])
         
@@ -46,13 +76,13 @@ class ReactiveDistillationModel:
 
     def _build_parameters(self):
         # 1. Structural Parameters (These make the superstructure dynamic)
-        self.Ns = gp.Parameter(self.m, name="Ns", description="Current active stages")
+        # self.Ns = gp.Parameter(self.m, name="Ns", description="Current active stages")
         self.is_FE = gp.Parameter(self.m, name="is_FE", domain=[self.j])
         self.is_FB = gp.Parameter(self.m, name="is_FB", domain=[self.j])
         self.is_reactive = gp.Parameter(self.m, name="is_reactive", domain=[self.j])
         
         # Initialize defaults
-        self.Ns[...] = 10
+        # self.Ns[...] = 10
         self.is_FE[...] = 0
         self.is_FB[...] = 0
         self.is_reactive[...] = 0
@@ -445,6 +475,217 @@ class ReactiveDistillationModel:
         self.dummy_x = gp.Equation(self.m, name="dummy_x", domain=[i, j])
         self.dummy_x[i, j].where[cond_inactive] = self.x[i, j] == 0.25
 
+    def _build_equations_less_generic(self):
+        # -------------------------------------------------------------------- #
+        # LOCAL MACROS (Replaces explicit variables to prevent math errors)
+        # -------------------------------------------------------------------- #
+        # def Tr_m(i_, j_): return self.T[j_] / self.Tc[i_]
+        # def Betav_m(j_): return (self.b[j_] * self.P[j_]) / (self.R * self.T[j_])
+        # def qv_m(j_): return self.a[j_] / (self.b[j_] * self.R * self.T[j_])
+        # def tao_nrtl_m(i_, k_, j_): return 
+
+        # def g_nrtl_m(i_, k_, j_): return gmath.exp(-self.c_nrtl[i_, k_] * ( self.b_nrtl[i_, k_] / self.T[j_] ) )
+
+        # def Xg_m(i_, j_): return self.x[i_, j_] * self.gamma_nrtl[i_, j_]
+        # def Betav_p_m(i_, j_): return (self.bii[i_] * self.P[j_]) / (self.R * self.Tb[i_])
+        # def qv_p_m(i_): return self.ai_Tb[i_] / (self.bii[i_] * self.R * self.Tb[i_])
+
+        # -------------------------------------------------------------------- #
+        # DYNAMIC MASKS (These dynamically evaluate based on self.Ns!)
+        # -------------------------------------------------------------------- #
+        # cond_condenser = gp.Ord(self.j) == 1
+        # cond_interior  = (gp.Ord(self.j) > 1) & (gp.Ord(self.j) < self.Ns)
+        # cond_reboiler  = gp.Ord(self.j) == self.Ns
+        # cond_active    = gp.Ord(self.j) <= self.Ns
+        # cond_inactive  = gp.Ord(self.j) > self.Ns
+
+        # -------------------------------------------------------------------- #
+        # EQUATIONS
+        # -------------------------------------------------------------------- #
+        i, j, k, h, m_alias = self.i, self.j, self.k, self.h, self.m_alias
+
+        # Antoine
+        self.psat_def = gp.Equation(self.m, name="psat_def", domain=[i, j])
+        self.psat_def[i, j] = self.logPsat[i, j] == (
+            self.kk[i, "1"] + self.kk[i, "2"] / (self.kk[i, "3"] + self.T[j]) 
+            + self.kk[i, "4"] * self.T[j] + self.kk[i, "5"] * gmath.log(self.T[j]) 
+            + self.kk[i, "6"] * (self.T[j] ** self.kk[i, "7"])
+        )
+
+        # SRK
+        self.cubic_eos = gp.Equation(self.m, name="cubic_eos", domain=[j])
+        self.cubic_eos[j] = -self.Z[j] + 1 + ( self.b[j] * self.P[j]) / (self.R * self.T[j] ) - (  self.a[j] / (self.b[j] * self.R * self.T[j]) ) * ( self.b[j] * self.P[j]) / (self.R * self.T[j] ) * (self.Z[j] - ( self.b[j] * self.P[j]) / (self.R * self.T[j] )) / (self.Z[j] * (self.Z[j] + ( self.b[j] * self.P[j]) / (self.R * self.T[j] ))) == 0
+        
+        self.alpha_definition = gp.Equation(self.m, name="alpha_definition", domain=[i, j])
+        self.alpha_definition[i, j] = self.alpha_ij[i, j] == (1 + self.kappa[i] * (1 - gmath.sqrt(( self.T[j] / self.Tc[i] ))))**2
+        
+        self.aii_definition = gp.Equation(self.m, name="aii_definition", domain=[i, j])
+        self.aii_definition[i, j] = self.aii[i, j] == self.alpha_ij[i, j] * self.ac[i]
+
+        self.mixing_rule_b = gp.Equation(self.m, name="mixing_rule_b", domain=[j])
+        self.mixing_rule_b[j] = self.b[j] == gp.Sum(i, self.y[i, j] * self.bii[i])
+
+        self.mixing_rule_a = gp.Equation(self.m, name="mixing_rule_a", domain=[j])
+        self.mixing_rule_a[j] = self.a[j] == gp.Sum(i, gp.Sum(k, self.y[i, j] * self.y[k, j] * gmath.sqrt(self.aii[i, j] * self.aii[k, j])))
+
+        self.v_definition = gp.Equation(self.m, name="v_definition", domain=[j])
+        self.v_definition[j] = self.v_mol[j] == self.Z[j] * self.R * self.T[j] / self.P[j]
+
+        self.fugacity_eq = gp.Equation(self.m, name="fugacity_eq", domain=[i, j])
+        self.fugacity_eq[i, j] = self.phi[i, j] == gmath.exp(
+            self.bii[i] * (self.Z[j] - 1) / self.b[j] - gmath.log(self.P[j] * (self.v_mol[j] - self.b[j]) / (self.R * self.T[j])) +
+            (self.a[j] / (self.b[j] * self.R * self.T[j])) * (self.bii[i] / self.b[j] - 2 * gp.Sum(k, self.y[k, j] * gmath.sqrt(self.aii[i, j] * self.aii[k, j])) / self.a[j]) * gmath.log((self.v_mol[j] + self.b[j]) / self.v_mol[j])
+        )
+
+        self.dadT_ii_eq = gp.Equation(self.m, name="dadT_ii_eq", domain=[i, j])
+        self.dadT_ii_eq[i, j] = self.dadT_ii[i, j] == -(self.ac[i] * self.kappa[i]) * gmath.sqrt(self.alpha_ij[i, j] * ( self.T[j] / self.Tc[i] )) / self.T[j]
+
+        self.dadT_eq = gp.Equation(self.m, name="dadT_eq", domain=[j])
+        self.dadT_eq[j] = self.dadT[j] == -gp.Sum(i, gp.Sum(k, self.y[i, j] * self.y[k, j] * gmath.sqrt(self.dadT_ii[i, j] * self.dadT_ii[k, j])))
+
+        self.enthalpy_eq = gp.Equation(self.m, name="enthalpy_eq", domain=[j])
+        self.enthalpy_eq[j] = self.HR[j] == self.R * self.T[j] * (self.Z[j] - 1 + (self.T[j] * self.dadT[j] - self.a[j]) / (self.b[j] * self.R * self.T[j]) * gmath.log((self.v_mol[j] + self.b[j]) / self.v_mol[j]))
+
+        # NRTL
+        self.Compute_gamma = gp.Equation(self.m, name="Compute_gamma", domain=[i, j])
+        self.Compute_gamma[i, j] = self.gamma_nrtl[i, j] == gmath.exp(
+            gp.Sum(h, self.x[h, j] * ( self.b_nrtl[h, i] / self.T[j] ) * ( gmath.exp(-self.c_nrtl[h, i] * (self.b_nrtl[h, i] / self.T[j]) ) )) / gp.Sum(k, self.x[k, j] * ( gmath.exp(-self.c_nrtl[k, i] * (self.b_nrtl[k, i] / self.T[j]) ) )) +
+            gp.Sum(h, (self.x[h, j] * ( gmath.exp(-self.c_nrtl[i, h] * (self.b_nrtl[i, h] / self.T[j]) ) )) / gp.Sum(k, self.x[k, j] * ( gmath.exp(-self.c_nrtl[k, h] * (self.b_nrtl[k, h] / self.T[j]) ) )) *
+            (( self.b_nrtl[i, h] / self.T[j] ) - gp.Sum(m_alias, self.x[m_alias, j] * ( self.b_nrtl[m_alias, h] / self.T[j] ) * ( gmath.exp(-self.c_nrtl[m_alias, h] * (self.b_nrtl[m_alias, h] / self.T[j]) ) )) / gp.Sum(k, self.x[k, j] * ( gmath.exp(-self.c_nrtl[k, h] * (self.b_nrtl[k, h] / self.T[j]) ) ))))
+        )
+
+        self.K_equation = gp.Equation(self.m, name="K_equation", domain=[i, j])
+        self.K_equation[i, j] = self.K_part[i, j] * (self.phi[i, j] * self.P[j]) == self.gamma_nrtl[i, j] * gmath.exp(self.logPsat[i, j])
+
+        # Enthalpies
+        self.calc_DH_ig = gp.Equation(self.m, name="calc_DH_ig", domain=[i, j])
+        self.calc_DH_ig[i, j] = self.DH_ig[i, j] == (self.C_ig[i, "1"] * (self.T[j] - self.T0) + self.C_ig[i, "2"] * (self.T[j]**2 - self.T0**2) / 2 + self.C_ig[i, "3"] * (self.T[j]**3 - self.T0**3) / 3 + self.C_ig[i, "4"] * (self.T[j]**4 - self.T0**4) / 4 + self.C_ig[i, "5"] * (self.T[j]**5 - self.T0**5) / 5)
+
+        self.calc_Hvi = gp.Equation(self.m, name="calc_Hvi", domain=[i, j])
+        self.calc_Hvi[i, j] = self.Hvi[i, j] == self.DH_ig[i, j] + self.Hform[i]
+
+        self.calc_Hv = gp.Equation(self.m, name="calc_Hv", domain=[j])
+        self.calc_Hv[j] = self.Hv[j] / self.H_factor == gp.Sum(i, self.y[i, j] * self.Hvi[i, j]) + self.HR[j]
+
+        self.Zvi_eq = gp.Equation(self.m, name="Zvi_eq", domain=[i, j])
+        self.Zvi_eq[i, j] = -self.Zvi[i, j] + 1 + ( (self.bii[i] * self.P[j]) / (self.R * self.Tb[i]) ) - ( self.ai_Tb[i] / (self.bii[i] * self.R * self.Tb[i]) ) * ( (self.bii[i] * self.P[j]) / (self.R * self.Tb[i]) ) * (self.Zvi[i, j] - ( (self.bii[i] * self.P[j]) / (self.R * self.Tb[i]) )) / (self.Zvi[i, j] * (self.Zvi[i, j] + ( (self.bii[i] * self.P[j]) / (self.R * self.Tb[i]) ))) == 0
+
+        self.v_eq = gp.Equation(self.m, name="v_eq", domain=[i, j])
+        self.v_eq[i, j] = self.v_mol_i[i, j] == self.Zvi[i, j] * self.R * self.Tb[i] / self.P[j]
+
+        self.calc_HR_pure = gp.Equation(self.m, name="calc_HR_pure", domain=[i, j])
+        self.calc_HR_pure[i, j] = self.HR_pure[i, j] == self.R * self.Tb[i] * (self.Zvi[i, j] - 1 + (self.Tb[i] * self.dadT_Tb[i] - self.ai_Tb[i]) / (self.bii[i] * self.R * self.Tb[i]) * gmath.log((self.v_mol_i[i, j] + self.bii[i]) / self.v_mol_i[i, j]))
+
+        self.calc_DH_liq = gp.Equation(self.m, name="calc_DH_liq", domain=[i, j])
+        self.calc_DH_liq[i, j] = self.DH_liq[i, j] == (self.C_liq[i, "1"] * (self.T[j] - self.Tb[i]) + self.C_liq[i, "2"] * (self.T[j]**2 - self.Tb[i]**2) / 2 + self.C_liq[i, "3"] * (self.T[j]**3 - self.Tb[i]**3) / 3 + self.C_liq[i, "4"] * (self.T[j]**4 - self.Tb[i]**4) / 4 + self.C_liq[i, "5"] * (self.T[j]**5 - self.Tb[i]**5) / 5)
+
+        self.calc_Hv_Tbi_P = gp.Equation(self.m, name="calc_Hv_Tbi_P", domain=[i, j])
+        self.calc_Hv_Tbi_P[i, j] = self.Hv_Tbi_P[i, j] == self.DH_ig_Tb[i] + self.Hform[i] + self.HR_pure[i, j]
+
+        self.calc_Hli = gp.Equation(self.m, name="calc_Hli", domain=[i, j])
+        self.calc_Hli[i, j] = self.Hli[i, j] == self.DH_liq[i, j] + self.Hv_Tbi_P[i, j] - self.DH_vap[i]
+
+        self.calc_Hl = gp.Equation(self.m, name="calc_Hl", domain=[j])
+        self.calc_Hl[j] = self.Hl[j] / self.H_factor == gp.Sum(i, self.x[i, j] * self.Hli[i, j])
+
+        # Kinetics (Uses the binary parameter `is_reactive` to turn reactions on/off)
+        self.calc_K_eq = gp.Equation(self.m, name="calc_K_eq", domain=[j])
+        self.calc_K_eq[j] = self.K_eq[j] == gmath.exp(10.387 + 4060.59 / self.T[j] - 2.89055 * gmath.log(self.T[j]) - 0.01915144 * self.T[j] + 5.28586E-5 * self.T[j]**2 - 5.32977E-8 * self.T[j]**3)
+
+        self.calc_k_rate = gp.Equation(self.m, name="calc_k_rate", domain=[j])
+        self.calc_k_rate[j] = self.k_rate[j] == 7.41816E15 * gmath.exp(-60.4E3 / (self.R * self.T[j])) / 60
+
+        self.calc_k_A = gp.Equation(self.m, name="calc_k_A", domain=[j])
+        self.calc_k_A[j] = self.k_A[j] == gmath.exp(-1.0707 + 1323.1 / self.T[j])
+
+        self.calc_Rx_Rate = gp.Equation(self.m, name="calc_Rx_Rate", domain=[j])
+        self.calc_Rx_Rate[j] = self.Rxn_Rate[j] == self.is_reactive[j] * (
+            self.k_rate[j] * ( self.x["2", j] * self.gamma_nrtl["2", j] ) * (( self.x["2", j] * self.gamma_nrtl["2", j] ) * ( self.x["3", j] * self.gamma_nrtl["3", j] ) - ( self.x["4", j] * self.gamma_nrtl["4", j] ) / self.K_eq[j]) / (1 + self.k_A[j] * ( self.x["2", j] * self.gamma_nrtl["2", j] ))**3
+        )
+
+        # MESHR Balances
+        self.mol_balance_eq = gp.Equation(self.m, name="mol_balance_eq", domain=[j])
+        self.mol_balance_eq[j] = self.L[j] + self.V[j] - self.V[j.lead(1)] - self.L[j.lag(1)] - self.FE * self.is_FE[j] - self.FB * self.is_FB[j] - gp.Sum(i, self.v_i[i] * self.m_cat * self.Rxn_Rate[j]) / self.F_factor == 0
+
+        self.mol_balance_condenser_eq = gp.Equation(self.m, name="mol_balance_condenser_eq")
+        self.mol_balance_condenser_eq[...] = self.V["1"] + (self.L["1"] + self.D) - self.V["2"] == 0
+
+        self.mol_balance_reboiler_eq = gp.Equation(self.m, name="mol_balance_reboiler_eq", domain=[j])
+        self.mol_balance_reboiler_eq[j] = self.V[j] + self.L[j] - self.L[j.lag(1)] == 0
+
+        self.comp_balance_eq = gp.Equation(self.m, name="comp_balance_eq", domain=[i, j])
+        self.comp_balance_eq[i, j] = self.L[j] * self.x[i, j] + self.V[j] * self.y[i, j] - self.V[j.lead(1)] * self.y[i, j.lead(1)] - self.L[j.lag(1)] * self.x[i, j.lag(1)] - self.FE * self.is_FE[j] * self.zE[i] - self.FB * self.is_FB[j] * self.zB[i] - self.m_cat * self.v_i[i] * self.Rxn_Rate[j] / self.F_factor == 0
+
+        self.comp_balance_condenser_eq = gp.Equation(self.m, name="comp_balance_condenser_eq", domain=[i])
+        self.comp_balance_condenser_eq[i] = self.V["1"] * self.y[i, "1"] + (self.L["1"] + self.D) * self.x[i, "1"] - self.V["2"] * self.y[i, "2"] == 0
+
+        self.comp_balance_reboiler_eq = gp.Equation(self.m, name="comp_balance_reboiler_eq", domain=[i, j])
+        self.comp_balance_reboiler_eq[i, j] = self.V[j] * self.y[i, j] + self.L[j] * self.x[i, j] - self.L[j.lag(1)] * self.x[i, j.lag(1)] == 0
+
+        self.eq_rel_eq = gp.Equation(self.m, name="eq_rel_eq", domain=[i, j])
+        self.eq_rel_eq[i, j] = self.K_part[i, j] * self.x[i, j] - self.y[i, j] == 0
+
+        self.summation_eq = gp.Equation(self.m, name="summation_eq", domain=[j])
+        self.summation_eq[j] = gp.Sum(i, self.y[i, j] - self.x[i, j]) == 0
+
+        self.energy_balance_eq = gp.Equation(self.m, name="energy_balance_eq", domain=[j])
+        self.energy_balance_eq[j] = self.V[j] * self.Hv[j] + self.L[j] * self.Hl[j] - self.V[j.lead(1)] * self.Hv[j.lead(1)] - self.L[j.lag(1)] * self.Hl[j.lag(1)] - self.FE * self.is_FE[j] * self.HFE - self.FB * self.is_FB[j] * self.HFB == 0
+
+        self.energy_balance_condenser_eq = gp.Equation(self.m, name="energy_balance_condenser_eq")
+        self.energy_balance_condenser_eq[...] = self.V["1"] * self.Hv["1"] + (self.L["1"] + self.D) * self.Hl["1"] - self.V["2"] * self.Hv["2"] + self.Qc == 0
+
+        self.energy_balance_reboiler_eq = gp.Equation(self.m, name="energy_balance_reboiler_eq", domain=[j])
+        self.energy_balance_reboiler_eq[j] = self.V[j] * self.Hv[j] + self.L[j] * self.Hl[j] - self.L[j.lag(1)] * self.Hl[j.lag(1)] - self.Qr == 0
+
+        self.spec_2_eq = gp.Equation(self.m, name="spec_2_eq", domain=[j])
+        self.spec_2_eq[j] = self.x["4", j] == self.Spec_2
+
+        self.V1_eq = gp.Equation(self.m, name="V1_eq")
+        self.V1_eq[...] = self.V["1"] == 0
+
+        # Economics
+        self.def_Mw_mix = gp.Equation(self.m, name="def_Mw_mix", domain=[j])
+        self.def_Mw_mix[j] = self.Mw_mix[j] == gp.Sum(i, self.y[i, j] * self.Mw[i])
+
+        self.def_D_col = gp.Equation(self.m, name="def_D_col", domain=[j])
+        self.def_D_col[j] = self.D_col[j] == gmath.sqrt(4 * ((self.V[j] * self.F_factor * self.v_mol[j] / 60) / ((self.FF / gmath.sqrt(self.Mw_mix[j] * 1e-3 / self.v_mol[j])) * 0.88)) / np.pi) * 3.28084
+
+        self.def_Dcol_max = gp.Equation(self.m, name="def_Dcol_max", domain=[j])
+        self.def_Dcol_max[j] = self.Dcol_max >= self.D_col[j]
+
+        self.def_Tcond = gp.Equation(self.m, name="def_Tcond")
+        self.def_Tcond[...] = self.Tcond == self.T["1"]
+        
+        self.def_Treb = gp.Equation(self.m, name="def_Treb", domain=[j])
+        self.def_Treb[j] = self.Treb == self.T[j]
+        
+        self.def_Breb = gp.Equation(self.m, name="def_Breb", domain=[j])
+        self.def_Breb[j] = self.Breb == self.L[j]
+
+        self.eq_ColCost = gp.Equation(self.m, name="eq_ColCost")
+        self.eq_ColCost[...] = self.v_ColCost == (self.MS / 280) * (101.9 * (self.Dcol_max**1.066) * ((0.7315 * (self.Ns - 2) * 3.28084)**0.802) * 7.05)
+
+        self.eq_TrayCost = gp.Equation(self.m, name="eq_TrayCost")
+        self.eq_TrayCost[...] = self.v_TrayCost == (self.MS / 280) * (4.7 * (self.Dcol_max**1.55) * (0.7315 * (self.Ns - 2) * 3.28084) * 2.7)
+
+        self.eq_CondCost = gp.Equation(self.m, name="eq_CondCost")
+        self.eq_CondCost[...] = self.v_CondCost == (self.Qc * self.FH_factor / 60 / (150 / 0.17611 * (10 / gmath.log((self.Tcond - 303.15) / (self.Tcond - 313.15)))) * 10.7639)**0.65 * 1709.8394439285714
+
+        self.eq_RebCost = gp.Equation(self.m, name="eq_RebCost")
+        self.eq_RebCost[...] = self.v_RebCost == (self.MS / 280 * 101.3 * ((self.Qr * self.FH_factor / 60 / ((250 / 0.17611) * (433.15 - self.Treb)) * 10.7639)**0.65 * 7.3525))
+
+        self.eq_CAP_cost = gp.Equation(self.m, name="eq_CAP_cost")
+        self.eq_CAP_cost[...] = self.CAP_cost == (1 / 3) * (self.v_TrayCost + self.v_ColCost + self.v_CondCost + self.v_RebCost + (7.7 * 3 * 0.4))
+
+        self.eq_OP_cost = gp.Equation(self.m, name="eq_OP_cost")
+        self.eq_OP_cost[...] = self.OP_cost == ((0.378e-9 * self.Qc + self.c_steam * self.Qr) * 8150 * 60 * self.FH_factor + (self.FE * self.CostEth + self.FB * self.CostBut - self.CostETBE * self.Breb) * self.F_factor * 8150 * 60)
+
+        self.def_Profit = gp.Equation(self.m, name="def_Profit")
+        self.def_Profit[...] = self.Profit * 1e6 == self.CAP_cost + self.OP_cost
+
+        self.obj_def = gp.Equation(self.m, name="obj_def")
+        self.obj_def[...] = self.obj == self.Profit
+
     def _initialize_bounds_and_scales(self):
         j, i = self.j, self.i
         # Original Bounds
@@ -511,9 +752,9 @@ class ReactiveDistillationModel:
 
     def update_config(self, Ns, NFE, NFB, reactive_trays):
         """
-        Updates the superstructure parameters instantly. No compilation required.
+        Updates the superstructure parameters instantly. No compilation required. *add compilation for testing
         """
-        self.Ns[...] = Ns
+        # self.Ns[...] = Ns
         self.is_FE[...] = 0
         self.is_FB[...] = 0
         self.is_reactive[...] = 0
@@ -522,15 +763,27 @@ class ReactiveDistillationModel:
         self.is_FB[str(NFB)] = 1
         for rt in reactive_trays:
             self.is_reactive[str(rt)] = 1
+        
+        
+        # Compile the Model object
+        self.model = gp.Model(
+            container=self.m,
+            name="MESHR_Superstructure",
+            equations=self.m.getEquations(),
+            problem="NLP",
+            sense=gp.Sense.MIN,
+            objective=self.obj,
+
+        )
 
     def solve(self, solver="CONOPT"):
-        print(f"\nSolving with Ns={self.Ns.toValue()}, NFE={self.is_FE.records[self.is_FE.records['value']==1]['j'].values[0]}")
+        print(f"\nSolving with Ns={self.Ns}, NFE={self.is_FE.records[self.is_FE.records['value']==1]['j'].values[0]}")
         self.model.solve(
             solver=solver,
             options=gp.Options(time_limit=600, 
                                enable_scaling=True,
                                relative_optimality_gap=1e-10,
-                               threads=6
+                               threads=10
                                ),
             output=sys.stdout #for debuging
         )
