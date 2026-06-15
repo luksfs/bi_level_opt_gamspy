@@ -621,6 +621,7 @@ cond_reactive = (gp.Ord(j) == NR1) | (gp.Ord(j) == NR2) | (gp.Ord(j) == NR3)
 
 # The ~ operator perfectly inverts the subset to find the non-reactive trays
 cond_non_reactive= ~((gp.Ord(j) == NR1) | (gp.Ord(j) == NR2) | (gp.Ord(j) == NR3))
+# cond_non_reactive = (gp.Ord(j) != NR1) & (gp.Ord(j) != NR2) & (gp.Ord(j) != NR3)
 
 # ---------------------------------------------------------------------------- #
 # 3. Equations Definition
@@ -1080,7 +1081,7 @@ k_rate.l[j] = 100.0
 k_A.l[j] = 10.0
 Rxn_Rate.l[j] = 0.0
 
-# 5. Enthalpies (Crucial: prevents gradients from spiking by 10^8 on step 1)
+# 5. Enthalpies
 DH_ig.l[i, j] = 5000.0
 Hvi.l[i, j] = -150000.0
 Hv.l[j] = 100.0
@@ -1114,24 +1115,23 @@ meshr_model = gp.Model(
 options = gp.Options(
     relative_optimality_gap=1e-4,
     # absolute_optimality_gap=0,
-    time_limit=3600,
-    threads=6,
+    time_limit=60,
+    threads=10,
+    enable_scaling=True
 )
 
 # 2. Solve the Model
 meshr_model.solve(
-    solver="CONOPT", 
+    solver="BARON",
     # Global GAMS engine settings
-    options=gp.Options(
-        time_limit=1000,         # Correct mapping for GAMS 'reslim'
-        enable_scaling=True
-    ),
-    # output=sys.stdout
+    options=options,
+    output=sys.stdout
 )
 # options=gp.Options(
 #     optfile=1  # Tells GAMS to look for a file named conopt.opt
 # )
-
+# Print the solver version
+print(meshr_model.solver_version)
 print(f"Solver Status: {meshr_model.status}")
 print(f"Final Objective Value: {obj.toValue()}")
 # ---------------------------------------------------------------------------- #
@@ -1159,7 +1159,7 @@ import matplotlib.pyplot as plt
 # Grab the data
 df = T.records
 # Convert stage index to numeric for plotting
-df['j'] = df['j'].astype(int) 
+df['j'] = df['j'].astype(int)
 
 # Plot
 plt.figure(figsize=(8, 5))

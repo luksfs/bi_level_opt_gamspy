@@ -970,7 +970,7 @@ NR3 = 7;
 *    CONOPT
 *option NLP = SNOPT;
 option NLP = CONOPT;
-SOLVE MESHR_Rigorous USING NLP MINIMIZING obj;
+*SOLVE MESHR_Rigorous USING NLP MINIMIZING obj;
 
 Elapsed_time = timeElapsed;
 Display   Elapsed_time
