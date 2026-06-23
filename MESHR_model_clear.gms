@@ -291,19 +291,25 @@ Alias(i,h);
 Alias(i,m);
 
 Variables
-    gamma_nrtl(i,j);
+    gamma_nrtl(i,j)
+*    tao_nrtl(i,k,j)
+*    g_nrtl(i,k,j)
+    ;
 
 Equations
-    Compute_gamma(i,j), Compute_gamma_ideal(i,j);
+    Compute_gamma(i,j), compute_tao(i,k,j), compute_g(i,k,j);
 
 *calc_tao(i,k,j) ..
 *    tao_nrtl(i,k,j) =E= b_nrtl(i,k) / T(j);
     
 *calc_g(i,k,j)..
 *    g_nrtl(i,k,j) =E= exp(-c_nrtl(i,k) * tao_nrtl(i,k,j));
-
+*
 $macro tao_nrtl(i,k,j)  ( b_nrtl(i,k) / T(j) )
 $macro g_nrtl(i,k,j) (exp(-c_nrtl(i,k) * ( b_nrtl(i,k) / T(j) ) ) )
+
+*compute_tao(i,k,j) .. tao_nrtl(i,k,j) =E= ( b_nrtl(i,k) / T(j) );
+*compute_g(i,k,j)   .. g_nrtl(i,k,j)   =E= (exp(-c_nrtl(i,k) * ( b_nrtl(i,k) / T(j) ) ) );
 
 *Equation 29
 Compute_gamma(i,j)$(ord(j) <= Ns) ..
@@ -790,7 +796,9 @@ eq_CAP_cost,
 eq_OP_cost,
 *CAP_eq,
 *OP_eq,
-obj_def
+obj_def,
+*compute_tao,
+*compute_g
 /;
    
 * Positive Variables
@@ -799,11 +807,12 @@ V.lo(j) = 1e-5 ;  V.up(j) = 50; V.l(j) = .5;
 V.lo('1') = 0; V.up('1') = 0.001; V.l('1') = 0;
 x.lo(i,j) = 0;  x.up(i,j) = 1; x.l(i,j) = 0.25;
 y.lo(i,j) = 0;  y.up(i,j) = 1; y.l(i,j) = 0.25;
-D.lo = 0.01; D.up = 1;
-Qc.lo = 0.01;  Qc.up = 10; 
-Qr.lo = 0.01;  Qr.up = 10;
-Breb.lo = 0.001; Breb.up = 1;
+D.lo = 0.01; D.up = 1; D.l  = 0.5748006462583984;
+Qc.lo = 0.01;  Qc.up = 10; Qc.l = 0.5451343354854316;
+Qr.lo = 0.01;  Qr.up = 10; Qr.l = 0.4592022879232921;
+Breb.lo = 0.001; Breb.up = 1; Breb.l = 0.24;
 T.lo(j) = Tmin; T.up(j) = Tmax; T.scale(j) = TF_factor;
+
 
 logPsat.lo(i,j) = (
                 kk(i,'1') + kk(i,'2')/(kk(i,'3') + Tmin) 
@@ -825,14 +834,14 @@ logPsat.scale(i,j) = 10;
 * SRK parameters and properties
 *dadT_Tb.lo(i) = -0.01; dadT_Tb.up(i) = -0.00001; 
     
-alpha_ij.lo(i,j) = 0.5;  alpha_ij.up(i,j) = 2;
-aii.lo(i,j) = 1;  aii.up(i,j) = 4;
-a.lo(j) = 1;  a.up(j) = 3;
-b.lo(j) = 1e-5;  b.up(j) = 1e-3; b.scale(j) = 1e-5;
-dadT_ii.lo(i,j) = -0.009;  dadT_ii.up(i,j) = -0.001; dadT_ii.scale(i,j) = 1e-3;
-dadT.lo(j) = -0.009;  dadT.up(j) = -0.001; dadT.scale(j) = 1e-3;
-K_part.lo(i,j) = 0.001 ; K_part.up(i,j) = 10;
-phi.lo(i,j) = 0.1; phi.up(i,j) = 1.2;
+alpha_ij.lo(i,j) = 0.5;     alpha_ij.up(i,j) = 2;
+aii.lo(i,j) = 1;            aii.up(i,j) = 4;
+a.lo(j) = 1;                a.up(j) = 3;
+b.lo(j) = 1e-5;             b.up(j) = 1e-3;             b.scale(j) = 1e-5;
+dadT_ii.lo(i,j) = -0.009;   dadT_ii.up(i,j) = -0.001;   dadT_ii.scale(i,j) = 1e-3;
+dadT.lo(j) = -0.009;        dadT.up(j) = -0.001;        dadT.scale(j) = 1e-3;
+K_part.lo(i,j) = 0.001 ;    K_part.up(i,j) = 10;
+phi.lo(i,j) = 0.1;          phi.up(i,j) = 1.2;
             
 *    *Enthalpy Variables
 DH_ig.lo(i,j) = (C_ig(i,'1')*(Tmin - T0)
@@ -894,8 +903,10 @@ v_mol_i.scale(i,j) = 1e-3;
     
 *    * NRTL Parameters
 gamma_nrtl.lo(i,j) =  0.01;  gamma_nrtl.up(i,j) = 20;
-*    *tao_nrtl.lo(i,k,j) =-5; tao_nrtl.up(i,k,j) = 5; tao_nrtl.l(i,k,j) = 1;
-*    *g_nrtl.lo(i,k,j) = 1e-10; g_nrtl.up(i,k,j) = 2; g_nrtl.l(i,k,j) = 1;
+*$macro tao_nrtl(i,k,j)  ( b_nrtl(i,k) / T(j) )
+*tao_nrtl.lo(i,k,j) = ( b_nrtl(i,k) / Tmax ); tao_nrtl.up(i,k,j) = 5
+*tao_nrtl.lo(i,k,j) =-5; tao_nrtl.up(i,k,j) = 5; tao_nrtl.l(i,k,j) = 1;
+*g_nrtl.lo(i,k,j) = 1e-10; g_nrtl.up(i,k,j) = 2; g_nrtl.l(i,k,j) = 1;
     
 *    * ReactionVariables
 *    *Xg.lo(i,j) = 1e-6;  Xg.up(i,j) = 1;
@@ -913,10 +924,7 @@ k_A.up(j) = EXP( -1.0707 + 1323.1 / Tmin );
 k_A.scale(j) = 10;
 Rxn_Rate.lo(j) = -10;  Rxn_Rate.up(j) = 10;
 
-D.l  = 0.5748006462583984;
-Qc.l = 0.5451343354854316;
-Qr.l = 0.4592022879232921;
-Breb.l = 0.24;
+
 *               cost estimations
 Mw_mix.lo(j) = 45; Mw_mix.up(j) = 103; Mw_mix.scale(j) = 10;
 D_col.lo(j) = 0.001; D_col.up(j) = 2; D_col.l(j)=0.03; D_col.scale(j)=0.1;
@@ -970,13 +978,16 @@ NR3 = 7;
 *    CONOPT
 *option NLP = SNOPT;
 option NLP = CONOPT;
-*SOLVE MESHR_Rigorous USING NLP MINIMIZING obj;
+SOLVE MESHR_Rigorous USING NLP MINIMIZING obj;
 
 Elapsed_time = timeElapsed;
 Display   Elapsed_time
 
 
 option NLP = Baron;
+SOLVE MESHR_Rigorous USING NLP MINIMIZING obj;
+
+option NLP = CONOPT;
 SOLVE MESHR_Rigorous USING NLP MINIMIZING obj;
     
 

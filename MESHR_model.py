@@ -11,9 +11,9 @@ NR1 = 3
 NR2 = 5
 NR3 = 7
 # 1. Initialize the GAMSPy Container
-m = gp.Container()
+m = gp.Container(debugging_level="keep")
 
-# ============================================================================ #
+# =============================-=============================================== #
 # SETS
 # ============================================================================ #
 # Define sets as strings. j goes up to 22.
@@ -46,7 +46,8 @@ P = gp.Parameter(m, name="P", domain=[j], description="Pressure (Pa)")
 # Assign the same value to all trays
 P[...] = 9.5e5 # [Pa]
 
-m_cat = 0.4 # [kg]
+m_cat = gp.Parameter(m, name="m_cat", records=0.4, description="catalyst mass [kg]")
+# m_cat = 0.4 # [kg]
 
 Tmin = gp.Parameter(m, name="Tmin", description="Minimum temperature limit")
 Tmin[...] = 330
@@ -671,21 +672,21 @@ mask_reboiler = (gp.Ord(j) == Ns)
 # Efficiency Improvement: Feed Indicator Parameters
 # ---------------------------------------------------------------------------- #
 # 1. Declare the parameters
-is_FE = gp.Parameter(m, name="is_FE", domain=[j], description="1 if tray is NFE, 0 otherwise")
-is_FB = gp.Parameter(m, name="is_FB", domain=[j], description="1 if tray is NFB, 0 otherwise")
+# is_FE = gp.Parameter(m, name="is_FE", domain=[j], description="1 if tray is NFE, 0 otherwise")
+# is_FB = gp.Parameter(m, name="is_FB", domain=[j], description="1 if tray is NFB, 0 otherwise")
 
-# 2. Initialize all trays to 0 (default state)
-is_FE[...] = 0
-is_FB[...] = 0
+# # 2. Initialize all trays to 0 (default state)
+# is_FE[...] = 0
+# is_FB[...] = 0
 
-# 3. Assign 1 only to the trays that match the feed condition
-# Initialize all to 0
-is_FE[...] = 0
-is_FB[...] = 0
+# # 3. Assign 1 only to the trays that match the feed condition
+# # Initialize all to 0
+# is_FE[...] = 0
+# is_FB[...] = 0
 
-# Directly assign 1 to the specific string index
-is_FE[str(NFE)] = 1
-is_FB[str(NFB)] = 1
+# # Directly assign 1 to the specific string index
+# is_FE[str(NFE)] = 1
+# is_FB[str(NFB)] = 1
 # ---------------------------------------------------------------------------- #
 # Equations Declaration
 # ---------------------------------------------------------------------------- #
@@ -714,7 +715,7 @@ V1_eq     = gp.Equation(m, name="V1_eq")
 # 1. Total Molar Balance
 mol_balance_eq[j].where[mask_interior] = (
     L[j] + V[j] - V[j.lead(1)] - L[j.lag(1)]
-    - FE * is_FE[j] - FB * is_FB[j]
+    - FE * (gp.Ord(j) == NFE) - FB * (gp.Ord(j) == NFB) 
     - gp.Sum(i, v_i[i] * m_cat * Rxn_Rate[j]) / F_factor == 0
 )
 
@@ -729,7 +730,7 @@ mol_balance_reboiler_eq[j].where[mask_reboiler] = (
 # 2. Component Molar Balance
 comp_balance_eq[i, j].where[mask_interior] = (
     L[j] * x[i, j] + V[j] * y[i, j] - V[j.lead(1)] * y[i, j.lead(1)] - L[j.lag(1)] * x[i, j.lag(1)]
-    - FE * is_FE[j] * zE[i] - FB * is_FB[j] * zB[i] 
+    - FE * (gp.Ord(j) == NFE) * zE[i] - FB * (gp.Ord(j) == NFB)  * zB[i]
     - m_cat * v_i[i] * Rxn_Rate[j] / F_factor == 0
 )
 
@@ -753,7 +754,7 @@ summation_eq[j] = (
 # 4. Energy Balance
 energy_balance_eq[j].where[mask_interior] = (
     V[j] * Hv[j] + L[j] * Hl[j] - V[j.lead(1)] * Hv[j.lead(1)] - L[j.lag(1)] * Hl[j.lag(1)] 
-    - FE * is_FE[j] * HFE - FB * is_FB[j] * HFB == 0
+    - FE * (gp.Ord(j) == NFE) * HFE - FB * (gp.Ord(j) == NFB) * HFB == 0
 )
 
 energy_balance_condenser_eq[...] = (
@@ -830,17 +831,6 @@ CAP_cost   = gp.Variable(m, name="CAP_cost", description="Capital cost ($/yr)")
 OP_cost    = gp.Variable(m, name="OP_cost", description="Operational cost ($/yr)")
 Profit     = gp.Variable(m, name="Profit", description="Annual Profit (Millions $)")
 obj        = gp.Variable(m, name="obj", description="Objective Function Variable")
-
-# ---------------------------------------------------------------------------- #
-# CRITICAL: Prevent Solver Domain Errors (Logarithms and Fractional Powers)
-# ---------------------------------------------------------------------------- #
-# In the Condenser Cost: log((Tcond - 303.15) / (Tcond - 313.15))
-# If Tcond <= 313.15, the denominator is <= 0, causing a fatal log(negative) crash.
-Tcond.lo[...] = 313.2  
-
-# In the Reboiler Cost: (433.15 - Treb)**0.65
-# If Treb >= 433.15, the base of the fractional power is negative, causing a crash.
-Treb.up[...] = 433.1  
 
 # ---------------------------------------------------------------------------- #
 # Equations Declaration
@@ -1046,10 +1036,11 @@ Dcol_max.lo[...] = 0.001; Dcol_max.up[...] = 2
 # CRITICAL INITIALIZATIONS: Mimicking GAMS Default States
 # ============================================================================ #
 
-# 1. Column Profiles (Flat starts to prevent mass-balance singularities)
-T.l[j] = 350
-Tcond.l[...] = 330
-Treb.l[...] = 400
+
+# T.l[j] = 350
+Tcond.lo[...] = 330;     Tcond.up[...] = Tmin+50; Tcond.scale[...] = TF_factor
+Treb.lo[...] = Tmax-50;  Treb.up[...] = Tmax;     Treb.scale[...] = TF_factor
+
 L.l[j] = 0.5
 V.l[j] = 0.5
 V.l["1"] = 0.1  # Do not start condenser vapor at exact 0
@@ -1084,12 +1075,12 @@ Rxn_Rate.l[j] = 0.0
 # 5. Enthalpies
 DH_ig.l[i, j] = 5000.0
 Hvi.l[i, j] = -150000.0
-Hv.l[j] = 100.0
+Hv.l[j] = -1
 DH_liq.l[i, j] = 1000.0
 HR_pure.l[i, j] = -2000.0
 Hv_Tbi_P.l[i, j] = -150000.0
 Hli.l[i, j] = -180000.0
-Hl.l[j] = 100.0
+Hl.l[j] = -1
 
 #####################################################
 # VALIDATION
@@ -1111,14 +1102,24 @@ meshr_model = gp.Model(
 )
 
 # define solver options 
-
 options = gp.Options(
-    relative_optimality_gap=1e-4,
+    relative_optimality_gap=1e-8,
     # absolute_optimality_gap=0,
-    time_limit=60,
-    threads=10,
+    time_limit=10,
+    threads=0,
+    equation_listing_limit=100,  # Prints the first 100 generated rows of EACH equation
+    variable_listing_limit=100,   # Prints the bounded states of the variables
     enable_scaling=True
 )
+
+# # 2. Solve the Model
+# meshr_model.solve(
+#     solver="CONOPT",
+#     # Global GAMS engine settings
+#     options=options,
+#     output=sys.stdout
+# )
+
 
 # 2. Solve the Model
 meshr_model.solve(
@@ -1127,6 +1128,19 @@ meshr_model.solve(
     options=options,
     output=sys.stdout
 )
+
+# Extract the pure GAMS code and save it to a file in your project folder
+gams_code = m.generateGamsString()
+
+with open("my_model_algebra.gms", "w") as f:
+    f.write(gams_code)
+    
+print("Saved GAMS algebra to my_model_algebra.gms!")
+meshr_model.toGams("debug.gms")
+
+print(m.system_directory)
+# import time
+# time.sleep(100)
 # options=gp.Options(
 #     optfile=1  # Tells GAMS to look for a file named conopt.opt
 # )
