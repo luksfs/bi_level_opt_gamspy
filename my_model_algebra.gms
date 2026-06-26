@@ -2865,6 +2865,10 @@ $onUNDF
 $onDotL
 MESHR_Optimization.scaleopt = 1;
 
+option NLP = Baron;
+option reslim = 1000;
+option optcr = 1e-8;
+option threads = 12;
 solve MESHR_Optimization using NLP MIN obj;
 
 $offListing
