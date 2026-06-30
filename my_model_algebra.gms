@@ -1,8 +1,8 @@
 $onMultiR
 $onUNDF
 $onDotL
-Set i(*) "Number of components";
-$gdxIn C:\Users\Lucas\AppData\Local\Temp\tmpv5hrz1c1\_CSvhZaUBQgOaUn3JNLGKCQin.gdx
+Set i(*);
+$gdxIn C:\Users\Lucas\AppData\Local\Temp\tmphbywovwa\_2FEx6YiWQZWZHbdMlJwL6Ain.gdx
 $loadDC i
 $gdxIn
 $offDotL
@@ -11,8 +11,8 @@ $offMulti
 $onMultiR
 $onUNDF
 $onDotL
-Set j(*) "Number of stages";
-$gdxIn C:\Users\Lucas\AppData\Local\Temp\tmpv5hrz1c1\_MtMuQPipRneSH3n00jpf_gin.gdx
+Set j(*);
+$gdxIn C:\Users\Lucas\AppData\Local\Temp\tmphbywovwa\_VorS87TxQW2037mgb01YAQin.gdx
 $loadDC j
 $gdxIn
 $offDotL
@@ -21,371 +21,8 @@ $offMulti
 $onMultiR
 $onUNDF
 $onDotL
-Parameter P(j) "Pressure (Pa)" / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-P(j) = 950000.0;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Parameter m_cat "catalyst mass [kg]" / 0.4 /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Parameter Tmin "Minimum temperature limit" / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Tmin = 330;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Parameter Tmax "Maximum temperature limit" / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Tmax = 410;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Parameter R "Gas constant J K-1 kmol-1" / 8.314463 /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Parameter v_i(i) "Reaction coefficient";
-$gdxIn C:\Users\Lucas\AppData\Local\Temp\tmpv5hrz1c1\_9nQdSNQ1T1mHvCi6iT42agin.gdx
-$loadDC v_i
-$gdxIn
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Parameter Tc(i) "Critical Temperature [K]";
-$gdxIn C:\Users\Lucas\AppData\Local\Temp\tmpv5hrz1c1\_4nT__C20TV_nLV5y6rDRUAin.gdx
-$loadDC Tc
-$gdxIn
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Parameter zE(i) "Molar fraction of ethanol";
-$gdxIn C:\Users\Lucas\AppData\Local\Temp\tmpv5hrz1c1\_KyxjLcQ9R8iwPxsGod_jLAin.gdx
-$loadDC zE
-$gdxIn
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Parameter zB(i) "Molar fraction of butenes";
-$gdxIn C:\Users\Lucas\AppData\Local\Temp\tmpv5hrz1c1\_fgOXs5izTnCdU_z05ik3wwin.gdx
-$loadDC zB
-$gdxIn
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Parameter Mw(i) "Molecular weights (kg/kmol)";
-$gdxIn C:\Users\Lucas\AppData\Local\Temp\tmpv5hrz1c1\_FQK8Ki1qSDiAGk8LnSjefQin.gdx
-$loadDC Mw
-$gdxIn
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Parameter Pc(i) "Critical pressure (Pa)";
-$gdxIn C:\Users\Lucas\AppData\Local\Temp\tmpv5hrz1c1\_5dC6UGL5SG6pjq6fL8t75Qin.gdx
-$loadDC Pc
-$gdxIn
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Parameter w(i) "Acentric factor";
-$gdxIn C:\Users\Lucas\AppData\Local\Temp\tmpv5hrz1c1\_cCgjj7iEQDi6iKsW9ZPLFgin.gdx
-$loadDC w
-$gdxIn
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Parameter Tb(i) "Boiling temperature (K)";
-$gdxIn C:\Users\Lucas\AppData\Local\Temp\tmpv5hrz1c1\_miXE8Vf6SAangOcdYCIB_win.gdx
-$loadDC Tb
-$gdxIn
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Parameter Hform(i) "Heat of formation (J/mol)";
-$gdxIn C:\Users\Lucas\AppData\Local\Temp\tmpv5hrz1c1\_WrDpEC6OTNy0ftFpOH4vLQin.gdx
-$loadDC Hform
-$gdxIn
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Parameter Omega_a "SRK parameter" / 0.42747 /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Parameter Omega_b "SRK parameter" / 0.08664 /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Parameter kappa(i) "SRK equation parameter" / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Parameter ac(i) "Component-specific parameter" / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Parameter bii(i) "SRK b-parameter" / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-kappa(i) = 0.48 + 1.574 * w(i) - 0.176 * power(w(i),2);
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-ac(i) = Omega_a * power(R * Tc(i),2) / Pc(i);
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-bii(i) = Omega_b * R * Tc(i) / Pc(i);
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Parameter HFE / -3.4564640738314174 /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Parameter HFB / -0.27173966027284036 /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Parameter FB / 0.7713270458735205 /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-positive Variable L(j) "Liquid flowrate [mol/min]" / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-positive Variable V(j) "Vapor flowrate [mol/min]" / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-positive Variable x(i,j) "Liquid fraction" / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-positive Variable y(i,j) "Vapor fraction" / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-positive Variable T(j) "Temperature [K]" / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-positive Variable FE "Etanol feed molar flowrate [mol/min]" / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-positive Variable D "Destillate product flowrate (mol/min)" / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-positive Variable Qc "Condenser Duty (J/min)" / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-positive Variable Qr "Reboiler Duty (J/min)" / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-free Variable Z(j) "Compressibility factor" / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-free Variable v_mol(j) "Molar volume" / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-free Variable phi(i,j) "Fugacity coefficient" / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-free Variable HR(j) "Residual enthalpy" / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-free Variable alpha_ij(i,j) "Alpha parameter" / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-free Variable aii(i,j) "Component-wise SRK aii parameter" / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-free Variable a(j) "Mixture parameter a" / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-free Variable b(j) "Mixture parameter b" / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-free Variable dadT_ii(i,j) "Partial derivative of a to T" / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-free Variable dadT(j) "Total temperature derivative of a" / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Alias(i,k);
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Set c(*) "Antoine coefficient columns";
-$gdxIn C:\Users\Lucas\AppData\Local\Temp\tmpv5hrz1c1\__znJNN9qTsOaB7IY63zDCQin.gdx
+Set c(*);
+$gdxIn C:\Users\Lucas\AppData\Local\Temp\tmphbywovwa\_l6fKawymQgmfLSuf_PDY_win.gdx
 $loadDC c
 $gdxIn
 $offDotL
@@ -394,177 +31,10 @@ $offMulti
 $onMultiR
 $onUNDF
 $onDotL
-positive Variable logPsat(i,j) "Saturation Pressure (Pa)" / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Parameter kk(i,c) "psat antoine parameters" / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-$gdxIn C:\Users\Lucas\AppData\Local\Temp\tmpv5hrz1c1\_fQdGKZTCRz2TSCENg8Qdvwin.gdx
-$loadDC kk
+Set cc(*);
+$gdxIn C:\Users\Lucas\AppData\Local\Temp\tmphbywovwa\_kiS9jZ_FSn_qpAEEeZvIDwin.gdx
+$loadDC cc
 $gdxIn
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Equation psat_def(i,j) / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-psat_def(i,j) .. logPsat(i,j) =e= kk(i,"1") + kk(i,"2") / (kk(i,"3") + T(j)) + kk(i,"4") * T(j) + kk(i,"5") * log(T(j)) + kk(i,"6") * rPower(T(j),kk(i,"7"));
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Equation cubic_eos(j) / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Equation v_definition(j) / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Equation fugacity_eq(i,j) / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Equation enthalpy_eq(j) / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Equation alpha_definition(i,j) / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Equation aii_definition(i,j) / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Equation mixing_rule_b(j) / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Equation mixing_rule_a(j) / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Equation dadT_ii_eq(i,j) / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Equation dadT_eq(j) / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-cubic_eos(j) .. (-Z(j)) + 1 + b(j) * P(j) / (R * T(j)) - a(j) / (b(j) * R * T(j)) * (b(j) * P(j) / (R * T(j))) * (Z(j) - b(j) * P(j) / (R * T(j))) / (Z(j) * (Z(j) + b(j) * P(j) / (R * T(j)))) =e= 0;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-alpha_definition(i,j) .. alpha_ij(i,j) =e= power(1 + kappa(i) * (1 - sqrt(T(j) / Tc(i))),2);
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-aii_definition(i,j) .. aii(i,j) =e= alpha_ij(i,j) * ac(i);
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-mixing_rule_b(j) .. b(j) =e= sum(i,y(i,j) * bii(i));
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-mixing_rule_a(j) .. a(j) =e= sum(i,sum(k,y(i,j) * y(k,j) * sqrt(aii(i,j) * aii(k,j))));
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-v_definition(j) .. v_mol(j) =e= Z(j) * R * T(j) / P(j);
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-fugacity_eq(i,j) .. phi(i,j) =e= exp(bii(i) * (Z(j) - 1) / b(j) - log(P(j) * (v_mol(j) - b(j)) / (R * T(j))) + a(j) / (b(j) * R * T(j)) * (bii(i) / b(j) - 2 * sum(k,y(k,j) * sqrt(aii(i,j) * aii(k,j))) / a(j)) * log((v_mol(j) + b(j)) / v_mol(j)));
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-dadT_ii_eq(i,j) .. dadT_ii(i,j) =e= (-(ac(i) * kappa(i))) * sqrt(alpha_ij(i,j) * (T(j) / Tc(i))) / T(j);
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-dadT_eq(j) .. dadT(j) =e= (-sum(i,sum(k,y(i,j) * y(k,j) * sqrt(dadT_ii(i,j) * dadT_ii(k,j)))));
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-enthalpy_eq(j) .. HR(j) =e= R * T(j) * (Z(j) - 1 + (T(j) * dadT(j) - a(j)) / (b(j) * R * T(j)) * log((v_mol(j) + b(j)) / v_mol(j)));
 $offDotL
 $offUNDF
 $offMulti
@@ -592,21 +62,316 @@ $offMulti
 $onMultiR
 $onUNDF
 $onDotL
-Parameter b_nrtl(i,i) "NRTL b parameter" / /;
+Parameter Ns "Current active stages" / /;
 $offDotL
 $offUNDF
 $offMulti
 $onMultiR
 $onUNDF
 $onDotL
-Parameter c_nrtl(i,i) "NRTL c parameter" / /;
+Parameter is_FE(j) / /;
 $offDotL
 $offUNDF
 $offMulti
 $onMultiR
 $onUNDF
 $onDotL
-$gdxIn C:\Users\Lucas\AppData\Local\Temp\tmpv5hrz1c1\_ecf6FljKT__mVfgoudiQBAin.gdx
+Parameter is_FB(j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Parameter is_reactive(j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Ns = 10;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+is_FE(j) = 0;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+is_FB(j) = 0;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+is_reactive(j) = 0;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Parameter P(j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+P(j) = 950000.0;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Parameter v_i(i);
+$gdxIn C:\Users\Lucas\AppData\Local\Temp\tmphbywovwa\_C35cQaXGTOq2seZ9mVZVDgin.gdx
+$loadDC v_i
+$gdxIn
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Parameter Tc(i);
+$gdxIn C:\Users\Lucas\AppData\Local\Temp\tmphbywovwa\_hQN18NE2T2iawPZbMcojrwin.gdx
+$loadDC Tc
+$gdxIn
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Parameter Pc(i);
+$gdxIn C:\Users\Lucas\AppData\Local\Temp\tmphbywovwa\_BgYm2Q1DS_mfuqch1bAPuwin.gdx
+$loadDC Pc
+$gdxIn
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Parameter w(i);
+$gdxIn C:\Users\Lucas\AppData\Local\Temp\tmphbywovwa\_JG9sfzbPTBaHhjNHZakfNgin.gdx
+$loadDC w
+$gdxIn
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Parameter Tb(i);
+$gdxIn C:\Users\Lucas\AppData\Local\Temp\tmphbywovwa\_pfYIvqr2TkOz1YtwVEbOCgin.gdx
+$loadDC Tb
+$gdxIn
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Parameter Mw(i);
+$gdxIn C:\Users\Lucas\AppData\Local\Temp\tmphbywovwa\_bYxwtB9XS46__6Sq1pty8gin.gdx
+$loadDC Mw
+$gdxIn
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Parameter Hform(i);
+$gdxIn C:\Users\Lucas\AppData\Local\Temp\tmphbywovwa\_Yfm32rlHQyC1IGKKEPj2vwin.gdx
+$loadDC Hform
+$gdxIn
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Parameter zE(i);
+$gdxIn C:\Users\Lucas\AppData\Local\Temp\tmphbywovwa\_Ur46QOKvTD6LgxjuKgeRwwin.gdx
+$loadDC zE
+$gdxIn
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Parameter zB(i);
+$gdxIn C:\Users\Lucas\AppData\Local\Temp\tmphbywovwa\_Hltb5ZypTXi1QWoZiqc8YAin.gdx
+$loadDC zB
+$gdxIn
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Parameter kappa(i) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Parameter ac(i) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Parameter bii(i) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+kappa(i) = 0.48 + 1.574 * w(i) - 0.176 * power(w(i),2);
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+ac(i) = 0.42747 * power(8.314463 * Tc(i),2) / Pc(i);
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+bii(i) = 0.72036507432 * Tc(i) / Pc(i);
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Parameter HFE / -3.4564640738314174 /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Parameter HFB / -0.27173966027284036 /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Parameter FB / 0.7713270458735205 /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Parameter Spec_1 / 0.85 /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Parameter Spec_2 / 0.83 /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Parameter FF / 1.8420539101049511 /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Parameter MS / 1773.4 /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Parameter CostETBE / 0.0253 /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Parameter CostEth / 0.015 /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Parameter CostBut / 0.00825 /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Parameter c_steam / 4.54e-09 /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Parameter kk(i,c) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+$gdxIn C:\Users\Lucas\AppData\Local\Temp\tmphbywovwa\_0opkH3ZJTR_dI130R5Dpvwin.gdx
+$loadDC kk
+$gdxIn
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Parameter b_nrtl(i,i) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Parameter c_nrtl(i,i) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+$gdxIn C:\Users\Lucas\AppData\Local\Temp\tmphbywovwa\_KPGOu8JhT8_VY4mERgZEtwin.gdx
 $loadDC b_nrtl
 $gdxIn
 $offDotL
@@ -615,7 +380,7 @@ $offMulti
 $onMultiR
 $onUNDF
 $onDotL
-$gdxIn C:\Users\Lucas\AppData\Local\Temp\tmpv5hrz1c1\_fNSrHOLNRpamY83hJV8nBAin.gdx
+$gdxIn C:\Users\Lucas\AppData\Local\Temp\tmphbywovwa\_CXyU7aVeT_61HVAXUk8qiQin.gdx
 $loadDC c_nrtl
 $gdxIn
 $offDotL
@@ -624,122 +389,28 @@ $offMulti
 $onMultiR
 $onUNDF
 $onDotL
-free Variable gamma_nrtl(i,j) / /;
+Parameter C_ig(i,cc) / /;
 $offDotL
 $offUNDF
 $offMulti
 $onMultiR
 $onUNDF
 $onDotL
-positive Variable K_part(i,j) / /;
+Parameter C_liq(i,cc) / /;
 $offDotL
 $offUNDF
 $offMulti
 $onMultiR
 $onUNDF
 $onDotL
-Equation Compute_gamma(i,j) / /;
+Parameter C_vap(i,cc) / /;
 $offDotL
 $offUNDF
 $offMulti
 $onMultiR
 $onUNDF
 $onDotL
-Equation K_equation(i,j) / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Compute_gamma(i,j) .. gamma_nrtl(i,j) =e= exp(sum(h,x(h,j) * (b_nrtl(h,i) / T(j)) * exp((-c_nrtl(h,i)) * (b_nrtl(h,i) / T(j)))) / sum(k,x(k,j) * exp((-c_nrtl(k,i)) * (b_nrtl(k,i) / T(j)))) + sum(h,x(h,j) * exp((-c_nrtl(i,h)) * (b_nrtl(i,h) / T(j))) / sum(k,x(k,j) * exp((-c_nrtl(k,h)) * (b_nrtl(k,h) / T(j)))) * (b_nrtl(i,h) / T(j) - sum(m_alias,x(m_alias,j) * (b_nrtl(m_alias,h) / T(j)) * exp((-c_nrtl(m_alias,h)) * (b_nrtl(m_alias,h) / T(j)))) / sum(k,x(k,j) * exp((-c_nrtl(k,h)) * (b_nrtl(k,h) / T(j)))))));
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-K_equation(i,j) .. K_part(i,j) * (phi(i,j) * P(j)) =e= gamma_nrtl(i,j) * exp(logPsat(i,j));
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Set cc(*) "Coefficient columns";
-$gdxIn C:\Users\Lucas\AppData\Local\Temp\tmpv5hrz1c1\_B6QQ6kG2RqC5MSGVaM80ugin.gdx
-$loadDC cc
-$gdxIn
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Parameter T0 "Reference temperature [K]" / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-T0 = 298.15;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Parameter e / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-e = 0;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Parameter sigma / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-sigma = 1;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Parameter C_ig(i,cc) "Heat capacity coefficients for ideal gas" / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Parameter C_liq(i,cc) "Heat capacity coefficients for liquid phase" / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Parameter C_vap(i,cc) "DIPPR coefficients for vaporization enthalpy" / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-$gdxIn C:\Users\Lucas\AppData\Local\Temp\tmpv5hrz1c1\_8UZyVNnjQi2g4k19a0HB_Ain.gdx
+$gdxIn C:\Users\Lucas\AppData\Local\Temp\tmphbywovwa\_KrlV6xMnS1GyDH41qtI2Mwin.gdx
 $loadDC C_ig
 $gdxIn
 $offDotL
@@ -748,7 +419,7 @@ $offMulti
 $onMultiR
 $onUNDF
 $onDotL
-$gdxIn C:\Users\Lucas\AppData\Local\Temp\tmpv5hrz1c1\_YBhpGXrSSLyBy6Xyg8rsnwin.gdx
+$gdxIn C:\Users\Lucas\AppData\Local\Temp\tmphbywovwa\_vVNHLpz2SHmQV5a4cL10PAin.gdx
 $loadDC C_liq
 $gdxIn
 $offDotL
@@ -757,7 +428,7 @@ $offMulti
 $onMultiR
 $onUNDF
 $onDotL
-$gdxIn C:\Users\Lucas\AppData\Local\Temp\tmpv5hrz1c1\_QqocJpHTSWKx1Q46uU3sawin.gdx
+$gdxIn C:\Users\Lucas\AppData\Local\Temp\tmphbywovwa\_aykBI2XjQsqbZsB1cpT1hAin.gdx
 $loadDC C_vap
 $gdxIn
 $offDotL
@@ -794,14 +465,14 @@ $offMulti
 $onMultiR
 $onUNDF
 $onDotL
-Parameter DH_vap(i) "Vaporization enthalpy at Tb [J/mol]" / /;
+Parameter DH_vap(i) / /;
 $offDotL
 $offUNDF
 $offMulti
 $onMultiR
 $onUNDF
 $onDotL
-Parameter DH_ig_Tb(i) "DH_ig from T0 to TB [J/mol]" / /;
+Parameter DH_ig_Tb(i) / /;
 $offDotL
 $offUNDF
 $offMulti
@@ -843,63 +514,315 @@ $offMulti
 $onMultiR
 $onUNDF
 $onDotL
-DH_ig_Tb(i) = C_ig(i,"1") * (Tb(i) - T0) + C_ig(i,"2") * (power(Tb(i),2) - power(T0,2)) / 2 + C_ig(i,"3") * (power(Tb(i),3) - power(T0,3)) / 3 + C_ig(i,"4") * (power(Tb(i),4) - power(T0,4)) / 4 + C_ig(i,"5") * (power(Tb(i),5) - power(T0,5)) / 5;
+DH_ig_Tb(i) = C_ig(i,"1") * (Tb(i) - 298.15) + C_ig(i,"2") * (power(Tb(i),2) - 88893.42249999999) / 2 + C_ig(i,"3") * (power(Tb(i),3) - 26503573.918374993) / 3 + C_ig(i,"4") * (power(Tb(i),4) - 7902040563.763504) / 4 + C_ig(i,"5") * (power(Tb(i),5) - 2355993394086.0884) / 5;
 $offDotL
 $offUNDF
 $offMulti
 $onMultiR
 $onUNDF
 $onDotL
-free Variable DH_ig(i,j) "Ideal gas enthalpy change" / /;
+positive Variable L(j) / /;
 $offDotL
 $offUNDF
 $offMulti
 $onMultiR
 $onUNDF
 $onDotL
-free Variable Hvi(i,j) "Ideal gas enthalpy of vapor phase + Hform" / /;
+positive Variable V(j) / /;
 $offDotL
 $offUNDF
 $offMulti
 $onMultiR
 $onUNDF
 $onDotL
-free Variable Hv(j) "Total vapor phase enthalpy" / /;
+positive Variable x(i,j) / /;
 $offDotL
 $offUNDF
 $offMulti
 $onMultiR
 $onUNDF
 $onDotL
-free Variable DH_liq(i,j) "Liquid enthalpy change from Tb to T" / /;
+positive Variable y(i,j) / /;
 $offDotL
 $offUNDF
 $offMulti
 $onMultiR
 $onUNDF
 $onDotL
-free Variable Hv_Tbi_P(i,j) "Vapor phase enthalpy at Tb" / /;
+positive Variable T(j) / /;
 $offDotL
 $offUNDF
 $offMulti
 $onMultiR
 $onUNDF
 $onDotL
-free Variable Hli(i,j) "Liquid enthalpy for each component" / /;
+positive Variable FE / /;
 $offDotL
 $offUNDF
 $offMulti
 $onMultiR
 $onUNDF
 $onDotL
-free Variable Hl(j) "Total liquid phase enthalpy" / /;
+positive Variable D / /;
 $offDotL
 $offUNDF
 $offMulti
 $onMultiR
 $onUNDF
 $onDotL
-free Variable HR_pure(i,j) "Residual enthalpy pure substance" / /;
+positive Variable Qc / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+positive Variable Qr / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+free Variable Breb / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+free Variable Tcond / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+free Variable Treb / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+free Variable D_col(j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+free Variable Dcol_max / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+free Variable Mw_mix(j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+free Variable v_ColCost / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+free Variable v_TrayCost / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+free Variable v_CondCost / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+free Variable v_RebCost / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+free Variable CAP_cost / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+free Variable OP_cost / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+free Variable Profit / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+free Variable obj / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+positive Variable logPsat(i,j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+free Variable Z(j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+free Variable v_mol(j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+free Variable phi(i,j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+free Variable HR(j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+free Variable alpha_ij(i,j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+free Variable aii(i,j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+free Variable a(j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+free Variable b(j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+free Variable dadT_ii(i,j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+free Variable dadT(j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+free Variable gamma_nrtl(i,j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+positive Variable K_part(i,j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+free Variable DH_ig(i,j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+free Variable Hvi(i,j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+free Variable Hv(j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+free Variable DH_liq(i,j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+free Variable Hv_Tbi_P(i,j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+free Variable Hli(i,j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+free Variable Hl(j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+free Variable HR_pure(i,j) / /;
 $offDotL
 $offUNDF
 $offMulti
@@ -914,146 +837,6 @@ $onMultiR
 $onUNDF
 $onDotL
 positive Variable v_mol_i(i,j) / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Equation calc_DH_ig(i,j) / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Equation calc_Hvi(i,j) / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Equation calc_Hv(j) / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Equation Zvi_eq(i,j) / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Equation v_eq(i,j) / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Equation calc_HR_pure(i,j) / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Equation calc_DH_liq(i,j) / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Equation calc_Hv_Tbi_P(i,j) / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Equation calc_Hli(i,j) / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Equation calc_Hl(j) / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-calc_DH_ig(i,j) .. DH_ig(i,j) =e= C_ig(i,"1") * (T(j) - T0) + C_ig(i,"2") * (power(T(j),2) - power(T0,2)) / 2 + C_ig(i,"3") * (power(T(j),3) - power(T0,3)) / 3 + C_ig(i,"4") * (power(T(j),4) - power(T0,4)) / 4 + C_ig(i,"5") * (power(T(j),5) - power(T0,5)) / 5;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-calc_Hvi(i,j) .. Hvi(i,j) =e= DH_ig(i,j) + Hform(i);
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-calc_Hv(j) .. Hv(j) / 1.2649862632900375e-05 =e= sum(i,y(i,j) * Hvi(i,j)) + HR(j);
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Zvi_eq(i,j) .. (-Zvi(i,j)) + 1 + bii(i) * P(j) / (R * Tb(i)) - ai_Tb(i) / (bii(i) * R * Tb(i)) * (bii(i) * P(j) / (R * Tb(i))) * (Zvi(i,j) - bii(i) * P(j) / (R * Tb(i))) / (Zvi(i,j) * (Zvi(i,j) + bii(i) * P(j) / (R * Tb(i)))) =e= 0;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-v_eq(i,j) .. v_mol_i(i,j) =e= Zvi(i,j) * R * Tb(i) / P(j);
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-calc_HR_pure(i,j) .. HR_pure(i,j) =e= R * Tb(i) * (Zvi(i,j) - 1 + (Tb(i) * dadT_Tb(i) - ai_Tb(i)) / (bii(i) * R * Tb(i)) * log((v_mol_i(i,j) + bii(i)) / v_mol_i(i,j)));
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-calc_DH_liq(i,j) .. DH_liq(i,j) =e= C_liq(i,"1") * (T(j) - Tb(i)) + C_liq(i,"2") * (power(T(j),2) - power(Tb(i),2)) / 2 + C_liq(i,"3") * (power(T(j),3) - power(Tb(i),3)) / 3 + C_liq(i,"4") * (power(T(j),4) - power(Tb(i),4)) / 4 + C_liq(i,"5") * (power(T(j),5) - power(Tb(i),5)) / 5;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-calc_Hv_Tbi_P(i,j) .. Hv_Tbi_P(i,j) =e= DH_ig_Tb(i) + Hform(i) + HR_pure(i,j);
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-calc_Hli(i,j) .. Hli(i,j) =e= DH_liq(i,j) + Hv_Tbi_P(i,j) - DH_vap(i);
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-calc_Hl(j) .. Hl(j) / 1.2649862632900375e-05 =e= sum(i,x(i,j) * Hli(i,j));
 $offDotL
 $offUNDF
 $offMulti
@@ -1088,7 +871,336 @@ $offMulti
 $onMultiR
 $onUNDF
 $onDotL
+Equation psat_def(i,j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+psat_def(i,j) $ (ord(j) <= Ns - 1) .. logPsat(i,j) =e= kk(i,"1") + kk(i,"2") / (kk(i,"3") + T(j)) + kk(i,"4") * T(j) + kk(i,"5") * log(T(j)) + kk(i,"6") * rPower(T(j),kk(i,"7"));
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Equation cubic_eos(j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+cubic_eos(j) $ (ord(j) <= Ns - 1) .. (-Z(j)) + 1 + b(j) * P(j) / (8.314463 * T(j)) - a(j) / (b(j) * 8.314463 * T(j)) * (b(j) * P(j)) / (8.314463 * T(j)) * (Z(j) - b(j) * P(j) / (8.314463 * T(j))) / (Z(j) * (Z(j) + b(j) * P(j) / (8.314463 * T(j)))) =e= 0;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Equation alpha_definition(i,j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+alpha_definition(i,j) $ (ord(j) <= Ns - 1) .. alpha_ij(i,j) =e= power(1 + kappa(i) * (1 - sqrt(T(j) / Tc(i))),2);
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Equation aii_definition(i,j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+aii_definition(i,j) $ (ord(j) <= Ns - 1) .. aii(i,j) =e= alpha_ij(i,j) * ac(i);
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Equation mixing_rule_b(j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+mixing_rule_b(j) $ (ord(j) <= Ns - 1) .. b(j) =e= sum(i,y(i,j) * bii(i));
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Equation mixing_rule_a(j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+mixing_rule_a(j) $ (ord(j) <= Ns - 1) .. a(j) =e= sum(i,sum(k,y(i,j) * y(k,j) * sqrt(aii(i,j) * aii(k,j))));
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Equation v_definition(j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+v_definition(j) $ (ord(j) <= Ns - 1) .. v_mol(j) =e= Z(j) * 8.314463 * T(j) / P(j);
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Equation fugacity_eq(i,j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+fugacity_eq(i,j) $ (ord(j) <= Ns - 1) .. phi(i,j) =e= exp(bii(i) * (Z(j) - 1) / b(j) - log(P(j) * (v_mol(j) - b(j)) / (8.314463 * T(j))) + a(j) / (b(j) * 8.314463 * T(j)) * (bii(i) / b(j) - 2 * sum(k,y(k,j) * sqrt(aii(i,j) * aii(k,j))) / a(j)) * log((v_mol(j) + b(j)) / v_mol(j)));
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Equation dadT_ii_eq(i,j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+dadT_ii_eq(i,j) $ (ord(j) <= Ns - 1) .. dadT_ii(i,j) =e= (-(ac(i) * kappa(i))) * sqrt(alpha_ij(i,j) * (T(j) / Tc(i))) / T(j);
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Equation dadT_eq(j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+dadT_eq(j) $ (ord(j) <= Ns - 1) .. dadT(j) =e= (-sum(i,sum(k,y(i,j) * y(k,j) * sqrt(dadT_ii(i,j) * dadT_ii(k,j)))));
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Equation enthalpy_eq(j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+enthalpy_eq(j) $ (ord(j) <= Ns - 1) .. HR(j) =e= 8.314463 * T(j) * (Z(j) - 1 + (T(j) * dadT(j) - a(j)) / (b(j) * 8.314463 * T(j)) * log((v_mol(j) + b(j)) / v_mol(j)));
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Equation Compute_gamma(i,j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Compute_gamma(i,j) $ (ord(j) <= Ns - 1) .. gamma_nrtl(i,j) =e= exp(sum(h,x(h,j) * (b_nrtl(h,i) / T(j)) * exp((-c_nrtl(h,i)) * (b_nrtl(h,i) / T(j)))) / sum(k,x(k,j) * exp((-c_nrtl(k,i)) * (b_nrtl(k,i) / T(j)))) + sum(h,x(h,j) * exp((-c_nrtl(i,h)) * (b_nrtl(i,h) / T(j))) / sum(k,x(k,j) * exp((-c_nrtl(k,h)) * (b_nrtl(k,h) / T(j)))) * (b_nrtl(i,h) / T(j) - sum(m_alias,x(m_alias,j) * (b_nrtl(m_alias,h) / T(j)) * exp((-c_nrtl(m_alias,h)) * (b_nrtl(m_alias,h) / T(j)))) / sum(k,x(k,j) * exp((-c_nrtl(k,h)) * (b_nrtl(k,h) / T(j)))))));
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Equation K_equation(i,j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+K_equation(i,j) $ (ord(j) <= Ns - 1) .. K_part(i,j) * (phi(i,j) * P(j)) =e= gamma_nrtl(i,j) * exp(logPsat(i,j));
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Equation calc_DH_ig(i,j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+calc_DH_ig(i,j) $ (ord(j) <= Ns - 1) .. DH_ig(i,j) =e= C_ig(i,"1") * (T(j) - 298.15) + C_ig(i,"2") * (power(T(j),2) - 88893.42249999999) / 2 + C_ig(i,"3") * (power(T(j),3) - 26503573.918374993) / 3 + C_ig(i,"4") * (power(T(j),4) - 7902040563.763504) / 4 + C_ig(i,"5") * (power(T(j),5) - 2355993394086.0884) / 5;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Equation calc_Hvi(i,j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+calc_Hvi(i,j) $ (ord(j) <= Ns - 1) .. Hvi(i,j) =e= DH_ig(i,j) + Hform(i);
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Equation calc_Hv(j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+calc_Hv(j) $ (ord(j) <= Ns - 1) .. Hv(j) / 1.2649862632900375e-05 =e= sum(i,y(i,j) * Hvi(i,j)) + HR(j);
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Equation Zvi_eq(i,j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Zvi_eq(i,j) $ (ord(j) <= Ns - 1) .. (-Zvi(i,j)) + 1 + bii(i) * P(j) / (8.314463 * Tb(i)) - ai_Tb(i) / (bii(i) * 8.314463 * Tb(i)) * (bii(i) * P(j) / (8.314463 * Tb(i))) * (Zvi(i,j) - bii(i) * P(j) / (8.314463 * Tb(i))) / (Zvi(i,j) * (Zvi(i,j) + bii(i) * P(j) / (8.314463 * Tb(i)))) =e= 0;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Equation v_eq(i,j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+v_eq(i,j) $ (ord(j) <= Ns - 1) .. v_mol_i(i,j) =e= Zvi(i,j) * 8.314463 * Tb(i) / P(j);
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Equation calc_HR_pure(i,j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+calc_HR_pure(i,j) $ (ord(j) <= Ns - 1) .. HR_pure(i,j) =e= 8.314463 * Tb(i) * (Zvi(i,j) - 1 + (Tb(i) * dadT_Tb(i) - ai_Tb(i)) / (bii(i) * 8.314463 * Tb(i)) * log((v_mol_i(i,j) + bii(i)) / v_mol_i(i,j)));
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Equation calc_DH_liq(i,j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+calc_DH_liq(i,j) $ (ord(j) <= Ns - 1) .. DH_liq(i,j) =e= C_liq(i,"1") * (T(j) - Tb(i)) + C_liq(i,"2") * (power(T(j),2) - power(Tb(i),2)) / 2 + C_liq(i,"3") * (power(T(j),3) - power(Tb(i),3)) / 3 + C_liq(i,"4") * (power(T(j),4) - power(Tb(i),4)) / 4 + C_liq(i,"5") * (power(T(j),5) - power(Tb(i),5)) / 5;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Equation calc_Hv_Tbi_P(i,j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+calc_Hv_Tbi_P(i,j) $ (ord(j) <= Ns - 1) .. Hv_Tbi_P(i,j) =e= DH_ig_Tb(i) + Hform(i) + HR_pure(i,j);
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Equation calc_Hli(i,j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+calc_Hli(i,j) $ (ord(j) <= Ns - 1) .. Hli(i,j) =e= DH_liq(i,j) + Hv_Tbi_P(i,j) - DH_vap(i);
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Equation calc_Hl(j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+calc_Hl(j) $ (ord(j) <= Ns - 1) .. Hl(j) / 1.2649862632900375e-05 =e= sum(i,x(i,j) * Hli(i,j));
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
 Equation calc_K_eq(j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+calc_K_eq(j) $ (ord(j) <= Ns - 1) .. K_eq(j) =e= exp(10.387 + 4060.59 / T(j) - 2.89055 * log(T(j)) - 0.01915144 * T(j) + 5.28586e-05 * power(T(j),2) - 5.32977e-08 * power(T(j),3));
 $offDotL
 $offUNDF
 $offMulti
@@ -1102,7 +1214,21 @@ $offMulti
 $onMultiR
 $onUNDF
 $onDotL
+calc_k_rate(j) $ (ord(j) <= Ns - 1) .. k_rate(j) =e= 7418160000000000.0 * exp((-60400.0) / (8.314463 * T(j))) / 60;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
 Equation calc_k_A(j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+calc_k_A(j) $ (ord(j) <= Ns - 1) .. k_A(j) =e= exp((-1.0707) + 1323.1 / T(j));
 $offDotL
 $offUNDF
 $offMulti
@@ -1116,70 +1242,7 @@ $offMulti
 $onMultiR
 $onUNDF
 $onDotL
-Equation assign_zero(j) / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-calc_K_eq(j) $ (ord(j) eq 3 or ord(j) eq 5 or ord(j) eq 7) .. K_eq(j) =e= exp(10.387 + 4060.59 / T(j) - 2.89055 * log(T(j)) - 0.01915144 * T(j) + 5.28586e-05 * power(T(j),2) - 5.32977e-08 * power(T(j),3));
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-calc_k_rate(j) $ (ord(j) eq 3 or ord(j) eq 5 or ord(j) eq 7) .. k_rate(j) =e= 7418160000000000.0 * exp((-60400.0) / (R * T(j))) / 60;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-calc_k_A(j) $ (ord(j) eq 3 or ord(j) eq 5 or ord(j) eq 7) .. k_A(j) =e= exp((-1.0707) + 1323.1 / T(j));
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-calc_Rx_Rate(j) $ (ord(j) eq 3 or ord(j) eq 5 or ord(j) eq 7) .. Rxn_Rate(j) =e= k_rate(j) * (x("2",j) * gamma_nrtl("2",j)) * (x("2",j) * gamma_nrtl("2",j) * (x("3",j) * gamma_nrtl("3",j)) - x("4",j) * gamma_nrtl("4",j) / K_eq(j)) / power(1 + k_A(j) * (x("2",j) * gamma_nrtl("2",j)),3);
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-assign_zero(j) $ ((not (ord(j) eq 3 or ord(j) eq 5 or ord(j) eq 7))) .. Rxn_Rate(j) =e= 0;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Parameter Spec_1 "Ethanol conversion" / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Spec_1 = 0.85;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Parameter Spec_2 "ETBE molar fraction on the bottom product" / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Spec_2 = 0.83;
+calc_Rx_Rate(j) $ (ord(j) <= Ns - 1) .. Rxn_Rate(j) =e= is_reactive(j) * (k_rate(j) * (x("2",j) * gamma_nrtl("2",j)) * (x("2",j) * gamma_nrtl("2",j) * (x("3",j) * gamma_nrtl("3",j)) - x("4",j) * gamma_nrtl("4",j) / K_eq(j)) / power(1 + k_A(j) * (x("2",j) * gamma_nrtl("2",j)),3));
 $offDotL
 $offUNDF
 $offMulti
@@ -1193,7 +1256,21 @@ $offMulti
 $onMultiR
 $onUNDF
 $onDotL
+mol_balance_eq(j) $ (ord(j) > 0 and ord(j) < Ns - 1) .. L(j) + V(j) - V(j + 1) - L(j - 1) - FE * is_FE(j) - FB * is_FB(j) - sum(i,v_i(i) * 0.4 * Rxn_Rate(j)) / 7.4858 =e= 0;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
 Equation mol_balance_condenser_eq / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+mol_balance_condenser_eq .. V("0") + (L("0") + D) - V("1") =e= 0;
 $offDotL
 $offUNDF
 $offMulti
@@ -1207,7 +1284,21 @@ $offMulti
 $onMultiR
 $onUNDF
 $onDotL
+mol_balance_reboiler_eq(j) $ (ord(j) eq Ns - 1) .. V(j) + L(j) - L(j - 1) =e= 0;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
 Equation comp_balance_eq(i,j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+comp_balance_eq(i,j) $ (ord(j) > 0 and ord(j) < Ns - 1) .. L(j) * x(i,j) + V(j) * y(i,j) - V(j + 1) * y(i,j + 1) - L(j - 1) * x(i,j - 1) - FE * is_FE(j) * zE(i) - FB * is_FB(j) * zB(i) - 0.4 * v_i(i) * Rxn_Rate(j) / 7.4858 =e= 0;
 $offDotL
 $offUNDF
 $offMulti
@@ -1221,7 +1312,21 @@ $offMulti
 $onMultiR
 $onUNDF
 $onDotL
+comp_balance_condenser_eq(i) .. V("0") * y(i,"0") + (L("0") + D) * x(i,"0") - V("1") * y(i,"1") =e= 0;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
 Equation comp_balance_reboiler_eq(i,j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+comp_balance_reboiler_eq(i,j) $ (ord(j) eq Ns - 1) .. V(j) * y(i,j) + L(j) * x(i,j) - L(j - 1) * x(i,j - 1) =e= 0;
 $offDotL
 $offUNDF
 $offMulti
@@ -1235,7 +1340,21 @@ $offMulti
 $onMultiR
 $onUNDF
 $onDotL
+eq_rel_eq(i,j) $ (ord(j) <= Ns - 1) .. K_part(i,j) * x(i,j) - y(i,j) =e= 0;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
 Equation summation_eq(j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+summation_eq(j) $ (ord(j) <= Ns - 1) .. sum(i,y(i,j) - x(i,j)) =e= 0;
 $offDotL
 $offUNDF
 $offMulti
@@ -1249,7 +1368,21 @@ $offMulti
 $onMultiR
 $onUNDF
 $onDotL
+energy_balance_eq(j) $ (ord(j) > 0 and ord(j) < Ns - 1) .. V(j) * Hv(j) + L(j) * Hl(j) - V(j + 1) * Hv(j + 1) - L(j - 1) * Hl(j - 1) - FE * is_FE(j) * HFE - FB * is_FB(j) * HFB =e= 0;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
 Equation energy_balance_condenser_eq / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+energy_balance_condenser_eq .. V("0") * Hv("0") + (L("0") + D) * Hl("0") - V("1") * Hv("1") + Qc =e= 0;
 $offDotL
 $offUNDF
 $offMulti
@@ -1263,7 +1396,21 @@ $offMulti
 $onMultiR
 $onUNDF
 $onDotL
+energy_balance_reboiler_eq(j) $ (ord(j) eq Ns - 1) .. V(j) * Hv(j) + L(j) * Hl(j) - L(j - 1) * Hl(j - 1) - Qr =e= 0;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
 Equation spec_2_eq(j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+spec_2_eq(j) $ (ord(j) eq Ns - 1) .. x("4",j) =e= Spec_2;
 $offDotL
 $offUNDF
 $offMulti
@@ -1277,294 +1424,7 @@ $offMulti
 $onMultiR
 $onUNDF
 $onDotL
-mol_balance_eq(j) $ (ord(j) > 1 and ord(j) < 10) .. L(j) + V(j) - V(j + 1) - L(j - 1) - FE * (ord(j) eq 5) - FB * (ord(j) eq 7) - sum(i,v_i(i) * m_cat * Rxn_Rate(j)) / 7.4858 =e= 0;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-mol_balance_condenser_eq .. V("1") + (L("1") + D) - V("2") =e= 0;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-mol_balance_reboiler_eq(j) $ (ord(j) eq 10) .. V(j) + L(j) - L(j - 1) =e= 0;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-comp_balance_eq(i,j) $ (ord(j) > 1 and ord(j) < 10) .. L(j) * x(i,j) + V(j) * y(i,j) - V(j + 1) * y(i,j + 1) - L(j - 1) * x(i,j - 1) - FE * (ord(j) eq 5) * zE(i) - FB * (ord(j) eq 7) * zB(i) - m_cat * v_i(i) * Rxn_Rate(j) / 7.4858 =e= 0;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-comp_balance_condenser_eq(i) .. V("1") * y(i,"1") + (L("1") + D) * x(i,"1") - V("2") * y(i,"2") =e= 0;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-comp_balance_reboiler_eq(i,j) $ (ord(j) eq 10) .. V(j) * y(i,j) + L(j) * x(i,j) - L(j - 1) * x(i,j - 1) =e= 0;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-eq_rel_eq(i,j) .. K_part(i,j) * x(i,j) - y(i,j) =e= 0;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-summation_eq(j) .. sum(i,y(i,j) - x(i,j)) =e= 0;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-energy_balance_eq(j) $ (ord(j) > 1 and ord(j) < 10) .. V(j) * Hv(j) + L(j) * Hl(j) - V(j + 1) * Hv(j + 1) - L(j - 1) * Hl(j - 1) - FE * (ord(j) eq 5) * HFE - FB * (ord(j) eq 7) * HFB =e= 0;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-energy_balance_condenser_eq .. V("1") * Hv("1") + (L("1") + D) * Hl("1") - V("2") * Hv("2") + Qc =e= 0;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-energy_balance_reboiler_eq(j) $ (ord(j) eq 10) .. V(j) * Hv(j) + L(j) * Hl(j) - L(j - 1) * Hl(j - 1) - Qr =e= 0;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-spec_2_eq(j) $ (ord(j) eq 10) .. x("4",j) =e= Spec_2;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-V1_eq .. V("1") =e= 0;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Parameter FF "Flooding velocity estimation parameter" / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-FF = 1.8420539101049511;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Parameter MS "Marshall & Swift Parameter" / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-MS = 1773.4;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Parameter CostETBE "Price of ETBE bottom product [$/mol]" / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-CostETBE = 0.0253;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Parameter CostEth "Price of Ethanol [$/mol]" / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-CostEth = 0.015;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Parameter CostBut "Price of Butenes [$/mol]" / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-CostBut = 0.00825;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Parameter c_steam "Steam cost parameter [$/J]" / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-c_steam = 4.54e-09;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-free Variable D_col(j) "Column diameter (ft)" / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-free Variable Dcol_max "Maximum column diameter (ft)" / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-free Variable Mw_mix(j) "Molecular weights (kg/kmol)" / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-free Variable Tcond "Condenser temperature (K)" / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-free Variable Treb "Reboiler Temperature (K)" / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-free Variable Breb "Bottoms flowrate" / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-free Variable v_AreaCond "Condenser heat transfer area (ft2)" / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-free Variable v_AreaReb "Reboiler heat transfer area (ft2)" / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-free Variable v_ColCost "Column shell cost ($)" / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-free Variable v_TrayCost "Tray cost ($)" / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-free Variable v_CondCost "Condenser cost ($)" / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-free Variable v_RebCost "Reboiler cost ($)" / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-free Variable CAP_cost "Capital cost ($/yr)" / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-free Variable OP_cost "Operational cost ($/yr)" / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-free Variable Profit "Annual Profit (Millions $)" / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-free Variable obj "Objective Function Variable" / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Equation def_D_col(j) / /;
+V1_eq .. V("0") =e= 0;
 $offDotL
 $offUNDF
 $offMulti
@@ -1578,7 +1438,35 @@ $offMulti
 $onMultiR
 $onUNDF
 $onDotL
+def_Mw_mix(j) $ (ord(j) <= Ns - 1) .. Mw_mix(j) =e= sum(i,y(i,j) * Mw(i));
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Equation def_D_col(j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+def_D_col(j) $ (ord(j) > 0 and ord(j) < Ns - 1) .. D_col(j) =e= sqrt(4 * (V(j) * 7.4858 * v_mol(j) / 60 / (FF / sqrt(Mw_mix(j) * 0.001 / v_mol(j)) * 0.88)) / 3.141592653589793) * 3.28084;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
 Equation def_Dcol_max(j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+def_Dcol_max(j) $ (ord(j) > 0 and ord(j) < Ns - 1) .. Dcol_max =g= D_col(j);
 $offDotL
 $offUNDF
 $offMulti
@@ -1592,7 +1480,21 @@ $offMulti
 $onMultiR
 $onUNDF
 $onDotL
+def_Tcond .. Tcond =e= T("0");
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
 Equation def_Treb(j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+def_Treb(j) $ (ord(j) eq Ns - 1) .. Treb =e= T(j);
 $offDotL
 $offUNDF
 $offMulti
@@ -1606,7 +1508,21 @@ $offMulti
 $onMultiR
 $onUNDF
 $onDotL
+def_Breb(j) $ (ord(j) eq Ns - 1) .. Breb =e= L(j);
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
 Equation eq_ColCost / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+eq_ColCost .. v_ColCost =e= MS / 280 * (101.9 * rPower(Dcol_max,1.066) * rPower(0.7315 * (Ns - 2) * 3.28084,0.802) * 7.05);
 $offDotL
 $offUNDF
 $offMulti
@@ -1620,98 +1536,14 @@ $offMulti
 $onMultiR
 $onUNDF
 $onDotL
+eq_TrayCost .. v_TrayCost =e= MS / 280 * (4.7 * rPower(Dcol_max,1.55) * (0.7315 * (Ns - 2) * 3.28084) * 2.7);
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
 Equation eq_CondCost / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Equation eq_RebCost / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Equation eq_CAP_cost / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Equation eq_OP_cost / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Equation def_Profit / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-Equation obj_def / /;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-def_Mw_mix(j) .. Mw_mix(j) =e= sum(i,y(i,j) * Mw(i));
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-def_D_col(j) $ (ord(j) > 1 and ord(j) < 10) .. D_col(j) =e= sqrt(4 * (V(j) * 7.4858 * v_mol(j) / 60 / (FF / sqrt(Mw_mix(j) * 0.001 / v_mol(j)) * 0.88)) / 3.141592653589793) * 3.28084;
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-def_Dcol_max(j) $ (ord(j) > 1 and ord(j) < 10) .. Dcol_max =g= D_col(j);
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-def_Tcond .. Tcond =e= T("1");
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-def_Treb(j) $ (ord(j) eq 10) .. Treb =e= T(j);
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-def_Breb(j) $ (ord(j) eq 10) .. Breb =e= L(j);
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-eq_ColCost .. v_ColCost =e= MS / 280 * (101.9 * rPower(Dcol_max,1.066) * 10.695425665923146 * 7.05);
-$offDotL
-$offUNDF
-$offMulti
-$onMultiR
-$onUNDF
-$onDotL
-eq_TrayCost .. v_TrayCost =e= MS / 280 * (4.7 * rPower(Dcol_max,1.55) * 19.199475680000003 * 2.7);
 $offDotL
 $offUNDF
 $offMulti
@@ -1725,6 +1557,13 @@ $offMulti
 $onMultiR
 $onUNDF
 $onDotL
+Equation eq_RebCost / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
 eq_RebCost .. v_RebCost =e= MS / 280 * 101.3 * (rPower(Qr * 591769.2719073936 / 60 / (1419.5673158821191 * (433.15 - Treb)) * 10.7639,0.65) * 7.3525);
 $offDotL
 $offUNDF
@@ -1732,7 +1571,21 @@ $offMulti
 $onMultiR
 $onUNDF
 $onDotL
-eq_CAP_cost .. CAP_cost =e= 0.3333333333333333 * (v_TrayCost + v_ColCost + v_CondCost + v_RebCost + 9.24);
+Equation eq_CAP_cost / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+eq_CAP_cost .. CAP_cost =e= 0.3333333333333333 * (v_TrayCost + v_ColCost + v_CondCost + v_RebCost + 7.7 * sum(j,is_reactive(j)) * 0.4);
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Equation eq_OP_cost / /;
 $offDotL
 $offUNDF
 $offMulti
@@ -1746,6 +1599,13 @@ $offMulti
 $onMultiR
 $onUNDF
 $onDotL
+Equation def_Profit / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
 def_Profit .. Profit * 1000000.0 =e= CAP_cost + OP_cost;
 $offDotL
 $offUNDF
@@ -1753,7 +1613,70 @@ $offMulti
 $onMultiR
 $onUNDF
 $onDotL
+Equation obj_def / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
 obj_def .. obj =e= Profit;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Equation dummy_T(j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+dummy_T(j) $ (ord(j) > Ns - 1) .. T(j) =e= 350;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Equation dummy_L(j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+dummy_L(j) $ (ord(j) > Ns - 1) .. L(j) =e= 1e-05;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Equation dummy_V(j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+dummy_V(j) $ (ord(j) > Ns - 1) .. V(j) =e= 1e-05;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Equation dummy_x(i,j) / /;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+dummy_x(i,j) $ (ord(j) > Ns - 1) .. x(i,j) =e= 0.25;
 $offDotL
 $offUNDF
 $offMulti
@@ -1802,21 +1725,21 @@ $offMulti
 $onMultiR
 $onUNDF
 $onDotL
-V.lo("1") = 0;
+V.lo("0") = 0;
 $offDotL
 $offUNDF
 $offMulti
 $onMultiR
 $onUNDF
 $onDotL
-V.up("1") = 0.001;
+V.up("0") = 0.001;
 $offDotL
 $offUNDF
 $offMulti
 $onMultiR
 $onUNDF
 $onDotL
-V.l("1") = 0;
+V.l("0") = 0;
 $offDotL
 $offUNDF
 $offMulti
@@ -1949,14 +1872,14 @@ $offMulti
 $onMultiR
 $onUNDF
 $onDotL
-T.lo(j) = Tmin;
+T.lo(j) = 330;
 $offDotL
 $offUNDF
 $offMulti
 $onMultiR
 $onUNDF
 $onDotL
-T.up(j) = Tmax;
+T.up(j) = 410;
 $offDotL
 $offUNDF
 $offMulti
@@ -1991,14 +1914,14 @@ $offMulti
 $onMultiR
 $onUNDF
 $onDotL
-logPsat.lo(i,j) = kk(i,"1") + kk(i,"2") / (kk(i,"3") + Tmin) + kk(i,"4") * Tmin + kk(i,"5") * log(Tmin) + kk(i,"6") * rPower(Tmin,kk(i,"7"));
+logPsat.lo(i,j) = kk(i,"1") + kk(i,"2") / (kk(i,"3") + 330) + kk(i,"4") * 330 + kk(i,"5") * log(330) + kk(i,"6") * rPower(330,kk(i,"7"));
 $offDotL
 $offUNDF
 $offMulti
 $onMultiR
 $onUNDF
 $onDotL
-logPsat.up(i,j) = kk(i,"1") + kk(i,"2") / (kk(i,"3") + Tmax) + kk(i,"4") * Tmax + kk(i,"5") * log(Tmax) + kk(i,"6") * rPower(Tmax,kk(i,"7"));
+logPsat.up(i,j) = kk(i,"1") + kk(i,"2") / (kk(i,"3") + 410) + kk(i,"4") * 410 + kk(i,"5") * log(410) + kk(i,"6") * rPower(410,kk(i,"7"));
 $offDotL
 $offUNDF
 $offMulti
@@ -2145,14 +2068,14 @@ $offMulti
 $onMultiR
 $onUNDF
 $onDotL
-DH_ig.lo(i,j) = C_ig(i,"1") * (Tmin - T0) + C_ig(i,"2") * (power(Tmin,2) - power(T0,2)) / 2 + C_ig(i,"3") * (power(Tmin,3) - power(T0,3)) / 3 + C_ig(i,"4") * (power(Tmin,4) - power(T0,4)) / 4 + C_ig(i,"5") * (power(Tmin,5) - power(T0,5)) / 5;
+DH_ig.lo(i,j) = C_ig(i,"1") * 31.850000000000023 + C_ig(i,"2") * 20006.577500000014 / 2 + C_ig(i,"3") * 9433426.081625007 / 3 + C_ig(i,"4") * 3957169436.236496 / 4 + C_ig(i,"5") * 1557545905913.9116 / 5;
 $offDotL
 $offUNDF
 $offMulti
 $onMultiR
 $onUNDF
 $onDotL
-DH_ig.up(i,j) = C_ig(i,"1") * (Tmax - T0) + C_ig(i,"2") * (power(Tmax,2) - power(T0,2)) / 2 + C_ig(i,"3") * (power(Tmax,3) - power(T0,3)) / 3 + C_ig(i,"4") * (power(Tmax,4) - power(T0,4)) / 4 + C_ig(i,"5") * (power(Tmax,5) - power(T0,5)) / 5;
+DH_ig.up(i,j) = C_ig(i,"1") * 111.85000000000002 + C_ig(i,"2") * 79206.57750000001 / 2 + C_ig(i,"3") * 42417426.08162501 / 3 + C_ig(i,"4") * 20355569436.236496 / 4 + C_ig(i,"5") * 9229626705913.912 / 5;
 $offDotL
 $offUNDF
 $offMulti
@@ -2222,14 +2145,14 @@ $offMulti
 $onMultiR
 $onUNDF
 $onDotL
-DH_liq.lo(i,j) = C_liq(i,"1") * (Tmin - Tb(i)) + C_liq(i,"2") * (power(Tmin,2) - power(Tb(i),2)) / 2 + C_liq(i,"3") * (power(Tmin,3) - power(Tb(i),3)) / 3 + C_liq(i,"4") * (power(Tmin,4) - power(Tb(i),4)) / 4 + C_liq(i,"5") * (power(Tmin,5) - power(Tb(i),5)) / 5;
+DH_liq.lo(i,j) = C_liq(i,"1") * (330 - Tb(i)) + C_liq(i,"2") * (108900 - power(Tb(i),2)) / 2 + C_liq(i,"3") * (35937000 - power(Tb(i),3)) / 3 + C_liq(i,"4") * (11859210000 - power(Tb(i),4)) / 4 + C_liq(i,"5") * (3913539300000 - power(Tb(i),5)) / 5;
 $offDotL
 $offUNDF
 $offMulti
 $onMultiR
 $onUNDF
 $onDotL
-DH_liq.up(i,j) = C_liq(i,"1") * (Tmax - Tb(i)) + C_liq(i,"2") * (power(Tmax,2) - power(Tb(i),2)) / 2 + C_liq(i,"3") * (power(Tmax,3) - power(Tb(i),3)) / 3 + C_liq(i,"4") * (power(Tmax,4) - power(Tb(i),4)) / 4 + C_liq(i,"5") * (power(Tmax,5) - power(Tb(i),5)) / 5;
+DH_liq.up(i,j) = C_liq(i,"1") * (410 - Tb(i)) + C_liq(i,"2") * (168100 - power(Tb(i),2)) / 2 + C_liq(i,"3") * (68921000 - power(Tb(i),3)) / 3 + C_liq(i,"4") * (28257610000 - power(Tb(i),4)) / 4 + C_liq(i,"5") * (11585620100000 - power(Tb(i),5)) / 5;
 $offDotL
 $offUNDF
 $offMulti
@@ -2341,14 +2264,14 @@ $offMulti
 $onMultiR
 $onUNDF
 $onDotL
-v_mol.lo(j) = Z.lo(j) * R * Tmin / 950000.0;
+v_mol.lo(j) = Z.lo(j) * 8.314463 * 330 / 950000.0;
 $offDotL
 $offUNDF
 $offMulti
 $onMultiR
 $onUNDF
 $onDotL
-v_mol.up(j) = Z.up(j) * R * Tmax / 950000.0;
+v_mol.up(j) = Z.up(j) * 8.314463 * 410 / 950000.0;
 $offDotL
 $offUNDF
 $offMulti
@@ -2383,14 +2306,14 @@ $offMulti
 $onMultiR
 $onUNDF
 $onDotL
-v_mol_i.lo(i,j) = Zvi.lo(i,j) * R * Tmin / 950000.0;
+v_mol_i.lo(i,j) = Zvi.lo(i,j) * 8.314463 * 330 / 950000.0;
 $offDotL
 $offUNDF
 $offMulti
 $onMultiR
 $onUNDF
 $onDotL
-v_mol_i.up(i,j) = Zvi.up(i,j) * R * Tmax / 950000.0;
+v_mol_i.up(i,j) = Zvi.up(i,j) * 8.314463 * 410 / 950000.0;
 $offDotL
 $offUNDF
 $offMulti
@@ -2418,14 +2341,14 @@ $offMulti
 $onMultiR
 $onUNDF
 $onDotL
-K_eq.lo(j) = exp(10.387 + 4060.59 / Tmax - 2.89055 * log(Tmax) - 0.01915144 * Tmax + 5.28586e-05 * power(Tmax,2) - 5.32977e-08 * power(Tmax,3));
+K_eq.lo(j) = exp(20.29087804878049 - 2.89055 * log(410) - 7.8520904 + 8.88553066 - 3.6733307817000003);
 $offDotL
 $offUNDF
 $offMulti
 $onMultiR
 $onUNDF
 $onDotL
-K_eq.up(j) = exp(10.387 + 4060.59 / Tmin - 2.89055 * log(Tmin) - 0.01915144 * Tmin + 5.28586e-05 * power(Tmin,2) - 5.32977e-08 * power(Tmin,3));
+K_eq.up(j) = exp(22.691818181818185 - 2.89055 * log(330) - 6.3199752 + 5.75630154 - 1.9153594449);
 $offDotL
 $offUNDF
 $offMulti
@@ -2439,14 +2362,14 @@ $offMulti
 $onMultiR
 $onUNDF
 $onDotL
-k_rate.lo(j) = 7418160000000000.0 * exp((-60400.0) / (R * Tmin)) / 60;
+k_rate.lo(j) = 7418160000000000.0 * exp(-22.013484578655653) / 60;
 $offDotL
 $offUNDF
 $offMulti
 $onMultiR
 $onUNDF
 $onDotL
-k_rate.up(j) = 7418160000000000.0 * exp((-60400.0) / (R * Tmax)) / 60;
+k_rate.up(j) = 7418160000000000.0 * exp(-17.71817051452772) / 60;
 $offDotL
 $offUNDF
 $offMulti
@@ -2460,14 +2383,14 @@ $offMulti
 $onMultiR
 $onUNDF
 $onDotL
-k_A.lo(j) = exp((-1.0707) + 1323.1 / Tmax);
+k_A.lo(j) = exp(2.1563731707317073);
 $offDotL
 $offUNDF
 $offMulti
 $onMultiR
 $onUNDF
 $onDotL
-k_A.up(j) = exp((-1.0707) + 1323.1 / Tmin);
+k_A.up(j) = exp(2.938693939393939);
 $offDotL
 $offUNDF
 $offMulti
@@ -2565,7 +2488,7 @@ $offMulti
 $onMultiR
 $onUNDF
 $onDotL
-Tcond.up = Tmin + 50;
+Tcond.up = 380;
 $offDotL
 $offUNDF
 $offMulti
@@ -2579,14 +2502,14 @@ $offMulti
 $onMultiR
 $onUNDF
 $onDotL
-Treb.lo = Tmax - 50;
+Treb.lo = 360;
 $offDotL
 $offUNDF
 $offMulti
 $onMultiR
 $onUNDF
 $onDotL
-Treb.up = Tmax;
+Treb.up = 410;
 $offDotL
 $offUNDF
 $offMulti
@@ -2614,7 +2537,7 @@ $offMulti
 $onMultiR
 $onUNDF
 $onDotL
-V.l("1") = 0.1;
+V.l("0") = 0.1;
 $offDotL
 $offUNDF
 $offMulti
@@ -2824,38 +2747,38 @@ $offMulti
 $onMultiR
 $onUNDF
 $onDotL
-Model MESHR_Optimization / psat_def,cubic_eos,v_definition,fugacity_eq,enthalpy_eq,alpha_definition,aii_definition,mixing_rule_b,mixing_rule_a,dadT_ii_eq,dadT_eq,Compute_gamma,K_equation,calc_DH_ig,calc_Hvi,calc_Hv,Zvi_eq,v_eq,calc_HR_pure,calc_DH_liq,calc_Hv_Tbi_P,calc_Hli,calc_Hl,calc_K_eq,calc_k_rate,calc_k_A,calc_Rx_Rate,assign_zero,mol_balance_eq,mol_balance_condenser_eq,mol_balance_reboiler_eq,comp_balance_eq,comp_balance_condenser_eq,comp_balance_reboiler_eq,eq_rel_eq,summation_eq,energy_balance_eq,energy_balance_condenser_eq,energy_balance_reboiler_eq,spec_2_eq,V1_eq,def_D_col,def_Mw_mix,def_Dcol_max,def_Tcond,def_Treb,def_Breb,eq_ColCost,eq_TrayCost,eq_CondCost,eq_RebCost,eq_CAP_cost,eq_OP_cost,def_Profit,obj_def /;
+Model MESHR_Superstructure / psat_def,cubic_eos,alpha_definition,aii_definition,mixing_rule_b,mixing_rule_a,v_definition,fugacity_eq,dadT_ii_eq,dadT_eq,enthalpy_eq,Compute_gamma,K_equation,calc_DH_ig,calc_Hvi,calc_Hv,Zvi_eq,v_eq,calc_HR_pure,calc_DH_liq,calc_Hv_Tbi_P,calc_Hli,calc_Hl,calc_K_eq,calc_k_rate,calc_k_A,calc_Rx_Rate,mol_balance_eq,mol_balance_condenser_eq,mol_balance_reboiler_eq,comp_balance_eq,comp_balance_condenser_eq,comp_balance_reboiler_eq,eq_rel_eq,summation_eq,energy_balance_eq,energy_balance_condenser_eq,energy_balance_reboiler_eq,spec_2_eq,V1_eq,def_Mw_mix,def_D_col,def_Dcol_max,def_Tcond,def_Treb,def_Breb,eq_ColCost,eq_TrayCost,eq_CondCost,eq_RebCost,eq_CAP_cost,eq_OP_cost,def_Profit,obj_def,dummy_T,dummy_L,dummy_V,dummy_x /;
 $offListing
-Parameter autogenerated_domUsd_mJFz0MaNXRxSNY_gYwDYrrg;
-Parameter autogenerated_etAlg_mJFz0MaNXRxSNY_gYwDYrrg;
-Parameter autogenerated_etSolve_mJFz0MaNXRxSNY_gYwDYrrg;
-Parameter autogenerated_etSolver_mJFz0MaNXRxSNY_gYwDYrrg;
-Parameter autogenerated_iterUsd_mJFz0MaNXRxSNY_gYwDYrrg;
-Parameter autogenerated_marginals_mJFz0MaNXRxSNY_gYwDYrrg;
-Parameter autogenerated_maxInfes_mJFz0MaNXRxSNY_gYwDYrrg;
-Parameter autogenerated_meanInfes_mJFz0MaNXRxSNY_gYwDYrrg;
-Parameter autogenerated_modelStat_mJFz0MaNXRxSNY_gYwDYrrg;
-Parameter autogenerated_nodUsd_mJFz0MaNXRxSNY_gYwDYrrg;
-Parameter autogenerated_number_mJFz0MaNXRxSNY_gYwDYrrg;
-Parameter autogenerated_numDepnd_mJFz0MaNXRxSNY_gYwDYrrg;
-Parameter autogenerated_numDVar_mJFz0MaNXRxSNY_gYwDYrrg;
-Parameter autogenerated_numEqu_mJFz0MaNXRxSNY_gYwDYrrg;
-Parameter autogenerated_numInfes_mJFz0MaNXRxSNY_gYwDYrrg;
-Parameter autogenerated_numNLIns_mJFz0MaNXRxSNY_gYwDYrrg;
-Parameter autogenerated_numNLNZ_mJFz0MaNXRxSNY_gYwDYrrg;
-Parameter autogenerated_numNOpt_mJFz0MaNXRxSNY_gYwDYrrg;
-Parameter autogenerated_numNZ_mJFz0MaNXRxSNY_gYwDYrrg;
-Parameter autogenerated_numRedef_mJFz0MaNXRxSNY_gYwDYrrg;
-Parameter autogenerated_numVar_mJFz0MaNXRxSNY_gYwDYrrg;
-Parameter autogenerated_numVarProj_mJFz0MaNXRxSNY_gYwDYrrg;
-Parameter autogenerated_objEst_mJFz0MaNXRxSNY_gYwDYrrg;
-Parameter autogenerated_objVal_mJFz0MaNXRxSNY_gYwDYrrg;
-Parameter autogenerated_procUsed_mJFz0MaNXRxSNY_gYwDYrrg;
-Parameter autogenerated_resGen_mJFz0MaNXRxSNY_gYwDYrrg;
-Parameter autogenerated_resUsd_mJFz0MaNXRxSNY_gYwDYrrg;
-Parameter autogenerated_solveStat_mJFz0MaNXRxSNY_gYwDYrrg;
-Parameter autogenerated_sumInfes_mJFz0MaNXRxSNY_gYwDYrrg;
-Parameter autogenerated_sysVer_mJFz0MaNXRxSNY_gYwDYrrg;
+Parameter autogenerated_domUsd_m7E8D0NaoTWSyMQU_D1gWUQ;
+Parameter autogenerated_etAlg_m7E8D0NaoTWSyMQU_D1gWUQ;
+Parameter autogenerated_etSolve_m7E8D0NaoTWSyMQU_D1gWUQ;
+Parameter autogenerated_etSolver_m7E8D0NaoTWSyMQU_D1gWUQ;
+Parameter autogenerated_iterUsd_m7E8D0NaoTWSyMQU_D1gWUQ;
+Parameter autogenerated_marginals_m7E8D0NaoTWSyMQU_D1gWUQ;
+Parameter autogenerated_maxInfes_m7E8D0NaoTWSyMQU_D1gWUQ;
+Parameter autogenerated_meanInfes_m7E8D0NaoTWSyMQU_D1gWUQ;
+Parameter autogenerated_modelStat_m7E8D0NaoTWSyMQU_D1gWUQ;
+Parameter autogenerated_nodUsd_m7E8D0NaoTWSyMQU_D1gWUQ;
+Parameter autogenerated_number_m7E8D0NaoTWSyMQU_D1gWUQ;
+Parameter autogenerated_numDepnd_m7E8D0NaoTWSyMQU_D1gWUQ;
+Parameter autogenerated_numDVar_m7E8D0NaoTWSyMQU_D1gWUQ;
+Parameter autogenerated_numEqu_m7E8D0NaoTWSyMQU_D1gWUQ;
+Parameter autogenerated_numInfes_m7E8D0NaoTWSyMQU_D1gWUQ;
+Parameter autogenerated_numNLIns_m7E8D0NaoTWSyMQU_D1gWUQ;
+Parameter autogenerated_numNLNZ_m7E8D0NaoTWSyMQU_D1gWUQ;
+Parameter autogenerated_numNOpt_m7E8D0NaoTWSyMQU_D1gWUQ;
+Parameter autogenerated_numNZ_m7E8D0NaoTWSyMQU_D1gWUQ;
+Parameter autogenerated_numRedef_m7E8D0NaoTWSyMQU_D1gWUQ;
+Parameter autogenerated_numVar_m7E8D0NaoTWSyMQU_D1gWUQ;
+Parameter autogenerated_numVarProj_m7E8D0NaoTWSyMQU_D1gWUQ;
+Parameter autogenerated_objEst_m7E8D0NaoTWSyMQU_D1gWUQ;
+Parameter autogenerated_objVal_m7E8D0NaoTWSyMQU_D1gWUQ;
+Parameter autogenerated_procUsed_m7E8D0NaoTWSyMQU_D1gWUQ;
+Parameter autogenerated_resGen_m7E8D0NaoTWSyMQU_D1gWUQ;
+Parameter autogenerated_resUsd_m7E8D0NaoTWSyMQU_D1gWUQ;
+Parameter autogenerated_solveStat_m7E8D0NaoTWSyMQU_D1gWUQ;
+Parameter autogenerated_sumInfes_m7E8D0NaoTWSyMQU_D1gWUQ;
+Parameter autogenerated_sysVer_m7E8D0NaoTWSyMQU_D1gWUQ;
 $onListing
 $offDotL
 $offUNDF
@@ -2863,46 +2786,307 @@ $offMulti
 $onMultiR
 $onUNDF
 $onDotL
-MESHR_Optimization.scaleopt = 1;
+Ns = 10;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+is_FE(j) = 0;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+is_FB(j) = 0;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+is_reactive(j) = 0;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+is_FE("4") = 1;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+is_FB("6") = 1;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+is_reactive("2") = 1;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+is_reactive("4") = 1;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+is_reactive("6") = 1;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+MESHR_Superstructure.scaleopt = 1;
 
-option NLP = Baron;
-option reslim = 1000;
-option optcr = 1e-8;
-option threads = 12;
-solve MESHR_Optimization using NLP MIN obj;
+solve MESHR_Superstructure using NLP MIN obj;
 
 $offListing
-autogenerated_domUsd_mJFz0MaNXRxSNY_gYwDYrrg = MESHR_Optimization.domUsd;
-autogenerated_etAlg_mJFz0MaNXRxSNY_gYwDYrrg = MESHR_Optimization.etAlg;
-autogenerated_etSolve_mJFz0MaNXRxSNY_gYwDYrrg = MESHR_Optimization.etSolve;
-autogenerated_etSolver_mJFz0MaNXRxSNY_gYwDYrrg = MESHR_Optimization.etSolver;
-autogenerated_iterUsd_mJFz0MaNXRxSNY_gYwDYrrg = MESHR_Optimization.iterUsd;
-autogenerated_marginals_mJFz0MaNXRxSNY_gYwDYrrg = MESHR_Optimization.marginals;
-autogenerated_maxInfes_mJFz0MaNXRxSNY_gYwDYrrg = MESHR_Optimization.maxInfes;
-autogenerated_meanInfes_mJFz0MaNXRxSNY_gYwDYrrg = MESHR_Optimization.meanInfes;
-autogenerated_modelStat_mJFz0MaNXRxSNY_gYwDYrrg = MESHR_Optimization.modelStat;
-autogenerated_nodUsd_mJFz0MaNXRxSNY_gYwDYrrg = MESHR_Optimization.nodUsd;
-autogenerated_number_mJFz0MaNXRxSNY_gYwDYrrg = MESHR_Optimization.number;
-autogenerated_numDepnd_mJFz0MaNXRxSNY_gYwDYrrg = MESHR_Optimization.numDepnd;
-autogenerated_numDVar_mJFz0MaNXRxSNY_gYwDYrrg = MESHR_Optimization.numDVar;
-autogenerated_numEqu_mJFz0MaNXRxSNY_gYwDYrrg = MESHR_Optimization.numEqu;
-autogenerated_numInfes_mJFz0MaNXRxSNY_gYwDYrrg = MESHR_Optimization.numInfes;
-autogenerated_numNLIns_mJFz0MaNXRxSNY_gYwDYrrg = MESHR_Optimization.numNLIns;
-autogenerated_numNLNZ_mJFz0MaNXRxSNY_gYwDYrrg = MESHR_Optimization.numNLNZ;
-autogenerated_numNOpt_mJFz0MaNXRxSNY_gYwDYrrg = MESHR_Optimization.numNOpt;
-autogenerated_numNZ_mJFz0MaNXRxSNY_gYwDYrrg = MESHR_Optimization.numNZ;
-autogenerated_numRedef_mJFz0MaNXRxSNY_gYwDYrrg = MESHR_Optimization.numRedef;
-autogenerated_numVar_mJFz0MaNXRxSNY_gYwDYrrg = MESHR_Optimization.numVar;
-autogenerated_numVarProj_mJFz0MaNXRxSNY_gYwDYrrg = MESHR_Optimization.numVarProj;
-autogenerated_objEst_mJFz0MaNXRxSNY_gYwDYrrg = MESHR_Optimization.objEst;
-autogenerated_objVal_mJFz0MaNXRxSNY_gYwDYrrg = MESHR_Optimization.objVal;
-autogenerated_procUsed_mJFz0MaNXRxSNY_gYwDYrrg = MESHR_Optimization.procUsed;
-autogenerated_resGen_mJFz0MaNXRxSNY_gYwDYrrg = MESHR_Optimization.resGen;
-autogenerated_resUsd_mJFz0MaNXRxSNY_gYwDYrrg = MESHR_Optimization.resUsd;
-autogenerated_solveStat_mJFz0MaNXRxSNY_gYwDYrrg = MESHR_Optimization.solveStat;
-autogenerated_sumInfes_mJFz0MaNXRxSNY_gYwDYrrg = MESHR_Optimization.sumInfes;
-autogenerated_sysVer_mJFz0MaNXRxSNY_gYwDYrrg = MESHR_Optimization.sysVer;
-execute_unload 'C:\Users\Lucas\AppData\Local\Temp\tmpv5hrz1c1\_c4d_29V9RquITJ_Fv_xIfA.gdx', autogenerated_domUsd_mJFz0MaNXRxSNY_gYwDYrrg,autogenerated_etAlg_mJFz0MaNXRxSNY_gYwDYrrg,autogenerated_etSolve_mJFz0MaNXRxSNY_gYwDYrrg,autogenerated_etSolver_mJFz0MaNXRxSNY_gYwDYrrg,autogenerated_iterUsd_mJFz0MaNXRxSNY_gYwDYrrg,autogenerated_marginals_mJFz0MaNXRxSNY_gYwDYrrg,autogenerated_maxInfes_mJFz0MaNXRxSNY_gYwDYrrg,autogenerated_meanInfes_mJFz0MaNXRxSNY_gYwDYrrg,autogenerated_modelStat_mJFz0MaNXRxSNY_gYwDYrrg,autogenerated_nodUsd_mJFz0MaNXRxSNY_gYwDYrrg,autogenerated_number_mJFz0MaNXRxSNY_gYwDYrrg,autogenerated_numDepnd_mJFz0MaNXRxSNY_gYwDYrrg,autogenerated_numDVar_mJFz0MaNXRxSNY_gYwDYrrg,autogenerated_numEqu_mJFz0MaNXRxSNY_gYwDYrrg,autogenerated_numInfes_mJFz0MaNXRxSNY_gYwDYrrg,autogenerated_numNLIns_mJFz0MaNXRxSNY_gYwDYrrg,autogenerated_numNLNZ_mJFz0MaNXRxSNY_gYwDYrrg,autogenerated_numNOpt_mJFz0MaNXRxSNY_gYwDYrrg,autogenerated_numNZ_mJFz0MaNXRxSNY_gYwDYrrg,autogenerated_numRedef_mJFz0MaNXRxSNY_gYwDYrrg,autogenerated_numVar_mJFz0MaNXRxSNY_gYwDYrrg,autogenerated_numVarProj_mJFz0MaNXRxSNY_gYwDYrrg,autogenerated_objEst_mJFz0MaNXRxSNY_gYwDYrrg,autogenerated_objVal_mJFz0MaNXRxSNY_gYwDYrrg,autogenerated_procUsed_mJFz0MaNXRxSNY_gYwDYrrg,autogenerated_resGen_mJFz0MaNXRxSNY_gYwDYrrg,autogenerated_resUsd_mJFz0MaNXRxSNY_gYwDYrrg,autogenerated_solveStat_mJFz0MaNXRxSNY_gYwDYrrg,autogenerated_sumInfes_mJFz0MaNXRxSNY_gYwDYrrg,autogenerated_sysVer_mJFz0MaNXRxSNY_gYwDYrrg;
+autogenerated_domUsd_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.domUsd;
+autogenerated_etAlg_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.etAlg;
+autogenerated_etSolve_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.etSolve;
+autogenerated_etSolver_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.etSolver;
+autogenerated_iterUsd_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.iterUsd;
+autogenerated_marginals_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.marginals;
+autogenerated_maxInfes_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.maxInfes;
+autogenerated_meanInfes_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.meanInfes;
+autogenerated_modelStat_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.modelStat;
+autogenerated_nodUsd_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.nodUsd;
+autogenerated_number_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.number;
+autogenerated_numDepnd_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.numDepnd;
+autogenerated_numDVar_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.numDVar;
+autogenerated_numEqu_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.numEqu;
+autogenerated_numInfes_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.numInfes;
+autogenerated_numNLIns_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.numNLIns;
+autogenerated_numNLNZ_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.numNLNZ;
+autogenerated_numNOpt_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.numNOpt;
+autogenerated_numNZ_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.numNZ;
+autogenerated_numRedef_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.numRedef;
+autogenerated_numVar_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.numVar;
+autogenerated_numVarProj_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.numVarProj;
+autogenerated_objEst_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.objEst;
+autogenerated_objVal_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.objVal;
+autogenerated_procUsed_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.procUsed;
+autogenerated_resGen_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.resGen;
+autogenerated_resUsd_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.resUsd;
+autogenerated_solveStat_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.solveStat;
+autogenerated_sumInfes_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.sumInfes;
+autogenerated_sysVer_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.sysVer;
+$onListing
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Ns = 12;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+is_FE(j) = 0;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+is_FB(j) = 0;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+is_reactive(j) = 0;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+is_FE("6") = 1;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+is_FB("8") = 1;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+is_reactive("4") = 1;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+MESHR_Superstructure.scaleopt = 1;
+
+solve MESHR_Superstructure using NLP MIN obj;
+
+$offListing
+autogenerated_domUsd_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.domUsd;
+autogenerated_etAlg_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.etAlg;
+autogenerated_etSolve_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.etSolve;
+autogenerated_etSolver_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.etSolver;
+autogenerated_iterUsd_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.iterUsd;
+autogenerated_marginals_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.marginals;
+autogenerated_maxInfes_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.maxInfes;
+autogenerated_meanInfes_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.meanInfes;
+autogenerated_modelStat_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.modelStat;
+autogenerated_nodUsd_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.nodUsd;
+autogenerated_number_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.number;
+autogenerated_numDepnd_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.numDepnd;
+autogenerated_numDVar_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.numDVar;
+autogenerated_numEqu_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.numEqu;
+autogenerated_numInfes_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.numInfes;
+autogenerated_numNLIns_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.numNLIns;
+autogenerated_numNLNZ_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.numNLNZ;
+autogenerated_numNOpt_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.numNOpt;
+autogenerated_numNZ_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.numNZ;
+autogenerated_numRedef_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.numRedef;
+autogenerated_numVar_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.numVar;
+autogenerated_numVarProj_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.numVarProj;
+autogenerated_objEst_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.objEst;
+autogenerated_objVal_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.objVal;
+autogenerated_procUsed_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.procUsed;
+autogenerated_resGen_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.resGen;
+autogenerated_resUsd_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.resUsd;
+autogenerated_solveStat_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.solveStat;
+autogenerated_sumInfes_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.sumInfes;
+autogenerated_sysVer_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.sysVer;
+$onListing
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+Ns = 15;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+is_FE(j) = 0;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+is_FB(j) = 0;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+is_reactive(j) = 0;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+is_FE("7") = 1;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+is_FB("9") = 1;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+is_reactive("4") = 1;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+is_reactive("5") = 1;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+is_reactive("6") = 1;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+is_reactive("7") = 1;
+$offDotL
+$offUNDF
+$offMulti
+$onMultiR
+$onUNDF
+$onDotL
+MESHR_Superstructure.scaleopt = 1;
+
+solve MESHR_Superstructure using NLP MIN obj;
+
+$offListing
+autogenerated_domUsd_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.domUsd;
+autogenerated_etAlg_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.etAlg;
+autogenerated_etSolve_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.etSolve;
+autogenerated_etSolver_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.etSolver;
+autogenerated_iterUsd_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.iterUsd;
+autogenerated_marginals_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.marginals;
+autogenerated_maxInfes_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.maxInfes;
+autogenerated_meanInfes_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.meanInfes;
+autogenerated_modelStat_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.modelStat;
+autogenerated_nodUsd_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.nodUsd;
+autogenerated_number_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.number;
+autogenerated_numDepnd_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.numDepnd;
+autogenerated_numDVar_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.numDVar;
+autogenerated_numEqu_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.numEqu;
+autogenerated_numInfes_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.numInfes;
+autogenerated_numNLIns_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.numNLIns;
+autogenerated_numNLNZ_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.numNLNZ;
+autogenerated_numNOpt_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.numNOpt;
+autogenerated_numNZ_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.numNZ;
+autogenerated_numRedef_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.numRedef;
+autogenerated_numVar_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.numVar;
+autogenerated_numVarProj_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.numVarProj;
+autogenerated_objEst_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.objEst;
+autogenerated_objVal_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.objVal;
+autogenerated_procUsed_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.procUsed;
+autogenerated_resGen_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.resGen;
+autogenerated_resUsd_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.resUsd;
+autogenerated_solveStat_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.solveStat;
+autogenerated_sumInfes_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.sumInfes;
+autogenerated_sysVer_m7E8D0NaoTWSyMQU_D1gWUQ = MESHR_Superstructure.sysVer;
 $onListing
 $offDotL
 $offUNDF

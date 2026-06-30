@@ -1,0 +1,152 @@
+--- Job my_model_algebra.gms Start 06/17/26 09:30:07 54.1.0 37378ce0 WEX-WEI x86 64bit/MS Windows
+--- Applying:
+    C:\GAMS\54\gmsprmNT.txt
+--- GAMS Parameters defined
+    Input "C:\Users\Lucas\Documents\PhD Code\bi_level_opt_gamspy\my_model_algebra.gms"
+    PageSize 0
+    ScrDir "C:\Users\Lucas\Documents\PhD Code\bi_level_opt_gamspy\225b\"
+    SysDir C:\GAMS\54\
+    LogOption 3
+    AppendLog 1
+    ErrMsg 1
+    Reference "C:\Users\Lucas\Documents\PhD Code\bi_level_opt_gamspy\my_model_algebra.ref"
+    ErrorLog 99
+    IDE 1
+    GDX "C:\Users\Lucas\Documents\PhD Code\bi_level_opt_gamspy\my_model_algebra.gdx"
+    LstTitleLeftAligned 1
+Licensee: Argimiro R. Secchi, Single User License        G250917+0003Ac-WIN
+          Universidade Federal do Rio de Janeiro, COPPE/PEQ         DC16665
+          C:\Users\Lucas\Documents\GAMS\gamslice.txt
+          d836e5b7-68f3-45ea
+          v:2                                                              
+          The maintenance period of the license expires on Sep 12, 2026
+System information: 6 physical cores and 32 Gb physical memory detected
+GAMS 54.1.0   Copyright (C) 1987-2026 GAMS Development. All rights reserved
+--- Starting compilation
+--- my_model_algebra.gms(5) 2 Mb
+--- GDXin=C:\Users\Lucas\AppData\Local\Temp\tmp86ht9mat\_ZisNx0BgQciICh5yTqYsWwin.gdx
+--- GDX File ($gdxIn) C:\Users\Lucas\AppData\Local\Temp\tmp86ht9mat\_ZisNx0BgQciICh5yTqYsWwin.gdx
+--- my_model_algebra.gms(15) 3 Mb
+--- GDXin=C:\Users\Lucas\AppData\Local\Temp\tmp86ht9mat\_w_OvMMNcQcqH8sRBJ_OOdQin.gdx
+--- GDX File ($gdxIn) C:\Users\Lucas\AppData\Local\Temp\tmp86ht9mat\_w_OvMMNcQcqH8sRBJ_OOdQin.gdx
+--- my_model_algebra.gms(74) 3 Mb
+--- GDXin=C:\Users\Lucas\AppData\Local\Temp\tmp86ht9mat\_TODt7TX3SL6jy_4ZfcLwNAin.gdx
+--- GDX File ($gdxIn) C:\Users\Lucas\AppData\Local\Temp\tmp86ht9mat\_TODt7TX3SL6jy_4ZfcLwNAin.gdx
+--- my_model_algebra.gms(84) 3 Mb
+--- GDXin=C:\Users\Lucas\AppData\Local\Temp\tmp86ht9mat\_XfmoeCsZSmqVrD7njgpdiAin.gdx
+--- GDX File ($gdxIn) C:\Users\Lucas\AppData\Local\Temp\tmp86ht9mat\_XfmoeCsZSmqVrD7njgpdiAin.gdx
+--- my_model_algebra.gms(94) 3 Mb
+--- GDXin=C:\Users\Lucas\AppData\Local\Temp\tmp86ht9mat\_1dYyG1BaRvuQkVZuD_fRDAin.gdx
+--- GDX File ($gdxIn) C:\Users\Lucas\AppData\Local\Temp\tmp86ht9mat\_1dYyG1BaRvuQkVZuD_fRDAin.gdx
+--- my_model_algebra.gms(104) 3 Mb
+--- GDXin=C:\Users\Lucas\AppData\Local\Temp\tmp86ht9mat\_e4a7s02bT_SortUhRm8Vywin.gdx
+--- GDX File ($gdxIn) C:\Users\Lucas\AppData\Local\Temp\tmp86ht9mat\_e4a7s02bT_SortUhRm8Vywin.gdx
+--- my_model_algebra.gms(114) 3 Mb
+--- GDXin=C:\Users\Lucas\AppData\Local\Temp\tmp86ht9mat\_tFTEBK0nQsCNhI0xmf0etQin.gdx
+--- GDX File ($gdxIn) C:\Users\Lucas\AppData\Local\Temp\tmp86ht9mat\_tFTEBK0nQsCNhI0xmf0etQin.gdx
+--- my_model_algebra.gms(124) 3 Mb
+--- GDXin=C:\Users\Lucas\AppData\Local\Temp\tmp86ht9mat\_bVL8sOsIS92cfoDiPR5hOwin.gdx
+--- GDX File ($gdxIn) C:\Users\Lucas\AppData\Local\Temp\tmp86ht9mat\_bVL8sOsIS92cfoDiPR5hOwin.gdx
+--- my_model_algebra.gms(134) 3 Mb
+--- GDXin=C:\Users\Lucas\AppData\Local\Temp\tmp86ht9mat\_CgoDyLK4SLe_OyieDJvYCAin.gdx
+--- GDX File ($gdxIn) C:\Users\Lucas\AppData\Local\Temp\tmp86ht9mat\_CgoDyLK4SLe_OyieDJvYCAin.gdx
+--- my_model_algebra.gms(144) 3 Mb
+--- GDXin=C:\Users\Lucas\AppData\Local\Temp\tmp86ht9mat\_HygIcW_eRAq8lFW2HspKnwin.gdx
+--- GDX File ($gdxIn) C:\Users\Lucas\AppData\Local\Temp\tmp86ht9mat\_HygIcW_eRAq8lFW2HspKnwin.gdx
+--- my_model_algebra.gms(154) 3 Mb
+--- GDXin=C:\Users\Lucas\AppData\Local\Temp\tmp86ht9mat\_WXLGkz_HRj60K7kK72YYdwin.gdx
+--- GDX File ($gdxIn) C:\Users\Lucas\AppData\Local\Temp\tmp86ht9mat\_WXLGkz_HRj60K7kK72YYdwin.gdx
+--- my_model_algebra.gms(381) 3 Mb
+--- GDXin=C:\Users\Lucas\AppData\Local\Temp\tmp86ht9mat\_hbfCfabxT4qjii0eIQzp3win.gdx
+--- GDX File ($gdxIn) C:\Users\Lucas\AppData\Local\Temp\tmp86ht9mat\_hbfCfabxT4qjii0eIQzp3win.gdx
+--- my_model_algebra.gms(404) 3 Mb
+--- GDXin=C:\Users\Lucas\AppData\Local\Temp\tmp86ht9mat\_O9xy9_hQSC2wbMPFsdOX2Ain.gdx
+--- GDX File ($gdxIn) C:\Users\Lucas\AppData\Local\Temp\tmp86ht9mat\_O9xy9_hQSC2wbMPFsdOX2Ain.gdx
+--- my_model_algebra.gms(568) 3 Mb
+--- GDXin=C:\Users\Lucas\AppData\Local\Temp\tmp86ht9mat\_sESjvZSbTuCNHWZhNQV3Tgin.gdx
+--- GDX File ($gdxIn) C:\Users\Lucas\AppData\Local\Temp\tmp86ht9mat\_sESjvZSbTuCNHWZhNQV3Tgin.gdx
+--- my_model_algebra.gms(598) 3 Mb
+--- GDXin=C:\Users\Lucas\AppData\Local\Temp\tmp86ht9mat\_5BYwR9KMRza_UkDIY6EjYgin.gdx
+--- GDX File ($gdxIn) C:\Users\Lucas\AppData\Local\Temp\tmp86ht9mat\_5BYwR9KMRza_UkDIY6EjYgin.gdx
+--- my_model_algebra.gms(607) 3 Mb
+--- GDXin=C:\Users\Lucas\AppData\Local\Temp\tmp86ht9mat\_SN_6ZhMWS0ienB1V2QMsCQin.gdx
+--- GDX File ($gdxIn) C:\Users\Lucas\AppData\Local\Temp\tmp86ht9mat\_SN_6ZhMWS0ienB1V2QMsCQin.gdx
+--- my_model_algebra.gms(659) 3 Mb
+--- GDXin=C:\Users\Lucas\AppData\Local\Temp\tmp86ht9mat\_tSosYcWMT3_7w0RyDYKU_Ain.gdx
+--- GDX File ($gdxIn) C:\Users\Lucas\AppData\Local\Temp\tmp86ht9mat\_tSosYcWMT3_7w0RyDYKU_Ain.gdx
+--- my_model_algebra.gms(731) 3 Mb
+--- GDXin=C:\Users\Lucas\AppData\Local\Temp\tmp86ht9mat\_thUn0IJQSMixTS3dY4WWBQin.gdx
+--- GDX File ($gdxIn) C:\Users\Lucas\AppData\Local\Temp\tmp86ht9mat\_thUn0IJQSMixTS3dY4WWBQin.gdx
+--- my_model_algebra.gms(740) 3 Mb
+--- GDXin=C:\Users\Lucas\AppData\Local\Temp\tmp86ht9mat\__BbQSGIRRvObkPO52bc90gin.gdx
+--- GDX File ($gdxIn) C:\Users\Lucas\AppData\Local\Temp\tmp86ht9mat\__BbQSGIRRvObkPO52bc90gin.gdx
+--- my_model_algebra.gms(749) 3 Mb
+--- GDXin=C:\Users\Lucas\AppData\Local\Temp\tmp86ht9mat\_iT0dYEOpRH_3JtKfMWIr7Qin.gdx
+--- GDX File ($gdxIn) C:\Users\Lucas\AppData\Local\Temp\tmp86ht9mat\_iT0dYEOpRH_3JtKfMWIr7Qin.gdx
+--- my_model_algebra.gms(2909) 3 Mb
+--- Starting execution: elapsed 0:00:00.022
+--- my_model_algebra.gms(2908) 4 Mb
+--- Generating NLP model MESHR_Optimization
+--- my_model_algebra.gms(2909) 6 Mb
+---   848 rows  843 columns  3,407 non-zeroes
+---   31,514 nl-code  2,171 nl-non-zeroes
+--- Range statistics (absolute non-zero finite values)
+--- RHS       [min, max] : [ 2.096E-01, 2.180E+07] - Zero values observed as well
+--- Bound     [min, max] : [ 1.000E-05, 2.496E+06] - Zero values observed as well
+--- Matrix    [min, max] : [ 1.000E-05, 7.228E+06]
+--- my_model_algebra.gms(2909) 4 Mb
+--- Executing BARON (Solvelink=2): elapsed 0:00:00.041
+
+GAMS/BARON       54.1.0 37378ce0 Jun 15, 2026          WEI x86 64bit/MS Window
+
+===========================================================================
+ BARON version 26.5.27. Built: WIN-64 2026-05-27 12:16:23           
+ Running on machine DESKTOP-6GN4LN7
+
+ BARON is a product of The Optimization Firm. For more information and 
+ related optimization and data analytics products visit https://minlp.com.
+
+
+ If you publish work using this software, please cite publications from
+ https://minlp.com/baron-publications, such as: 
+
+ Zhang, Y. and N. V. Sahinidis, Solving continuous and discrete
+ nonlinear programs with BARON, Comput Optim Appl, 92, 1123-1161, 2025. 
+ https://doi.org/10.1007/s10589-024-00633-0
+===========================================================================
+ This BARON run may utilize the following subsolver(s)
+ For LP/MIP/QP: CLP/CBC, ILOG CPLEX                             
+ For NLP: MINOS, SNOPT, External NLP, IPOPT, FILTERSQP
+===========================================================================
+ Doing local search
+ Preprocessing found feasible solution with value 0.166742E-01
+ Solving bounding LP
+ Starting multi-start local search
+ Done with local search
+===========================================================================
+  Iteration       Time (s)     Mem   Lower bound     Upper bound   Progress
+          1           3.71    29MB     0.166742E-01    0.166742E-01 100.00%
+
+                         *** Normal completion ***            
+
+ Wall clock time:                     3.71
+ Total CPU time used:                 3.53
+
+ Total no. of BaR iterations:         1
+ Best solution found at node:        -1
+ Max. no. of nodes in memory:         1
+ 
+ All done
+===========================================================================
+
+Solution      = 0.016674156387825  best solution found during preprocessing
+Best possible = 0.016674156387825
+Absolute gap  = 0  optca = 1E-9
+Relative gap  = 0  optcr = 1E-8
+
+--- Reading solution for model MESHR_Optimization
+--- Solver did not provide marginals for model MESHR_Optimization
+--- RefFile C:\Users\Lucas\Documents\PhD Code\bi_level_opt_gamspy\my_model_algebra.ref
+--- GDX File C:\Users\Lucas\Documents\PhD Code\bi_level_opt_gamspy\my_model_algebra.gdx
+*** Status: Normal completion
+--- Job my_model_algebra.gms Stop 06/17/26 09:30:11 elapsed 0:00:04.126

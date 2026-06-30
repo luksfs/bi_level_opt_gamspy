@@ -663,6 +663,7 @@ class ReactiveDistillationModel:
 
         print(f"Total solve statement time: {total_elapsed} seconds")
         print(f"Solver execution time: {solver_only_elapsed} seconds")
+        print(self.model.status)
         return {
             "Status": self.model.status,
             "Profit": self.obj.toValue()
