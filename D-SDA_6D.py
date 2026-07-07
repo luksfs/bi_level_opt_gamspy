@@ -20,7 +20,7 @@ meshr = ReactiveDistillationModel(max_stages=22)
 
 counter_list = []
 fobj_list = []
-for i in range(20):
+for i in range(2):
 
     Ns  = random.randint(6, 22)
     NFE = random.randint(2, Ns-1)
@@ -64,11 +64,13 @@ for i in range(20):
     # batch = manager.generate_new_batch(y)
 
     best_bool = True
+    y_best = y
     while best_bool:
         best_bool = False
         # Generate list of combinatory
         batch = manager.generate_new_batch(y)
 
+        fobj_list = []
         for y_d in batch:
             [Ns, NFE, NFB, NR1, NR2, NR3] = y_d
             meshr.update_config(
@@ -85,12 +87,36 @@ for i in range(20):
         challenger_idx =  fobj_list.index(challenger)
         print(challenger,best)
         if challenger < best:
+            y_old = y #########
             best = challenger
             y = batch[challenger_idx]
             best_bool = True
+            y_best = y
+
+            # line search
+            d = y - y_old#################
+            line_search = True
+            while line_search:
+                y_old = y
+                y_new = y+d
+                [Ns, NFE, NFB, NR1, NR2, NR3] = y_new
+                meshr.update_config(
+                    Ns=Ns,
+                    NFE=NFE,
+                    NFB=NFB,
+                    reactive_trays=[NR1,NR2,NR3]
+                )
+                Sol = meshr.solve(solver="CONOPT")
+                Fobj = Sol['Profit']
+                if Fobj < best:
+                    best = Fobj
+                    y_best = y
+                else:
+                    line_search = False
+
             # print(best,y)
 
-    print(y,best,i)
+    print(y_best,best,i)
     counter_list.append(i)
 
 print(f'Mean = {statistics.mean(counter_list):.2f}')

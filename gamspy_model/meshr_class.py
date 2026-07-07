@@ -66,6 +66,11 @@ class ReactiveDistillationModel:
         self.Tmin = 330
         self.Tmax = 410
 
+        # Catalyst volume calc
+        self.rho_cat = 770 # kg/m3
+        self.phi_c = 0.3
+        self.h_pack = 0.3048 # m
+
         self.v_i = gp.Parameter(self.m, name="v_i", domain=[self.i], records=[("1", 0), ("2", -1), ("3", -1), ("4", 1)])
         self.Tc = gp.Parameter(self.m, name="Tc", domain=[self.i], records=[("1", 419.5), ("2", 514), ("3", 417.9), ("4", 509.4)])
         self.Pc = gp.Parameter(self.m, name="Pc", domain=[self.i], records=[("1", 4.02E6), ("2", 6.137E6), ("3", 4.0E6), ("4", 2.934E6)])
@@ -397,6 +402,10 @@ class ReactiveDistillationModel:
         self.def_Dcol_max = gp.Equation(self.m, name="def_Dcol_max", domain=[j])
         self.def_Dcol_max[j].where[cond_interior] = self.Dcol_max >= self.D_col[j]
 
+        #catalyst volume limit
+        self.def_catal_vol = gp.Equation(self.m, name="def_catal_vol")
+        def_catal_vol = self.m_cat/self.rho_cat <= self.phi_c*(np.pi/4)*( self.Dcol_max*0.3048 )**2*self.h_pack
+
         self.def_Tcond = gp.Equation(self.m, name="def_Tcond")
         self.def_Tcond[...] = self.Tcond == self.T["1"]
         
@@ -635,6 +644,11 @@ class ReactiveDistillationModel:
         """
         Updates the superstructure parameters instantly. No compilation required.
         """
+        self.NFE = NFE
+        self.Ns_d = Ns # I am already using Ns for gamspy
+        self.NFB = NFB
+        self.reactive_trays = reactive_trays
+        
         self.Ns[...] = Ns
         self.is_FE[...] = 0
         self.is_FB[...] = 0
@@ -646,7 +660,27 @@ class ReactiveDistillationModel:
             self.is_reactive[str(rt)] = 1
 
     def solve(self, solver="CONOPT"):
-        print(f"\nSolving with Ns={self.Ns.toValue()}, NFE={self.is_FE.records[self.is_FE.records['value']==1]['j'].values[0]}")
+        NR_string = ['NR1','NR2','NR3','NR4','NR5','NR6']
+        text_NRx = ", ".join(
+            f"{name} = {value}"
+            for name, value in zip(NR_string, self.reactive_trays)
+        )
+        # print(f"\nSolving with Ns={self.Ns.toValue()}, 
+        #     NFE={self.is_FE.records[self.is_FE.records['value']==1]['j'].values[0]}")
+        print(
+            f"\nSolving with Ns={self.Ns_d}, "
+            f"NFE={self.NFE}, "
+            f"NFB={self.NFB}, "
+            f"{text_NRx}"
+        )
+        
+        if (self.reactive_trays[0] == 1 or self.NFE == 1) or (self.NFB == self.Ns_d or self.reactive_trays[-1] == self.Ns_d):
+            print('Violated the discrete bounds')
+            return {
+                "Status": 'fail',
+                "Profit": 1e5
+            }
+        
         self.model.solve(
             solver=solver,
             options=gp.Options(time_limit=600,
@@ -656,7 +690,7 @@ class ReactiveDistillationModel:
                                ),
             # output=sys.stdout #for debuging
         )
-
+    
         # 3. Access elapsed time
         total_elapsed = self.model.total_solve_time
         solver_only_elapsed = self.model.solve_model_time
@@ -664,7 +698,17 @@ class ReactiveDistillationModel:
         print(f"Total solve statement time: {total_elapsed} seconds")
         print(f"Solver execution time: {solver_only_elapsed} seconds")
         print(self.model.status)
-        return {
-            "Status": self.model.status,
-            "Profit": self.obj.toValue()
-        }
+
+        if self.model.status.value == 1 or self.model.status.value == 2:
+            print(f'Solver success. Fobj = {self.obj.toValue():.2e}')
+            return {
+                "Status": self.model.status,
+                "Profit": self.obj.toValue()
+            }
+        else:
+            print('solver failed')
+            return {
+                "Status": self.model.status,
+                "Profit": 1e5
+            }
+        

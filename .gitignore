@@ -38,3 +38,4 @@ venv/
 *.lxi
 *.gdx
 MESHR_model_clear.lst
+.ref

@@ -23,28 +23,12 @@ SCALAR
     NFB "Butenes feed stage"
     NR1 "First reactive tray"
     NR2 "Second reactive tray"
-*    NR3 "Third reactive tray"
-*    NR4 "Third reactive tray"
+    NR3 "Third reactive tray"
     nsmin /5/
     nsmax /22/
     count_s /0/
-    count_f /0/; 
-
-Ns = 7;
-NFE = 4;
-NFB = 4;
-NR1 = 4;
-*NR2 = 7;
-*NR3 = 6;
-*NR4 = 7;
-*[10, 5, 7, 3, 5, 6, 7]
-
-PARAMETER  jr(j);
-jr(j) = no;
-jr(j)$(ord(j)=NR1) = yes;
-*jr(j)$(ord(j)=NR2) = yes;
-*jr(j)$(ord(j)=NR3) = yes;
-*jr(j)$(ord(j)=NR4) = yes;
+    count_f /0/
+;
 * ============================================================================ *
 * ============================= Solution Parameters ============================= *
 * ============================================================================ *
@@ -497,6 +481,11 @@ calc_Hl(j)$(ord(j) <= Ns) ..
 *SETS
 *   reactive_trays(j) "Reactive trays"  /3,4,5 /
 
+PARAMETER  reactive_trays(j);
+
+*reactive_trays(j)$(ord(j) = NR) = 1;
+*reactive_trays(j)$(ord(j) = NR+1) = 1;
+*reactive_trays(j)$(ord(j) = NR+2) = 1;
 
 
 VARIABLES
@@ -510,39 +499,30 @@ $macro Xg(i,j) ( x(i,j)*gamma_nrtl(i,j) )
     
 * Reaction equilibrium constant
 EQUATION calc_K_eq(j);
-calc_K_eq(j)$jr(j) ..
-    K_eq(j) =E=
-        EXP(10.387
-          + 4060.59/T(j)
-          - 2.89055*LOG(T(j))
-          - 0.01915144*T(j)
-          + 5.28586E-5*T(j)**2
-          - 5.32977E-8*T(j)**3);
+calc_K_eq(j)$((ord(j) = NR1) OR (ord(j) = NR2) OR (ord(j) = NR3)) ..
+    K_eq(j) =E= EXP(10.387 + 4060.59/T(j) - 2.89055*LOG(T(j))
+                - 0.01915144*T(j) + 5.28586E-5*T(j)**2 - 5.32977E-8*T(j)**3);
 
 * Specific reaction rate
 EQUATION calc_k_rate(j);
-calc_k_rate(j)$jr(j) ..
-    k_rate(j) =E=
-        7.41816E15 * EXP(-60.4E3/(R*T(j))) / 60;
+calc_k_rate(j)$((ord(j) = NR1) OR (ord(j) = NR2) OR (ord(j) = NR3)) ..
+    k_rate(j) =E= 7.41816E15 * EXP(-60.4E3 / (R * T(j))) / 60;
 
 * Adsorption rate
 EQUATION calc_k_A(j);
-calc_k_A(j)$jr(j) ..
-    k_A(j) =E=
-        EXP(-1.0707 + 1323.1/T(j));
-        
+calc_k_A(j)$((ord(j) = NR1) OR (ord(j) = NR2) OR (ord(j) = NR3)) ..
+    k_A(j) =E= EXP(-1.0707 + 1323.1 / T(j));
+
 * Reaction rate equation
 EQUATION calc_Rx_Rate(j);
-calc_Rx_Rate(j)$jr(j) ..
-    Rxn_Rate(j) =E=
-        k_rate(j)*Xg('2',j)
-        *(Xg('2',j)*Xg('3',j)-Xg('4',j)/K_eq(j))
-        /(1+k_A(j)*Xg('2',j))**3;
+calc_Rx_Rate(j)$((ord(j) = NR1) OR (ord(j) = NR2) OR (ord(j) = NR3)) ..
+*    Rxn_Rate(j)*K_eq(j)*Xg('2',j) =E= k_rate(j)*(Xg('2',j))**2*(Xg('3',j)*K_eq(j)*Xg('2',j) - Xg('4',j))/(1+k_A(j)*Xg('2',j))**3;
+    Rxn_Rate(j) =E= k_rate(j)*Xg('2',j) * ( Xg('2',j) * Xg('3',j) - Xg('4',j)/K_eq(j) ) / (1 + k_A(j)*Xg('2',j) )**3;
         
 * Set reaction rate to zero for non-reactive trays
 EQUATION assign_zero(j);
-assign_zero(j)$(not jr(j)) ..
-    Rxn_Rate(j) =E= 0;
+assign_zero(j)$((ord(j) <> NR1) AND (ord(j) <> NR2) AND (ord(j) <> NR3)) ..
+   Rxn_Rate(j) =E= 0;
 
 
 * ============================================================================ *
@@ -642,15 +622,23 @@ V1_eq .. V('1') =E= 0;
 * ============================================================================ *
 * Column Diameter Calculation
 * ============================================================================ *
+PARAMETER
+    rho_cat         'Catalyst density (kg/m³)' /770/
+    phi_c           'Catalyst volume fraction' /0.3/
+    h_pack          'Catalyst pack height (m)' /0.3048/
+    ;
+
 VARIABLE
     D_col(j)        'Column diameter (ft)'
     Dcol_max        'Maximum column diameter (ft)'
     Mw_mix(j)       'Molecular weights (kg/kmol)';
 
 EQUATION
-    def_D_col(j)    'Equation for column diameter calculation'
-    def_Mw_mix(j)   'Define mixture molar mass at stage j'
-    def_Dcol_max(j) 'Equation for maximum column diameter calculation';
+    def_D_col(j)     'Equation for column diameter calculation'
+    def_Mw_mix(j)    'Define mixture molar mass at stage j'
+    def_Dcol_max(j)  'Equation for maximum column diameter calculation'
+    def_catal_vol    'Limit catalyst volume'
+    ;
 
 SCALAR FF 'Parameter for flooding velocity estimation - Douglas book #kg^1/2 m^-1/2 s^-1 '; ; 
 FF = 1.51*(0.45359237/0.3048)**0.5;
@@ -664,6 +652,11 @@ def_D_col(j)$( (ord(j) > 1) AND (ord(j) < Ns) ) ..
 
 def_Dcol_max(j)$( (ord(j) > 1) AND (ord(j) < Ns) ) ..
     Dcol_max =G= D_col(j);
+
+* Tray spacing 2ft = 0.6096 m    
+* New restriction for catalyst volume
+def_catal_vol .. m_cat/rho_cat =L= phi_c*(pi/4)*( Dcol_max*0.3048 )**2*h_pack;
+
 
 * ============================================================================ *
 * Equipment Costs & Economics (Refactored for NLP)
@@ -729,7 +722,7 @@ eq_RebCost ..
     v_RebCost =E= (MS/280*101.3*(( Qr*FH_factor/60/((250/0.17611)*(433.15-Treb))*10.7639)**.65*7.3525));
 
 eq_CAP_cost .. 
-    CAP_cost =E= (1/3) * (v_TrayCost + v_ColCost + v_CondCost + v_RebCost + (7.7*card(jr)*0.4));
+    CAP_cost =E= (1/3) * (v_TrayCost + v_ColCost + v_CondCost + v_RebCost + (7.7*3*0.4));
 
 * Operational Costs
 eq_OP_cost .. 
@@ -804,6 +797,7 @@ V1_eq,
 def_D_col,
 def_Mw_mix,
 def_Dcol_max,
+def_catal_vol,
 def_Profit,
 def_Treb,
 def_Tcond,
@@ -962,7 +956,7 @@ v_AreaReb.up = 5;
 
 * Set solver options once before the loop
 option reslim = 1000;
-option optcr = 1e-4;
+option optcr = 1e-8;
 option threads = 12;
 MESHR_Rigorous.scaleopt = 1;
 *Avoiding writing lst
@@ -971,12 +965,12 @@ MESHR_Rigorous.scaleopt = 1;
     
 *    * Set scalar values from loop indices
 * Best solution overall
-*Ns = 10;
-*NFE = 5;
-*NFB = 7;
-*NR1 = 3;
-*NR2 = 5;
-*NR3 = 7;
+Ns = 10;
+NFE = 5;
+NFB = 7;
+NR1 = 3;
+NR2 = 5;
+NR3 = 7;
 
 ** Best solution within constraints
 *Ns = 10;
@@ -1000,12 +994,16 @@ MESHR_Rigorous.scaleopt = 1;
 option NLP = CONOPT;
 SOLVE MESHR_Rigorous USING NLP MINIMIZING obj;
 
+Elapsed_time = timeElapsed;
+Display   Elapsed_time
+
+
 option NLP = Baron;
 SOLVE MESHR_Rigorous USING NLP MINIMIZING obj;
 
-Elapsed_time = timeElapsed;
-Display   Elapsed_time;
-
+option NLP = CONOPT;
+SOLVE MESHR_Rigorous USING NLP MINIMIZING obj;
+    
 
 *  Calculate derived values
 X_ETOH(j)$(ord(j) = Ns) = (FE.l - D.l*x.l['2','1'] - L.l[j]*x.l['2',j])/FE.l;
