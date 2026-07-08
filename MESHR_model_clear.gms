@@ -638,7 +638,11 @@ EQUATION
     def_Mw_mix(j)    'Define mixture molar mass at stage j'
     def_Dcol_max(j)  'Equation for maximum column diameter calculation'
     def_catal_vol    'Limit catalyst volume'
+    Capacity_factor_eq 'Capacity factopr equation'
     ;
+    
+
+
 
 SCALAR FF 'Parameter for flooding velocity estimation - Douglas book #kg^1/2 m^-1/2 s^-1 '; ; 
 FF = 1.51*(0.45359237/0.3048)**0.5;
