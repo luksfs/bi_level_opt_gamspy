@@ -12,6 +12,7 @@ venv/
 *.xlsx
 *.mat
 *.gdx
+*.dat
 
 # Results and logs
 results/

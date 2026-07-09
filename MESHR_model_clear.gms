@@ -75,10 +75,7 @@ PARAMETERS
     react_cost
     steam_cost
     cooling_cost
-    cost_fe_par
-    
-
-    
+    cost_fe_par    
 ;
 
 *SCALAR R_cost "Gas constant J K-1 kmol-1" /8.314463e3/;
@@ -623,24 +620,26 @@ V1_eq .. V('1') =E= 0;
 * Column Diameter Calculation
 * ============================================================================ *
 PARAMETER
-    rho_cat         'Catalyst density (kg/m³)' /770/
-    phi_c           'Catalyst volume fraction' /0.3/
-    h_pack          'Catalyst pack height (m)' /0.3048/
+    ht              'Tray height - 18 in'           /0.4572/
+    rho_cat         'Catalyst density (kg/m³)'      /770/
+    phi_c           'Catalyst volume fraction'      /0.3/
+    h_pack          'Catalyst pack height (m)'
     rhoL            'Avarege liquid density (g/m³)' /580e3/
     sigma_g         'Surface tension AVG (dyn/cm3)' /7.2/
-    a1              /1.0262/
-    a2              /0.63513/
-    a3              /0.20097/
+    a1              'Tray capacity parameter a'     /1.0262/
+    a2              'Tray capacity parameter b'     /0.63513/
+    a3              'Tray capacity parameter c'     /0.20097/
     ;
 
 VARIABLE
-    D_col(j)        'Column diameter (ft)'
-    Dcol_max        'Maximum column diameter (ft)'
+    D_col(j)        'Column diameter (m)'
+    Dcol_max        'Maximum column diameter (m)'
     Mw_mix_V(j)     'Vapor Molecular mass (kg/kmol)'
     Mw_mix_L(j)     'Liquid Molecular mass (kg/kmol)'
     ufl(j)          'Flooding velocity (ft/s) -> (.3048 * 60 m/min)'
     Flv(j)          'Flv parameter'
     uf(j)           'Actual velocity (ft/s) -> (.3048 * 60 m/min)'
+    CF(j)           'Capacity Factor'
     ;
 
 EQUATION
@@ -649,33 +648,44 @@ EQUATION
     def_Mw_mix_L(j)     'Define Liquid mixture molar mass at stage j'
     def_Dcol_max(j)     'Equation for maximum column diameter calculation'
     def_catal_vol       'Limit catalyst volume'
-    Capacity_factor_eq  'Capacity factopr equation'
+    CF_def(j)           'Capacity factor equation'
     flooding_vel_eq(j)  'Flooding velocity'
     Flv_def(j)          'Calc of Flv'
     uf_res_1(j)         'Velocity Restriction 1'
     uf_res_2(j)         'Velocity Restriction 2'
     ;
-    
-
-
 
 *SCALAR FF 'Parameter for flooding velocity estimation - Douglas book #kg^1/2 m^-1/2 s^-1 '; ; 
 *FF = 1.51*(0.45359237/0.3048)**0.5;
 
+h_pack = ht/2;
 
 Flv_def(j)$( (ord(j) > 1) AND (ord(j) < Ns) ) ..
-    Flv(j) =e= L(j)/V(j)*Mw_mix_L(j)/Mw_mix_V(j)*( Mw_mix_V(j)/v_mol(j)/rhoL )**.5;
+    Flv(j) =e=
+        L(j)/V(j)
+        * Mw_mix_L(j)/Mw_mix_V(j)
+        * (Mw_mix_V(j)/v_mol(j)/rhoL)**.5;
 
-flooding_vel_eq(j)$( (ord(j) > 1) AND (ord(j) < Ns) ) ..
-    ufl(j) =e= (sigma_g/20)**.2 * ( Mw_mix_V(j)/v_mol(j) / (rhoL - (Mw_mix_V(j)/v_mol(j))) )**.5 * 10**( a1 - a2*log10(Flv(j)) - a3* (log10(Flv(j)))**2 ) * 0.3048*60;
+CF_def(j)..
+    log10(CF(j)) =e=
+      - a1
+      - a2*log10(Flv(j))
+      - a3*sqr(log10(Flv(j)));
 
+flooding_vel_eq(j)..
+    ufl(j) =e=
+        (sigma_g/20)**0.2
+      * ( Mw_mix_V(j)/v_mol(j) / (rhoL + (Mw_mix_V(j)/v_mol(j))) )**.5
+      * CF(j)
+      * 0.3048*60;
+      
 def_D_col(j)$( (ord(j) > 1) AND (ord(j) < Ns) ) ..
     D_col(j) =E= sqrt(4*V(j)*v_mol(j) / ( pi*uf(j)*0.88 ) );
 
-uf_res_1(j) ..
+uf_res_1(j)$( (ord(j) > 1) AND (ord(j) < Ns) )  ..
     uf(j) =l= ufl(j)*.8;
     
-uf_res_2(j) ..
+uf_res_2(j)$( (ord(j) > 1) AND (ord(j) < Ns) )  ..
     uf(j) =g= ufl(j)*.4;
 
 def_Dcol_max(j)$( (ord(j) > 1) AND (ord(j) < Ns) ) ..
@@ -697,7 +707,7 @@ def_Mw_mix_L(j)$(ord(j) <= Ns) ..
 *
 * Tray spacing 2ft = 0.6096 m    
 * New restriction for catalyst volume
-def_catal_vol .. m_cat/rho_cat =L= phi_c*(pi/4)*( Dcol_max*0.3048 )**2*h_pack;
+def_catal_vol .. m_cat/rho_cat =L= phi_c*(pi/4)*( Dcol_max )**2*h_pack;
 
 
 * ============================================================================ *
@@ -752,10 +762,10 @@ def_Breb(j)$(ord(j) = Ns) ..
 
 * Capital Costs
 eq_ColCost .. 
-    v_ColCost =E= (MS/280) * ( 101.9 * (Dcol_max**1.066) * ((0.7315*(Ns-2)*3.28084)**0.802) * 7.05 );
+    v_ColCost =E= (MS/280) * ( 101.9 * (Dcol_max**1.066) * ((ht*1.2*(Ns-2)*3.28084)**0.802) * 7.05 );
 
 eq_TrayCost .. 
-    v_TrayCost =E= (MS/280) * ( 4.7 * (Dcol_max**1.55) * (0.7315*(Ns-2)*3.28084) * 2.7 );
+    v_TrayCost =E= (MS/280) * ( 4.7 * (Dcol_max**1.55) * (ht*1.2*(Ns-2)*3.28084) * 2.7 );
 
 eq_CondCost .. 
     v_CondCost =E= (Qc*FH_factor/60/(150/0.17611 * ((10)/log((Tcond-303.15)/(Tcond-313.15))))*10.7639)**.65*1709.8394439285714;
@@ -837,7 +847,7 @@ energy_balance_reboiler_eq,
 spec_2_eq,
 V1_eq,
 def_D_col,
-Capacity_factor_eq,
+CF_def,
 flooding_vel_eq,
 Flv_def,
 uf_res_1,
@@ -961,6 +971,7 @@ v_mol.scale(j) = 1e-3;
 Zvi.lo(i,j) = 0.75; Zvi.up(i,j) = 1;  Zvi.l(i,j) = 0.9;
 v_mol_i.lo(i,j) = Zvi.lo(i,j)*R*Tmin/(9.5e5);
 v_mol_i.up(i,j) = Zvi.up(i,j)*R*Tmax/(9.5e5);
+v_mol_i.l(i,j) = Zvi.up(i,j)*R*(Tmax+Tmin)*.5/(9.5e5);
 v_mol_i.scale(i,j) = 1e-3;
     
 *    * NRTL Parameters
@@ -988,8 +999,12 @@ Rxn_Rate.lo(j) = -10;  Rxn_Rate.up(j) = 10;
 
 
 *               cost estimations
-Mw_mix_L.lo(j) = 45; Mw_mix_L.up(j) = 103; Mw_mix_L.scale(j) = 10;
-Mw_mix_V.lo(j) = 45; Mw_mix_V.up(j) = 103; Mw_mix_V.scale(j) = 10;
+Mw_mix_L.lo(j) = 45; Mw_mix_L.up(j) = 103; Mw_mix_L.scale(j) = 10; Mw_mix_L.l(j) = 60;
+Mw_mix_V.lo(j) = 45; Mw_mix_V.up(j) = 103; Mw_mix_V.scale(j) = 10; Mw_mix_V.l(j) = 60;
+CF.lo(j) = 1e-5;
+Flv.lo(j) = 0.01; Flv.up(j) = 100;Flv.l(j) = 0.1;
+ufl.lo(j) = 1e-3; ufl.up(j) = 100; ufl.l(j) = 1;
+uf.lo(j) = 1e-3; uf.up(j) = 100; uf.l(j) = 1;
 D_col.lo(j) = 0.001; D_col.up(j) = 2; D_col.l(j)=0.03; D_col.scale(j)=0.1;
 Dcol_max.lo = 0.001; Dcol_max.up = 2; Dcol_max.l=0.03; Dcol_max.scale=0.1;
 Tcond.lo = Tmin; Tcond.up = Tmin+50; Tcond.scale = TF_factor;
