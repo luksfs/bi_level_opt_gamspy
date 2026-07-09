@@ -632,8 +632,8 @@ PARAMETER
     ;
 
 VARIABLE
-    D_col(j)        'Column diameter (m)'
-    Dcol_max        'Maximum column diameter (m)'
+*    D_col(j)        'Column diameter (m)'
+    Dcol        'Maximum column diameter (m)'
     Mw_mix_V(j)     'Vapor Molecular mass (kg/kmol)'
     Mw_mix_L(j)     'Liquid Molecular mass (kg/kmol)'
     ufl(j)          'Flooding velocity (ft/s) -> (.3048 * 60 m/min)'
@@ -643,10 +643,10 @@ VARIABLE
     ;
 
 EQUATION
-    def_D_col(j)        'Equation for column diameter calculation'
+*    def_D_col(j)        'Equation for column diameter calculation'
     def_Mw_mix_V(j)     'Define mixture molar mass at stage j'
     def_Mw_mix_L(j)     'Define Liquid mixture molar mass at stage j'
-    def_Dcol_max(j)     'Equation for maximum column diameter calculation'
+    def_Dcol(j)         'Equation for maximum column diameter calculation'
     def_catal_vol       'Limit catalyst volume'
     CF_def(j)           'Capacity factor equation'
     flooding_vel_eq(j)  'Flooding velocity'
@@ -679,8 +679,8 @@ flooding_vel_eq(j)..
       * CF(j)
       * 0.3048*60;
       
-def_D_col(j)$( (ord(j) > 1) AND (ord(j) < Ns) ) ..
-    D_col(j) =E= sqrt(4*V(j)*v_mol(j) / ( pi*uf(j)*0.88 ) );
+def_Dcol(j)$( (ord(j) > 1) AND (ord(j) < Ns) ) ..
+    Dcol =E= sqrt(4*V(j)*v_mol(j) / ( pi*uf(j)*0.88 ) );
 
 uf_res_1(j)$( (ord(j) > 1) AND (ord(j) < Ns) )  ..
     uf(j) =l= ufl(j)*.8;
@@ -688,8 +688,8 @@ uf_res_1(j)$( (ord(j) > 1) AND (ord(j) < Ns) )  ..
 uf_res_2(j)$( (ord(j) > 1) AND (ord(j) < Ns) )  ..
     uf(j) =g= ufl(j)*.4;
 
-def_Dcol_max(j)$( (ord(j) > 1) AND (ord(j) < Ns) ) ..
-    Dcol_max =G= D_col(j);
+*def_Dcol_max(j)$( (ord(j) > 1) AND (ord(j) < Ns) ) ..
+*    Dcol_max =G= D_col(j);
 
 
 def_Mw_mix_V(j)$(ord(j) <= Ns) ..
@@ -707,7 +707,7 @@ def_Mw_mix_L(j)$(ord(j) <= Ns) ..
 *
 * Tray spacing 2ft = 0.6096 m    
 * New restriction for catalyst volume
-def_catal_vol .. m_cat/rho_cat =L= phi_c*(pi/4)*( Dcol_max )**2*h_pack;
+def_catal_vol .. m_cat/rho_cat =L= phi_c*(pi/4)*( Dcol )**2*h_pack;
 
 
 * ============================================================================ *
@@ -762,10 +762,10 @@ def_Breb(j)$(ord(j) = Ns) ..
 
 * Capital Costs
 eq_ColCost .. 
-    v_ColCost =E= (MS/280) * ( 101.9 * (Dcol_max**1.066) * ((ht*1.2*(Ns-2)*3.28084)**0.802) * 7.05 );
+    v_ColCost =E= (MS/280) * ( 101.9 * (( Dcol*3.28084 )**1.066) * ((ht*1.2*(Ns-2)*3.28084)**0.802) * 7.05 );
 
 eq_TrayCost .. 
-    v_TrayCost =E= (MS/280) * ( 4.7 * (Dcol_max**1.55) * (ht*1.2*(Ns-2)*3.28084) * 2.7 );
+    v_TrayCost =E= (MS/280) * ( 4.7 * (( Dcol*3.28084 )**1.55) * (ht*1.2*(Ns-2)*3.28084) * 2.7 );
 
 eq_CondCost .. 
     v_CondCost =E= (Qc*FH_factor/60/(150/0.17611 * ((10)/log((Tcond-303.15)/(Tcond-313.15))))*10.7639)**.65*1709.8394439285714;
@@ -846,7 +846,7 @@ energy_balance_reboiler_eq,
 *spec_1_eq,
 spec_2_eq,
 V1_eq,
-def_D_col,
+*def_D_col,
 CF_def,
 flooding_vel_eq,
 Flv_def,
@@ -854,7 +854,7 @@ uf_res_1,
 uf_res_2,
 def_Mw_mix_V,
 def_Mw_mix_L,
-def_Dcol_max,
+def_Dcol,
 def_catal_vol,
 def_Profit,
 def_Treb,
@@ -1005,8 +1005,8 @@ CF.lo(j) = 1e-5;
 Flv.lo(j) = 0.01; Flv.up(j) = 100;Flv.l(j) = 0.1;
 ufl.lo(j) = 1e-3; ufl.up(j) = 100; ufl.l(j) = 1;
 uf.lo(j) = 1e-3; uf.up(j) = 100; uf.l(j) = 1;
-D_col.lo(j) = 0.001; D_col.up(j) = 2; D_col.l(j)=0.03; D_col.scale(j)=0.1;
-Dcol_max.lo = 0.001; Dcol_max.up = 2; Dcol_max.l=0.03; Dcol_max.scale=0.1;
+*D_col.lo(j) = 0.001; D_col.up(j) = 2; D_col.l(j)=0.03; D_col.scale(j)=0.1;
+Dcol.lo = 0.001; Dcol.up = 2; Dcol.l=0.03; Dcol.scale=0.1;
 Tcond.lo = Tmin; Tcond.up = Tmin+50; Tcond.scale = TF_factor;
 Treb.lo = Tmax-50; Treb.up = Tmax; Treb.scale = TF_factor;
 
