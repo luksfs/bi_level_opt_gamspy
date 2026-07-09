@@ -626,8 +626,7 @@ PARAMETER
     rho_cat         'Catalyst density (kg/m³)' /770/
     phi_c           'Catalyst volume fraction' /0.3/
     h_pack          'Catalyst pack height (m)' /0.3048/
-    rhoL            'Avarege liquid density (g/m³)' /580e3/
-    sigma_g         'Surface tension AVG (dyn/cm3)' /7.2/
+    rho_L           'Avarege liquid density (kg/m³)' /580/
     a1              /1.0262/
     a2              /0.63513/
     a3              /0.20097/
@@ -636,65 +635,40 @@ PARAMETER
 VARIABLE
     D_col(j)        'Column diameter (ft)'
     Dcol_max        'Maximum column diameter (ft)'
-    Mw_mix_V(j)     'Vapor Molecular mass (kg/kmol)'
-    Mw_mix_L(j)     'Liquid Molecular mass (kg/kmol)'
-    ufl(j)          'Flooding velocity (ft/s) -> (.3048 * 60 m/min)'
+    Mw_mix(j)       'Molecular weights (kg/kmol)'
+    uf(j)           'Flooding velocity (m/min)'
     Flv(j)          'Flv parameter'
-    uf(j)           'Actual velocity (ft/s) -> (.3048 * 60 m/min)'
     ;
 
 EQUATION
-    def_D_col(j)        'Equation for column diameter calculation'
-    def_Mw_mix_V(j)     'Define mixture molar mass at stage j'
-    def_Mw_mix_L(j)     'Define Liquid mixture molar mass at stage j'
-    def_Dcol_max(j)     'Equation for maximum column diameter calculation'
-    def_catal_vol       'Limit catalyst volume'
-    Capacity_factor_eq  'Capacity factopr equation'
-    flooding_vel_eq(j)  'Flooding velocity'
-    Flv_def(j)          'Calc of Flv'
-    uf_res_1(j)         'Velocity Restriction 1'
-    uf_res_2(j)         'Velocity Restriction 2'
+    def_D_col(j)     'Equation for column diameter calculation'
+    def_Mw_mix(j)    'Define mixture molar mass at stage j'
+    def_Dcol_max(j)  'Equation for maximum column diameter calculation'
+    def_catal_vol    'Limit catalyst volume'
+    Capacity_factor_eq 'Capacity factopr equation'
+    flooding_vel_eq        'Flooding velocity'
+    Flv_def             'Calc of Flv'
     ;
     
 
 
 
-*SCALAR FF 'Parameter for flooding velocity estimation - Douglas book #kg^1/2 m^-1/2 s^-1 '; ; 
-*FF = 1.51*(0.45359237/0.3048)**0.5;
+SCALAR FF 'Parameter for flooding velocity estimation - Douglas book #kg^1/2 m^-1/2 s^-1 '; ; 
+FF = 1.51*(0.45359237/0.3048)**0.5;
+
+uf(j) =e= (sigma_g/20)**.2*(Mw_mix(j)*v_mol(j)*1e-3/(rho_L - (Mw_mix(j)*v_mol(j)*1e-3))**.5 * 10**( a1 - a2*log10(Flv) - c* (log10(Flv))**2 )
 
 
-Flv_def(j)$( (ord(j) > 1) AND (ord(j) < Ns) ) ..
-    Flv(j) =e= L(j)/V(j)*Mw_mix_L(j)/Mw_mix_V(j)*( Mw_mix_V(j)/v_mol(j)/rhoL )**.5;
+def_Mw_mix(j)$(ord(j) <= Ns) ..
+    Mw_mix(j) =E= sum( i, y(i,j)*Mw(i) );
 
-flooding_vel_eq(j)$( (ord(j) > 1) AND (ord(j) < Ns) ) ..
-    ufl(j) =e= (sigma_g/20)**.2 * ( Mw_mix_V(j)/v_mol(j) / (rhoL - (Mw_mix_V(j)/v_mol(j))) )**.5 * 10**( a1 - a2*log10(Flv(j)) - a3* (log10(Flv(j)))**2 ) * 0.3048*60;
-
+* Expanding the macros into the equation safely
 def_D_col(j)$( (ord(j) > 1) AND (ord(j) < Ns) ) ..
-    D_col(j) =E= sqrt(4*V(j)*v_mol(j) / ( pi*uf(j)*0.88 ) );
-
-uf_res_1(j) ..
-    uf(j) =l= ufl(j)*.8;
-    
-uf_res_2(j) ..
-    uf(j) =g= ufl(j)*.4;
+    D_col(j) =E= sqrt(4 * ( (V(j)*F_factor*v_mol(j)/60) / ( (FF/sqrt(Mw_mix(j)*1e-3/v_mol(j))) * 0.88 ) ) / Pi) * 3.28084;
 
 def_Dcol_max(j)$( (ord(j) > 1) AND (ord(j) < Ns) ) ..
     Dcol_max =G= D_col(j);
 
-
-def_Mw_mix_V(j)$(ord(j) <= Ns) ..
-    Mw_mix_V(j) =E= sum( i, y(i,j)*Mw(i) );
-    
-def_Mw_mix_L(j)$(ord(j) <= Ns) ..
-    Mw_mix_L(j) =E= sum( i, x(i,j)*Mw(i) );
-
-* Expanding the macros into the equation safely
-*def_D_col(j)$( (ord(j) > 1) AND (ord(j) < Ns) ) ..
-*    D_col(j) =E= sqrt(4 * ( (V(j)*F_factor*v_mol(j)/60) / ( (FF/sqrt(Mw_mix_V(j)*1e-3/v_mol(j))) * 0.88 ) ) / Pi) * 3.28084;
-*
-*def_Dcol_max(j)$( (ord(j) > 1) AND (ord(j) < Ns) ) ..
-*    Dcol_max =G= D_col(j);
-*
 * Tray spacing 2ft = 0.6096 m    
 * New restriction for catalyst volume
 def_catal_vol .. m_cat/rho_cat =L= phi_c*(pi/4)*( Dcol_max*0.3048 )**2*h_pack;
@@ -837,13 +811,7 @@ energy_balance_reboiler_eq,
 spec_2_eq,
 V1_eq,
 def_D_col,
-Capacity_factor_eq,
-flooding_vel_eq,
-Flv_def,
-uf_res_1,
-uf_res_2,
-def_Mw_mix_V,
-def_Mw_mix_L,
+def_Mw_mix,
 def_Dcol_max,
 def_catal_vol,
 def_Profit,
@@ -988,8 +956,7 @@ Rxn_Rate.lo(j) = -10;  Rxn_Rate.up(j) = 10;
 
 
 *               cost estimations
-Mw_mix_L.lo(j) = 45; Mw_mix_L.up(j) = 103; Mw_mix_L.scale(j) = 10;
-Mw_mix_V.lo(j) = 45; Mw_mix_V.up(j) = 103; Mw_mix_V.scale(j) = 10;
+Mw_mix.lo(j) = 45; Mw_mix.up(j) = 103; Mw_mix.scale(j) = 10;
 D_col.lo(j) = 0.001; D_col.up(j) = 2; D_col.l(j)=0.03; D_col.scale(j)=0.1;
 Dcol_max.lo = 0.001; Dcol_max.up = 2; Dcol_max.l=0.03; Dcol_max.scale=0.1;
 Tcond.lo = Tmin; Tcond.up = Tmin+50; Tcond.scale = TF_factor;
@@ -1049,6 +1016,10 @@ Display   Elapsed_time
 
 option NLP = Baron;
 SOLVE MESHR_Rigorous USING NLP MINIMIZING obj;
+
+option NLP = CONOPT;
+SOLVE MESHR_Rigorous USING NLP MINIMIZING obj;
+    
 
 *  Calculate derived values
 X_ETOH(j)$(ord(j) = Ns) = (FE.l - D.l*x.l['2','1'] - L.l[j]*x.l['2',j])/FE.l;
