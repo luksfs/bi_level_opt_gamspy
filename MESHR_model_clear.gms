@@ -1050,12 +1050,12 @@ NR3 = 7;
 *NR3 = 7;
 
 * Test solution
-Ns = 10;
-NFE = 2;
-NFB = 2;
-NR1 = 2;
-NR2 = 3;
-NR3 = 6;
+*Ns = 10;
+*NFE = 2;
+*NFB = 2;
+*NR1 = 2;
+*NR2 = 3;
+*NR3 = 6;
 
 *    * Solve the mode
 *    CONOPT

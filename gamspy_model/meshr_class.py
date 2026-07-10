@@ -755,6 +755,11 @@ class ReactiveDistillationModel:
         """
         Updates the superstructure parameters instantly. No compilation required.
         """
+        # Count start in 0
+        NFE = NFE+1
+        NFB = NFB+1
+        reactive_trays = [x+1 for x in reactive_trays]
+        
         self.NFE = NFE
         self.Ns_d = Ns # I am already using Ns for gamspy
         self.NFB = NFB
