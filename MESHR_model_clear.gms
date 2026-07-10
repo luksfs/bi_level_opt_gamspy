@@ -75,7 +75,10 @@ PARAMETERS
     react_cost
     steam_cost
     cooling_cost
-    cost_fe_par    
+    cost_fe_par
+    cat_vol
+    avail_vol
+    Dcol_min_cat
 ;
 
 *SCALAR R_cost "Gas constant J K-1 kmol-1" /8.314463e3/;
@@ -633,7 +636,7 @@ PARAMETER
 
 VARIABLE
 *    D_col(j)        'Column diameter (m)'
-    Dcol        'Maximum column diameter (m)'
+    Dcol            'Column diameter (m)'
     Mw_mix_V(j)     'Vapor Molecular mass (kg/kmol)'
     Mw_mix_L(j)     'Liquid Molecular mass (kg/kmol)'
     ufl(j)          'Flooding velocity (ft/s) -> (.3048 * 60 m/min)'
@@ -646,7 +649,7 @@ EQUATION
 *    def_D_col(j)        'Equation for column diameter calculation'
     def_Mw_mix_V(j)     'Define mixture molar mass at stage j'
     def_Mw_mix_L(j)     'Define Liquid mixture molar mass at stage j'
-    def_Dcol(j)         'Equation for maximum column diameter calculation'
+    def_Dcol(j)         'Equation for velocity in each tray'
     def_catal_vol       'Limit catalyst volume'
     CF_def(j)           'Capacity factor equation'
     flooding_vel_eq(j)  'Flooding velocity'
@@ -666,7 +669,7 @@ Flv_def(j)$( (ord(j) > 1) AND (ord(j) < Ns) ) ..
         * Mw_mix_L(j)/Mw_mix_V(j)
         * (Mw_mix_V(j)/v_mol(j)/rhoL)**.5;
 
-CF_def(j)..
+CF_def(j)$( (ord(j) > 1) AND (ord(j) < Ns) )..
     log10(CF(j)) =e=
       - a1
       - a2*log10(Flv(j))
@@ -675,12 +678,12 @@ CF_def(j)..
 flooding_vel_eq(j)..
     ufl(j) =e=
         (sigma_g/20)**0.2
-      * ( Mw_mix_V(j)/v_mol(j) / (rhoL + (Mw_mix_V(j)/v_mol(j))) )**.5
+      * ( Mw_mix_V(j)/v_mol(j) / (rhoL - (Mw_mix_V(j)/v_mol(j))) )**.5
       * CF(j)
       * 0.3048*60;
       
 def_Dcol(j)$( (ord(j) > 1) AND (ord(j) < Ns) ) ..
-    Dcol =E= sqrt(4*V(j)*v_mol(j) / ( pi*uf(j)*0.88 ) );
+    uf(j) =E= 4*V(j)*v_mol(j)/(pi*sqr(Dcol)*0.88);
 
 uf_res_1(j)$( (ord(j) > 1) AND (ord(j) < Ns) )  ..
     uf(j) =l= ufl(j)*.8;
@@ -1001,12 +1004,14 @@ Rxn_Rate.lo(j) = -10;  Rxn_Rate.up(j) = 10;
 *               cost estimations
 Mw_mix_L.lo(j) = 45; Mw_mix_L.up(j) = 103; Mw_mix_L.scale(j) = 10; Mw_mix_L.l(j) = 60;
 Mw_mix_V.lo(j) = 45; Mw_mix_V.up(j) = 103; Mw_mix_V.scale(j) = 10; Mw_mix_V.l(j) = 60;
-CF.lo(j) = 1e-5;
-Flv.lo(j) = 0.01; Flv.up(j) = 100;Flv.l(j) = 0.1;
+CF.lo(j) = 1e-2; CF.up(j) = 2; CF.l(j) = 0.2;
+uf.lo(j) = 0.01; uf.up(j) = 20; uf.l(j) = 0.5;
+ufl.lo(j) = 0.01; ufl.up(j) = 20; ufl.l(j) = 0.7;
+Flv.lo(j) = 0.001; Flv.up(j) = 20;Flv.l(j) = 0.1;
 ufl.lo(j) = 1e-3; ufl.up(j) = 100; ufl.l(j) = 1;
 uf.lo(j) = 1e-3; uf.up(j) = 100; uf.l(j) = 1;
 *D_col.lo(j) = 0.001; D_col.up(j) = 2; D_col.l(j)=0.03; D_col.scale(j)=0.1;
-Dcol.lo = 0.001; Dcol.up = 2; Dcol.l=0.03; Dcol.scale=0.1;
+Dcol.lo = 0.01; Dcol.up = 2; Dcol.l=0.1; Dcol.scale=0.1;
 Tcond.lo = Tmin; Tcond.up = Tmin+50; Tcond.scale = TF_factor;
 Treb.lo = Tmax-50; Treb.up = Tmax; Treb.scale = TF_factor;
 
@@ -1030,7 +1035,7 @@ MESHR_Rigorous.scaleopt = 1;
 *    * Set scalar values from loop indices
 * Best solution overall
 Ns = 10;
-NFE = 5;
+NFE = 4;
 NFB = 7;
 NR1 = 3;
 NR2 = 5;
@@ -1045,12 +1050,12 @@ NR3 = 7;
 *NR3 = 7;
 
 * Test solution
-*Ns = 7;
-*NFE = 2;
-*NFB = 2;
-*NR1 = 2;
-*NR2 = 3;
-*NR3 = 6;
+Ns = 10;
+NFE = 2;
+NFB = 2;
+NR1 = 2;
+NR2 = 3;
+NR3 = 6;
 
 *    * Solve the mode
 *    CONOPT
@@ -1086,6 +1091,9 @@ area_reb_par = (Qr.l*FH_factor/60) / ( (250/0.17611) * (433.15 - Treb.l) ) * 10.
 tao_nrtl_par(i, k, j)$(ord(j) <= Ns) = b_nrtl(i,k) / T.l(j);
 g_nrtl_par(i, k, j)$(ord(j) <= Ns) = (exp(-c_nrtl(i,k) * ( b_nrtl(i,k) / T.l(j) ) ) );
 Xg_par(i, j)$(ord(j) <= Ns) = x.l(i,j)*gamma_nrtl.l(i,j);
+cat_vol = m_cat/rho_cat/phi_c;
+avail_vol = (pi/4)*( Dcol.l )**2*h_pack;
+Dcol_min_cat = sqrt(m_cat*4/(pi*phi_c*rho_cat*h_pack));
 
 * ( x(i,j)*gamma_nrtl(i,j) ) 
 *$macro tao_nrtl(i,k,j)  ( b_nrtl(i,k) / T(j) )
