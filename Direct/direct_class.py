@@ -39,9 +39,9 @@ class DiscreteDirectWrapper:
 
         Ns = int(np.round(Ns_c))
         
-        NFE = int( np.round( 1 + NFE_c * (Ns - 3)) )
+        NFE = int( np.round( 2 + NFE_c * (Ns - 4)) )
         NFB = int( np.round( NFE + NFB_c * (Ns - 2 - NFE) ) )
-        NR1 = int( np.round( 1 + NR1_c * (Ns - 3) ) )
+        NR1 = int( np.round( 2 + NR1_c * (Ns - 4) ) )
 
         x_discrete = [Ns, NFE, NFB, NR1]
         reactive_trays = [NR1]
@@ -87,10 +87,16 @@ class DiscreteDirectWrapper:
 
         Ns = int(np.round(Ns_c))
         
-        NFE = int( np.round( 1 + NFE_c * (Ns - 3)) )
+        # NFE = int( np.round( 1 + NFE_c * (Ns - 3)) )
+        # NFB = int( np.round( NFE + NFB_c * (Ns - 2 - NFE) ) )
+        # NR1 = int( np.round( 1 + NR1_c * (Ns - 4) ) )
+        # NR2 = int( np.round( NR1 + 1 + NR2_c * (Ns - 3 - NR1) ) )
+
+        NFE = int( np.round( 2 + NFE_c * (Ns - 4)) )
         NFB = int( np.round( NFE + NFB_c * (Ns - 2 - NFE) ) )
-        NR1 = int( np.round( 1 + NR1_c * (Ns - 4) ) )
+        NR1 = int( np.round( 2 + NR1_c * (Ns - 5) ) )
         NR2 = int( np.round( NR1 + 1 + NR2_c * (Ns - 3 - NR1) ) )
+
         x_discrete = [Ns, NFE, NFB, NR1, NR2]
         reactive_trays = [NR1, NR2]
             
@@ -137,9 +143,14 @@ class DiscreteDirectWrapper:
 
         Ns = int(np.round(Ns_c))
         
-        NFE = int( np.round( 1 + NFE_c * (Ns - 3)) )
+        # NFE = int( np.round( 1 + NFE_c * (Ns - 3)) )
+        # NFB = int( np.round( NFE + NFB_c * (Ns - 2 - NFE) ) )
+        # NR1 = int( np.round( 1 + NR1_c * (Ns - 5) ) )
+        # NR2 = int( np.round( NR1 + 1 + NR2_c * (Ns - 4 - NR1) ) )
+        # NR3 = int( np.round( NR2 + 1 + NR3_c * (Ns - 3 - NR2) ) )
+        NFE = int( np.round( 2 + NFE_c * (Ns - 4)) )
         NFB = int( np.round( NFE + NFB_c * (Ns - 2 - NFE) ) )
-        NR1 = int( np.round( 1 + NR1_c * (Ns - 5) ) )
+        NR1 = int( np.round( 2 + NR1_c * (Ns - 6) ) )
         NR2 = int( np.round( NR1 + 1 + NR2_c * (Ns - 4 - NR1) ) )
         NR3 = int( np.round( NR2 + 1 + NR3_c * (Ns - 3 - NR2) ) )
 
@@ -191,9 +202,16 @@ class DiscreteDirectWrapper:
 
         Ns = int(np.round(Ns_c))
         
-        NFE = int( np.round( 1 + NFE_c * (Ns - 3)) )
+        # NFE = int( np.round( 1 + NFE_c * (Ns - 3)) )
+        # NFB = int( np.round( NFE + NFB_c * (Ns - 2 - NFE) ) )
+        # NR1 = int( np.round( 1 + NR1_c * (Ns - 6) ) )
+        # NR2 = int( np.round( NR1 + 1 + NR2_c * (Ns - 5 - NR1) ) )
+        # NR3 = int( np.round( NR2 + 1 + NR3_c * (Ns - 4 - NR2) ) )
+        # NR4 = int( np.round( NR3 + 1 + NR4_c * (Ns - 3 - NR3) ) )
+
+        NFE = int( np.round( 2 + NFE_c * (Ns - 4)) )
         NFB = int( np.round( NFE + NFB_c * (Ns - 2 - NFE) ) )
-        NR1 = int( np.round( 1 + NR1_c * (Ns - 6) ) )
+        NR1 = int( np.round( 2 + NR1_c * (Ns - 7) ) )
         NR2 = int( np.round( NR1 + 1 + NR2_c * (Ns - 5 - NR1) ) )
         NR3 = int( np.round( NR2 + 1 + NR3_c * (Ns - 4 - NR2) ) )
         NR4 = int( np.round( NR3 + 1 + NR4_c * (Ns - 3 - NR3) ) )

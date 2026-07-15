@@ -755,10 +755,10 @@ class ReactiveDistillationModel:
         """
         Updates the superstructure parameters instantly. No compilation required.
         """
-        # Count start in 0
-        NFE = NFE+1
-        NFB = NFB+1
-        reactive_trays = [x+1 for x in reactive_trays]
+        # # Count start in 0 - this was to adapt the solution for starting at stage-0
+        # NFE = NFE+1
+        # NFB = NFB+1
+        # reactive_trays = [x+1 for x in reactive_trays]
         
         self.NFE = NFE
         self.Ns_d = Ns # I am already using Ns for gamspy
@@ -799,7 +799,7 @@ class ReactiveDistillationModel:
         
         self.model.solve(
             solver=solver,
-            options=gp.Options(time_limit=600,
+            options=gp.Options(time_limit=160,
                                enable_scaling=True,
                                relative_optimality_gap=1e-4,
                                threads=10

@@ -499,29 +499,29 @@ $macro Xg(i,j) ( x(i,j)*gamma_nrtl(i,j) )
     
 * Reaction equilibrium constant
 EQUATION calc_K_eq(j);
-calc_K_eq(j)$((ord(j) = NR1) OR (ord(j) = NR2) OR (ord(j) = NR3)) ..
+calc_K_eq(j)$(ord(j) = NR1 ) ..
     K_eq(j) =E= EXP(10.387 + 4060.59/T(j) - 2.89055*LOG(T(j))
                 - 0.01915144*T(j) + 5.28586E-5*T(j)**2 - 5.32977E-8*T(j)**3);
 
 * Specific reaction rate
 EQUATION calc_k_rate(j);
-calc_k_rate(j)$((ord(j) = NR1) OR (ord(j) = NR2) OR (ord(j) = NR3)) ..
+calc_k_rate(j)$( ord(j) = NR1 ) ..
     k_rate(j) =E= 7.41816E15 * EXP(-60.4E3 / (R * T(j))) / 60;
 
 * Adsorption rate
 EQUATION calc_k_A(j);
-calc_k_A(j)$((ord(j) = NR1) OR (ord(j) = NR2) OR (ord(j) = NR3)) ..
+calc_k_A(j)$( ord(j) = NR1 ) ..
     k_A(j) =E= EXP(-1.0707 + 1323.1 / T(j));
 
 * Reaction rate equation
 EQUATION calc_Rx_Rate(j);
-calc_Rx_Rate(j)$((ord(j) = NR1) OR (ord(j) = NR2) OR (ord(j) = NR3)) ..
+calc_Rx_Rate(j)$(ord(j) = NR1 ) ..
 *    Rxn_Rate(j)*K_eq(j)*Xg('2',j) =E= k_rate(j)*(Xg('2',j))**2*(Xg('3',j)*K_eq(j)*Xg('2',j) - Xg('4',j))/(1+k_A(j)*Xg('2',j))**3;
     Rxn_Rate(j) =E= k_rate(j)*Xg('2',j) * ( Xg('2',j) * Xg('3',j) - Xg('4',j)/K_eq(j) ) / (1 + k_A(j)*Xg('2',j) )**3;
         
 * Set reaction rate to zero for non-reactive trays
 EQUATION assign_zero(j);
-assign_zero(j)$((ord(j) <> NR1) AND (ord(j) <> NR2) AND (ord(j) <> NR3)) ..
+assign_zero(j)$( ord(j) <> NR1 ) ..
    Rxn_Rate(j) =E= 0;
 
 
@@ -1034,27 +1034,10 @@ MESHR_Rigorous.scaleopt = 1;
     
 *    * Set scalar values from loop indices
 * Best solution overall
-Ns = 10;
-NFE = 4;
-NFB = 7;
+Ns = 6;
+NFE = 3;
+NFB = 3;
 NR1 = 3;
-NR2 = 5;
-NR3 = 7;
-
-Ns = 14;
-NFE = 4;
-NFB = 11;
-NR1 = 7;
-NR2 = 9;
-NR3 = 13;
-
-Ns = 14;
-NFE = 4;
-NFB = 12;
-NR1 = 4;
-NR2 = 11;
-NR3 = 12;
-
 
 ** Best solution within constraints
 *Ns = 10;
@@ -1080,24 +1063,6 @@ SOLVE MESHR_Rigorous USING NLP MINIMIZING obj;
 
 Elapsed_time = timeElapsed;
 Display   Elapsed_time
-
-
-option NLP = Baron;
-SOLVE MESHR_Rigorous USING NLP MINIMIZING obj;
-
-Ns = 14;
-NFE = 4;
-NFB = 12;
-NR1 = 4;
-NR2 = 11;
-NR3 = 13;
-
-option NLP = CONOPT;
-SOLVE MESHR_Rigorous USING NLP MINIMIZING obj;
-
-Elapsed_time = timeElapsed;
-Display   Elapsed_time
-
 
 option NLP = Baron;
 SOLVE MESHR_Rigorous USING NLP MINIMIZING obj;

@@ -2,6 +2,7 @@ import random
 import statistics
 from functions.comb_manager import CombinationManager
 from gamspy_model.meshr_class import ReactiveDistillationModel
+import numpy as np
 
 try:
     del manager
@@ -94,11 +95,11 @@ for i in range(2):
             y_best = y
 
             # line search
-            d = y - y_old#################
+            d = [a-b for a,b in zip(y,y_old)]
             line_search = True
             while line_search:
                 y_old = y
-                y_new = y+d
+                y_new = [a+b for a,b in zip(y,d)]
                 [Ns, NFE, NFB, NR1, NR2, NR3] = y_new
                 meshr.update_config(
                     Ns=Ns,
