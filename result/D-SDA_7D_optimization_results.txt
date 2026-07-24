@@ -1,0 +1,22 @@
+
+==================================================
+Run date: 2026-07-21 17:49:14.503348
+Mean Execution time: 295.275580 seconds
+Mean of objective functions calls: 6835
+STD of objective functions calls: 3751.908580975821
+Best Discrete X found: [10, 5, 7, 3, 5, 6, 7]
+Minimum Objective Value: 0.016224133167572565
+All values: 
+fobj_1 = 1.6224e-02; y_1 = [10, 5, 7, 3, 5, 6, 7]; fobj_eval_1 = 9488; initial_y_1 = [6, 2, 4, 2, 3, 4, 5] 
+fobj_2 = 1.6224e-02; y_2 = [10, 5, 7, 3, 5, 6, 7]; fobj_eval_2 = 4182; initial_y_2 = [9, 6, 8, 2, 4, 5, 7] 
+
+==================================================
+Run date: 2026-07-22 12:32:07.419042
+Mean Execution time: 5761.358434 seconds
+Mean of objective functions calls: 8297
+STD of objective functions calls: 538.8153672641492
+Best Discrete X found: [10, 5, 7, 3, 5, 6, 7]
+Minimum Objective Value: 0.016224133168585946
+All values: 
+fobj_1 = 1.6224e-02; y_1 = [10, 5, 7, 3, 5, 6, 7]; fobj_eval_1 = 7916; initial_y_1 = [8, 2, 7, 2, 4, 5, 7] 
+fobj_2 = 1.6224e-02; y_2 = [10, 5, 7, 3, 5, 6, 7]; fobj_eval_2 = 8678; initial_y_2 = [6, 5, 5, 2, 3, 4, 5] 

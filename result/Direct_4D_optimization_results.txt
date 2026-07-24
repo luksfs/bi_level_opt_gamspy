@@ -43,3 +43,12 @@ Cache size (unique evaluations): 54
 Best Discrete X found: [6, 3, 3, 3]
 Minimum Objective Value: 0.02075477316135451
 Objective function evaluations: 54
+
+==================================================
+Run date: 2026-07-15 10:38:13.598088
+Execution time: 509.232035 seconds
+Status: The side length measure of the hyperrectangle containing the lowest function value found is below len_tol=0.04524886877828054
+Cache size (unique evaluations): 53
+Best Discrete X found: [6, 3, 3, 3]
+Minimum Objective Value: 0.02075477408032984
+Objective function evaluations: 53

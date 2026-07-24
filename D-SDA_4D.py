@@ -35,20 +35,19 @@ for i in range(2):
     # count time
     start_time = time.perf_counter()
 
-    Ns  = random.randint(6, 12)
+    Ns  = random.randint(6, 22)
     NFE = random.randint(2, Ns-1)
     NFB = random.randint(NFE, Ns-1)
-    NR1 = random.randint(2, Ns-3)
-    NR2 = random.randint(NR1+1, Ns-2)
-    NR3 = random.randint(NR2+1, Ns-1)
+    NR1 = random.randint(2, Ns-1)
+    # NR2 = random.randint(NR1+1, Ns-1)
+    # NR3 = random.randint(NR2+1, Ns-1)
     
     print(
         'Ns  = {Ns}; ' \
         'NFE = {NFE}; '\
         'NFB = {NFB}; '\
         'NR1 = {NR1}; '\
-        'NR2 = {NR2}; '\
-        'NR3 = {NR3}; '\
+        # 'NR2 = {NR2}; '\
     )
 
     # # Adding missing values
@@ -60,14 +59,14 @@ for i in range(2):
     # Ns = 6
     # NFE = 1
 
-    y = [Ns, NFE, NFB, NR1, NR2, NR3]
+    y = [Ns, NFE, NFB, NR1]
     initial_y_list.append(y)
 
     meshr.update_config(
         Ns=Ns,
         NFE=NFE,
         NFB=NFB,
-        reactive_trays=[NR1,NR2,NR3]
+        reactive_trays=[NR1]
     )
     i = 0 # number of times solver is called
     fobj_best  = meshr.solve(solver="BARON")['Profit']
@@ -87,12 +86,12 @@ for i in range(2):
 
         fobj_list = []
         for y_d in batch:
-            [Ns, NFE, NFB, NR1, NR2, NR3] = y_d
+            [Ns, NFE, NFB, NR1] = y_d
             meshr.update_config(
                 Ns=Ns,
                 NFE=NFE,
                 NFB=NFB,
-                reactive_trays=[NR1,NR2,NR3]
+                reactive_trays=[NR1]
             )
             Sol = meshr.solve(solver="BARON")
             Fobj = Sol['Profit']
@@ -119,12 +118,12 @@ for i in range(2):
                 line_search_list.append('linesearch start')
                 line_search_list.append(f"y = {y_new}; ")
                 line_search_list.append(f"d = {d};")
-                [Ns, NFE, NFB, NR1, NR2, NR3] = y_new
+                [Ns, NFE, NFB, NR1] = y_new
                 meshr.update_config(
                     Ns=Ns,
                     NFE=NFE,
                     NFB=NFB,
-                    reactive_trays=[NR1,NR2,NR3]
+                    reactive_trays=[NR1]
                 )
                 Sol = meshr.solve(solver="BARON")
                 fobj = Sol['Profit']
@@ -162,7 +161,7 @@ print(f"Best Discrete X found: {y_best}")
 print(f"Minimum Objective Value: {fobj_best:.4e}")
 print(f"Objective function evaluations: {fobj_calls_mean}")
 
-with open("result/D-SDA_6D_optimization_results.txt", "a") as f:
+with open("result/D-SDA_4D_optimization_results.txt", "a") as f:
     f.write(f"\n{'='*50}\n")
     f.write(f"Run date: {datetime.now()}\n")
     f.write(f"Mean Execution time: {time_mean:.6f} seconds\n")
@@ -178,6 +177,6 @@ with open("result/D-SDA_6D_optimization_results.txt", "a") as f:
         f.write(f"fobj_eval_{i} = {h_val}; ")
         f.write(f"initial_y_{i} = {j_val} \n")
 
-with open("result/all_resultsD-SDA_6D_optimization_results.txt", "a") as file:
+with open("result/all_resultsD-SDA_4D_optimization_results.txt", "a") as file:
     for txt in line_search_list:
         file.write(f"{txt}\n")

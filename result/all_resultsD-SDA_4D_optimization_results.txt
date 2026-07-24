@@ -1,0 +1,89 @@
+first point line search: [16, 6, 14, 6]
+linesearch start
+y = [15, 7, 15, 7]; 
+d = [-1, 1, 1, 1];
+first point line search: [15, 7, 14, 7]
+linesearch start
+y = [14, 8, 14, 8]; 
+d = [-1, 1, 0, 1];
+first point line search: [14, 7, 13, 7]
+linesearch start
+y = [13, 7, 12, 7]; 
+d = [-1, 0, -1, 0];
+linesearch start
+y = [12, 7, 11, 7]; 
+d = [-1, 0, -1, 0];
+linesearch start
+y = [11, 7, 10, 7]; 
+d = [-1, 0, -1, 0];
+linesearch start
+y = [10, 7, 9, 7]; 
+d = [-1, 0, -1, 0];
+first point line search: [11, 8, 9, 8]
+linesearch start
+y = [11, 9, 8, 9]; 
+d = [0, 1, -1, 1];
+first point line search: [11, 8, 8, 8]
+linesearch start
+y = [11, 8, 7, 8]; 
+d = [0, 0, -1, 0];
+first point line search: [10, 7, 7, 7]
+linesearch start
+y = [9, 6, 6, 6]; 
+d = [-1, -1, -1, -1];
+linesearch start
+y = [8, 5, 5, 5]; 
+d = [-1, -1, -1, -1];
+linesearch start
+y = [7, 4, 4, 4]; 
+d = [-1, -1, -1, -1];
+linesearch start
+y = [6, 3, 3, 3]; 
+d = [-1, -1, -1, -1];
+first point line search: [12, 8, 10, 8]
+linesearch start
+y = [11, 7, 9, 9]; 
+d = [-1, -1, -1, 1];
+linesearch start
+y = [10, 6, 8, 10]; 
+d = [-1, -1, -1, 1];
+first point line search: [12, 8, 8, 8]
+linesearch start
+y = [13, 9, 7, 7]; 
+d = [1, 1, -1, -1];
+first point line search: [11, 7, 7, 7]
+linesearch start
+y = [10, 6, 6, 6]; 
+d = [-1, -1, -1, -1];
+linesearch start
+y = [9, 5, 5, 5]; 
+d = [-1, -1, -1, -1];
+linesearch start
+y = [8, 4, 4, 4]; 
+d = [-1, -1, -1, -1];
+linesearch start
+y = [7, 3, 3, 3]; 
+d = [-1, -1, -1, -1];
+first point line search: [7, 4, 4, 4]
+linesearch start
+y = [6, 4, 4, 4]; 
+d = [-1, 0, 0, 0];
+first point line search: [6, 4, 5, 3]
+linesearch start
+y = [6, 3, 5, 4]; 
+d = [0, -1, 0, 1];
+linesearch start
+y = [6, 2, 5, 5]; 
+d = [0, -1, 0, 1];
+first point line search: [7, 4, 4, 4]
+linesearch start
+y = [8, 5, 3, 4]; 
+d = [1, 1, -1, 0];
+first point line search: [8, 4, 4, 4]
+linesearch start
+y = [7, 5, 4, 4]; 
+d = [-1, 1, 0, 0];
+first point line search: [7, 4, 4, 4]
+linesearch start
+y = [6, 4, 4, 4]; 
+d = [-1, 0, 0, 0];

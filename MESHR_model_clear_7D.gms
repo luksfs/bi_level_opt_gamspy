@@ -24,6 +24,7 @@ SCALAR
     NR1 "First reactive tray"
     NR2 "Second reactive tray"
     NR3 "Third reactive tray"
+    NR4 "Fourth reactive tray"
     nsmin /5/
     nsmax /22/
     count_s /0/
@@ -499,29 +500,29 @@ $macro Xg(i,j) ( x(i,j)*gamma_nrtl(i,j) )
     
 * Reaction equilibrium constant
 EQUATION calc_K_eq(j);
-calc_K_eq(j)$(ord(j) = NR1 ) ..
+calc_K_eq(j)$((ord(j) = NR1) OR (ord(j) = NR2) OR (ord(j) = NR3) OR (ord(j) = NR4) ) ..
     K_eq(j) =E= EXP(10.387 + 4060.59/T(j) - 2.89055*LOG(T(j))
                 - 0.01915144*T(j) + 5.28586E-5*T(j)**2 - 5.32977E-8*T(j)**3);
 
 * Specific reaction rate
 EQUATION calc_k_rate(j);
-calc_k_rate(j)$( ord(j) = NR1 ) ..
+calc_k_rate(j)$((ord(j) = NR1) OR (ord(j) = NR2) OR (ord(j) = NR3) OR (ord(j) = NR4))  ..
     k_rate(j) =E= 7.41816E15 * EXP(-60.4E3 / (R * T(j))) / 60;
 
 * Adsorption rate
 EQUATION calc_k_A(j);
-calc_k_A(j)$( ord(j) = NR1 ) ..
+calc_k_A(j)$((ord(j) = NR1) OR (ord(j) = NR2) OR (ord(j) = NR3) OR (ord(j) = NR4))  ..
     k_A(j) =E= EXP(-1.0707 + 1323.1 / T(j));
 
 * Reaction rate equation
 EQUATION calc_Rx_Rate(j);
-calc_Rx_Rate(j)$(ord(j) = NR1 ) ..
+calc_Rx_Rate(j)$((ord(j) = NR1) OR (ord(j) = NR2) OR (ord(j) = NR3) OR (ord(j) = NR4))  ..
 *    Rxn_Rate(j)*K_eq(j)*Xg('2',j) =E= k_rate(j)*(Xg('2',j))**2*(Xg('3',j)*K_eq(j)*Xg('2',j) - Xg('4',j))/(1+k_A(j)*Xg('2',j))**3;
     Rxn_Rate(j) =E= k_rate(j)*Xg('2',j) * ( Xg('2',j) * Xg('3',j) - Xg('4',j)/K_eq(j) ) / (1 + k_A(j)*Xg('2',j) )**3;
         
 * Set reaction rate to zero for non-reactive trays
 EQUATION assign_zero(j);
-assign_zero(j)$( ord(j) <> NR1 ) ..
+assign_zero(j)$((ord(j) <> NR1) AND (ord(j) <> NR2) AND (ord(j) <> NR3) AND (ord(j) <> NR4))  ..
    Rxn_Rate(j) =E= 0;
 
 
@@ -622,8 +623,9 @@ V1_eq .. V('1') =E= 0;
 * ============================================================================ *
 * Column Diameter Calculation
 * ============================================================================ *
+********************************************************* ht LOOK
 PARAMETER
-    ht              'Tray height - 18 in'           /0.4572/
+    ht              'Tray height - 18 in'           /0.6096/ 
     rho_cat         'Catalyst density (kg/m³)'      /770/
     phi_c           'Catalyst volume fraction'      /0.3/
     h_pack          'Catalyst pack height (m)'
@@ -635,7 +637,7 @@ PARAMETER
     ;
 
 VARIABLE
-*    D_col(j)        'Column diameter (m)'
+    D_col(j)        'Column diameter (m)'
     Dcol            'Column diameter (m)'
     Mw_mix_V(j)     'Vapor Molecular mass (kg/kmol)'
     Mw_mix_L(j)     'Liquid Molecular mass (kg/kmol)'
@@ -643,13 +645,15 @@ VARIABLE
     Flv(j)          'Flv parameter'
     uf(j)           'Actual velocity (ft/s) -> (.3048 * 60 m/min)'
     CF(j)           'Capacity Factor'
+    Dcol_max
     ;
 
 EQUATION
-*    def_D_col(j)        'Equation for column diameter calculation'
+    def_D_col(j)        'Equation for column diameter calculation'
+    def_Dcol_max(j)
     def_Mw_mix_V(j)     'Define mixture molar mass at stage j'
     def_Mw_mix_L(j)     'Define Liquid mixture molar mass at stage j'
-    def_Dcol(j)         'Equation for velocity in each tray'
+*    def_Dcol(j)         'Equation for velocity in each tray'
     def_catal_vol       'Limit catalyst volume'
     CF_def(j)           'Capacity factor equation'
     flooding_vel_eq(j)  'Flooding velocity'
@@ -658,38 +662,38 @@ EQUATION
     uf_res_2(j)         'Velocity Restriction 2'
     ;
 
-*SCALAR FF 'Parameter for flooding velocity estimation - Douglas book #kg^1/2 m^-1/2 s^-1 '; ; 
-*FF = 1.51*(0.45359237/0.3048)**0.5;
+SCALAR FF 'Parameter for flooding velocity estimation - Douglas book #kg^1/2 m^-1/2 s^-1 '; ; 
+FF = 1.51*(0.45359237/0.3048)**0.5;
 
 h_pack = ht/2;
 
-Flv_def(j)$( (ord(j) > 1) AND (ord(j) < Ns) ) ..
-    Flv(j) =e=
-        L(j)/V(j)
-        * Mw_mix_L(j)/Mw_mix_V(j)
-        * (Mw_mix_V(j)/v_mol(j)/rhoL)**.5;
-
-CF_def(j)$( (ord(j) > 1) AND (ord(j) < Ns) )..
-    log10(CF(j)) =e=
-      - a1
-      - a2*log10(Flv(j))
-      - a3*sqr(log10(Flv(j)));
-
-flooding_vel_eq(j)..
-    ufl(j) =e=
-        (sigma_g/20)**0.2
-      * ( Mw_mix_V(j)/v_mol(j) / (rhoL - (Mw_mix_V(j)/v_mol(j))) )**.5
-      * CF(j)
-      * 0.3048*60;
-      
-def_Dcol(j)$( (ord(j) > 1) AND (ord(j) < Ns) ) ..
-    uf(j) =E= 4*V(j)*v_mol(j)/(pi*sqr(Dcol)*0.88);
-
-uf_res_1(j)$( (ord(j) > 1) AND (ord(j) < Ns) )  ..
-    uf(j) =l= ufl(j)*.8;
-    
-uf_res_2(j)$( (ord(j) > 1) AND (ord(j) < Ns) )  ..
-    uf(j) =g= ufl(j)*.4;
+*Flv_def(j)$( (ord(j) > 1) AND (ord(j) < Ns) ) ..
+*    Flv(j) =e=
+*        L(j)/V(j)
+*        * Mw_mix_L(j)/Mw_mix_V(j)
+*        * (Mw_mix_V(j)/v_mol(j)/rhoL)**.5;
+*
+*CF_def(j)$( (ord(j) > 1) AND (ord(j) < Ns) )..
+*    log10(CF(j)) =e=
+*      - a1
+*      - a2*log10(Flv(j))
+*      - a3*sqr(log10(Flv(j)));
+*
+*flooding_vel_eq(j)..
+*    ufl(j) =e=
+*        (sigma_g/20)**0.2
+*      * ( Mw_mix_V(j)/v_mol(j) / (rhoL - (Mw_mix_V(j)/v_mol(j))) )**.5
+*      * CF(j)
+*      * 0.3048*60;
+*      
+*def_Dcol(j)$( (ord(j) > 1) AND (ord(j) < Ns) ) ..
+*    uf(j) =E= 4*V(j)*v_mol(j)/(pi*sqr(Dcol)*0.88);
+*
+*uf_res_1(j)$( (ord(j) > 1) AND (ord(j) < Ns) )  ..
+*    uf(j) =l= ufl(j)*.8;
+*    
+*uf_res_2(j)$( (ord(j) > 1) AND (ord(j) < Ns) )  ..
+*    uf(j) =g= ufl(j)*.4;
 
 *def_Dcol_max(j)$( (ord(j) > 1) AND (ord(j) < Ns) ) ..
 *    Dcol_max =G= D_col(j);
@@ -702,15 +706,15 @@ def_Mw_mix_L(j)$(ord(j) <= Ns) ..
     Mw_mix_L(j) =E= sum( i, x(i,j)*Mw(i) );
 
 * Expanding the macros into the equation safely
-*def_D_col(j)$( (ord(j) > 1) AND (ord(j) < Ns) ) ..
-*    D_col(j) =E= sqrt(4 * ( (V(j)*F_factor*v_mol(j)/60) / ( (FF/sqrt(Mw_mix_V(j)*1e-3/v_mol(j))) * 0.88 ) ) / Pi) * 3.28084;
+def_D_col(j)$( (ord(j) > 1) AND (ord(j) < Ns) ) ..
+    D_col(j) =E= sqrt(4 * ( (V(j)*F_factor*v_mol(j)/60) / ( (FF/sqrt(Mw_mix_V(j)*1e-3/v_mol(j))) * 0.88 ) ) / Pi) * 3.28084;
 *
-*def_Dcol_max(j)$( (ord(j) > 1) AND (ord(j) < Ns) ) ..
-*    Dcol_max =G= D_col(j);
+def_Dcol_max(j)$( (ord(j) > 1) AND (ord(j) < Ns) ) ..
+    Dcol_max =G= D_col(j);
 *
 * Tray spacing 2ft = 0.6096 m    
 * New restriction for catalyst volume
-def_catal_vol .. m_cat/rho_cat =L= phi_c*(pi/4)*( Dcol )**2*h_pack;
+*def_catal_vol .. m_cat/rho_cat =L= phi_c*(pi/4)*( Dcol )**2*h_pack;
 
 
 * ============================================================================ *
@@ -777,7 +781,7 @@ eq_RebCost ..
     v_RebCost =E= (MS/280*101.3*(( Qr*FH_factor/60/((250/0.17611)*(433.15-Treb))*10.7639)**.65*7.3525));
 
 eq_CAP_cost .. 
-    CAP_cost =E= (1/3) * (v_TrayCost + v_ColCost + v_CondCost + v_RebCost + (7.7*3*0.4));
+    CAP_cost =E= (1/3) * (v_TrayCost + v_ColCost + v_CondCost + v_RebCost + (7.7*4*0.4));
 
 * Operational Costs
 eq_OP_cost .. 
@@ -849,16 +853,17 @@ energy_balance_reboiler_eq,
 *spec_1_eq,
 spec_2_eq,
 V1_eq,
-*def_D_col,
-CF_def,
-flooding_vel_eq,
-Flv_def,
-uf_res_1,
-uf_res_2,
+def_D_col,
+def_Dcol_max,
+*CF_def,
+*flooding_vel_eq,
+*Flv_def,
+*uf_res_1,
+*uf_res_2,
 def_Mw_mix_V,
 def_Mw_mix_L,
-def_Dcol,
-def_catal_vol,
+*def_Dcol,
+*def_catal_vol,
 def_Profit,
 def_Treb,
 def_Tcond,
@@ -1025,7 +1030,7 @@ v_AreaReb.up = 5;
 
 * Set solver options once before the loop
 option reslim = 1000;
-option optcr = 1e-4;
+option optcr = 1e-8;
 option threads = 12;
 MESHR_Rigorous.scaleopt = 1;
 *Avoiding writing lst
@@ -1034,10 +1039,28 @@ MESHR_Rigorous.scaleopt = 1;
     
 *    * Set scalar values from loop indices
 * Best solution overall
-Ns = 6;
-NFE = 3;
-NFB = 3;
+Ns = 10;
+NFE = 4;
+NFB = 7;
 NR1 = 3;
+NR2 = 5;
+NR3 = 7;
+
+Ns = 14;
+NFE = 4;
+NFB = 11;
+NR1 = 7;
+NR2 = 9;
+NR3 = 13;
+*[10, 5, 7, 3, 5, 6, 7]
+Ns = 10;
+NFE = 5;
+NFB = 7;
+NR1 = 3;
+NR2 = 5;
+NR3 = 6;
+NR4 = 7;
+
 
 ** Best solution within constraints
 *Ns = 10;
@@ -1058,11 +1081,29 @@ NR1 = 3;
 *    * Solve the mode
 *    CONOPT
 *option NLP = SNOPT;
-option NLP = CONOPT;
+*option NLP = CONOPT;
 *SOLVE MESHR_Rigorous USING NLP MINIMIZING obj;
+*
+*Elapsed_time = timeElapsed;
+*Display   Elapsed_time
+*
+*
+*option NLP = Baron;
+*SOLVE MESHR_Rigorous USING NLP MINIMIZING obj;
+*
+*Ns = 14;
+*NFE = 4;
+*NFB = 12;
+*NR1 = 4;
+*NR2 = 11;
+*NR3 = 13;
+
+option NLP = CONOPT;
+SOLVE MESHR_Rigorous USING NLP MINIMIZING obj;
 
 Elapsed_time = timeElapsed;
 Display   Elapsed_time
+
 
 option NLP = Baron;
 SOLVE MESHR_Rigorous USING NLP MINIMIZING obj;

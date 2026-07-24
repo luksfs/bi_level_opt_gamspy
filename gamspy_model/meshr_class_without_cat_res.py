@@ -66,22 +66,10 @@ class ReactiveDistillationModel:
         self.Tmin = 330
         self.Tmax = 410
 
-        # Catalyst volume calc and flooding velocity
+        # Catalyst volume calc
         self.rho_cat = 770 # kg/m3
         self.phi_c = 0.3
-        # self.h_pack = 0.3048 # m
-        self.ht = gp.Parameter(self.m, "ht", records=0.4572)
-        self.rho_cat = gp.Parameter(self.m, "rho_cat", records=770)
-        self.phi_c = gp.Parameter(self.m, "phi_c", records=0.3)
-        self.h_pack = gp.Parameter(self.m, "h_pack")
-        self.rhoL =gp.Parameter(self.m, "rhoL", records=580e3)
-        self.sigma_g = gp.Parameter(self.m, "sigma_g", records=7.2)
-
-        self.a1 = gp.Parameter(self.m, "a1", records=1.0262)
-        self.a2 = gp.Parameter(self.m, "a2", records=0.63513)
-        self.a3 = gp.Parameter(self.m, "a3", records=0.20097)
-
-        self.h_pack[...] = self.ht / 2
+        self.h_pack = 0.3048 # m
 
         self.v_i = gp.Parameter(self.m, name="v_i", domain=[self.i], records=[("1", 0), ("2", -1), ("3", -1), ("4", 1)])
         self.Tc = gp.Parameter(self.m, name="Tc", domain=[self.i], records=[("1", 419.5), ("2", 514), ("3", 417.9), ("4", 509.4)])
@@ -190,18 +178,9 @@ class ReactiveDistillationModel:
         self.Tcond = gp.Variable(self.m, name="Tcond")
         self.Treb = gp.Variable(self.m, name="Treb")
         
-        # self.D_col = gp.Variable(self.m, name="D_col")
-        # self.Dcol_max = gp.Variable(self.m, name="Dcol_max")
-        self.Dcol = gp.Variable(self.m, "Dcol")
-
-        self.Mw_mix_V = gp.Variable(self.m, "Mw_mix_V", domain=self.j)
-        self.Mw_mix_L = gp.Variable(self.m, "Mw_mix_L", domain=self.j)
-
-        self.Flv = gp.Variable(self.m, "Flv", domain=self.j)
-        self.CF =gp.Variable(self.m, "CF", domain=self.j)
-
-        self.ufl = gp.Variable(self.m, "ufl", domain=self.j)
-        self.uf = gp.Variable(self.m, "uf", domain=self.j)
+        self.D_col = gp.Variable(self.m, name="D_col", domain=[self.j])
+        self.Dcol_max = gp.Variable(self.m, name="Dcol_max")
+        self.Mw_mix = gp.Variable(self.m, name="Mw_mix", domain=[self.j])
         
         self.v_ColCost = gp.Variable(self.m, name="v_ColCost")
         self.v_TrayCost = gp.Variable(self.m, name="v_TrayCost")
@@ -414,98 +393,14 @@ class ReactiveDistillationModel:
         self.V1_eq[...] = self.V["1"] == 0
 
         # Economics
-        self.Flv_def = gp.Equation(self.m, "Flv_def", domain=j)
-        self.CF_def = gp.Equation(self.m, "CF_def", domain=j)
-        self.flooding_vel_eq = gp.Equation(self.m, "flooding_vel_eq", domain=j)
+        self.def_Mw_mix = gp.Equation(self.m, name="def_Mw_mix", domain=[j])
+        self.def_Mw_mix[j].where[cond_active] = self.Mw_mix[j] == gp.Sum(i, self.y[i, j] * self.Mw[i])
 
-        self.def_Dcol = gp.Equation(self.m, "def_Dcol", domain=j)
+        self.def_D_col = gp.Equation(self.m, name="def_D_col", domain=[j])
+        self.def_D_col[j].where[cond_interior] = self.D_col[j] == gmath.sqrt(4 * ((self.V[j] * self.F_factor * self.v_mol[j] / 60) / ((self.FF / gmath.sqrt(self.Mw_mix[j] * 1e-3 / self.v_mol[j])) * 0.88)) / np.pi) * 3.28084
 
-        self.uf_res_1 = gp.Equation(self.m, "uf_res_1", domain=j)
-        self.uf_res_2 = gp.Equation(self.m, "uf_res_2", domain=j)
-
-        self.def_Mw_mix_V = gp.Equation(self.m, "def_Mw_mix_V", domain=j)
-        self.def_Mw_mix_L = gp.Equation(self.m, "def_Mw_mix_L", domain=j)
-
-        self.def_catal_vol = gp.Equation(self.m, "def_catal_vol")
-        
-        self.def_Mw_mix_V[j].where[cond_interior]  = (
-            self.Mw_mix_V[j]
-            == gp.Sum(self.i, self.y[i, j] * self.Mw[i])
-        )
-
-        self.def_Mw_mix_L[j].where[cond_interior] = (
-            self.Mw_mix_L[j]
-            == gp.Sum(i, self.x[i, j]*self.Mw[i])
-        )
-
-        self.Flv_def[j].where[cond_interior] = (
-            self.Flv[j]
-            == self.L[j]
-            / self.V[j]
-            * self.Mw_mix_L[j]
-            / self.Mw_mix_V[j]
-            * gmath.sqrt(
-                self.Mw_mix_V[j] / self.v_mol[j] / self.rhoL
-            )
-        )
-        self.CF_def[j].where[cond_interior] = (
-            gmath.log10(self.CF[j])
-            ==
-            - self.a1
-            - self.a2 * gmath.log10(self.Flv[j])
-            - self.a3 * gmath.sqr(gmath.log10(self.Flv[j]))
-        )
-
-        self.flooding_vel_eq[j].where[cond_interior] = (
-            self.ufl[j]
-            ==
-            (self.sigma_g / 20) ** 0.2
-            * gmath.sqrt(
-                (self.Mw_mix_V[j] / self.v_mol[j])
-                / (self.rhoL - self.Mw_mix_V[j] / self.v_mol[j])
-            )
-            * self.CF[j]
-            * 0.3048
-            * 60
-        )
-
-        # self.def_Dcol[j].where[cond_interior] = (
-        #     self.Dcol
-        #     ==
-        #     0.0982067
-        # )
-        self.def_Dcol[j].where[cond_interior] = (
-            self.uf[j]
-            ==
-            4*self.V[j]*self.v_mol[j]/(np.pi*gmath.sqr(self.Dcol)*0.88)
-        )
-        self.uf_res_1[j].where[cond_interior] = (
-            self.uf[j] <= 0.8 * self.ufl[j]
-        )
-
-        self.uf_res_2[j].where[cond_interior] = (
-            self.uf[j] >= 0.4 * self.ufl[j]
-        )   
-
-        self.def_catal_vol[...] = (
-            self.m_cat / self.rho_cat
-            <=
-            self.phi_c
-            * (np.pi / 4)
-            * self.Dcol**2
-            * self.h_pack
-        ) 
-
-        # not using    
-        # self.def_Mw_mix = gp.Equation(self.m, name="def_Mw_mix", domain=[j])
-        # self.def_Mw_mix[j].where[cond_active] = self.Mw_mix[j] == gp.Sum(i, self.y[i, j] * self.Mw[i])
-        # self.def_D_col = gp.Equation(self.m, name="def_D_col", domain=[j])
-        # self.def_D_col[j].where[cond_interior] = self.D_col[j] == gmath.sqrt(4 * ((self.V[j] * self.F_factor * self.v_mol[j] / 60) / ((self.FF / gmath.sqrt(self.Mw_mix[j] * 1e-3 / self.v_mol[j])) * 0.88)) / np.pi) * 3.28084
-        # self.def_Dcol_max = gp.Equation(self.m, name="def_Dcol_max", domain=[j])
-        # self.def_Dcol_max[j].where[cond_interior] = self.Dcol_max >= self.D_col[j]
-        #catalyst volume limit (alaready there)
-        # self.def_catal_vol = gp.Equation(self.m, name="def_catal_vol")
-        # self.def_catal_vol = self.m_cat/self.rho_cat <= self.phi_c*(np.pi/4)*( self.Dcol )**2*self.h_pack
+        self.def_Dcol_max = gp.Equation(self.m, name="def_Dcol_max", domain=[j])
+        self.def_Dcol_max[j].where[cond_interior] = self.Dcol_max >= self.D_col[j]
 
         self.def_Tcond = gp.Equation(self.m, name="def_Tcond")
         self.def_Tcond[...] = self.Tcond == self.T["1"]
@@ -517,10 +412,10 @@ class ReactiveDistillationModel:
         self.def_Breb[j].where[cond_reboiler] = self.Breb == self.L[j]
 
         self.eq_ColCost = gp.Equation(self.m, name="eq_ColCost")
-        self.eq_ColCost[...] = self.v_ColCost == (self.MS / 280) * (101.9 * ((self.Dcol*3.28084)**1.066) * ((self.ht*1.2 * (self.Ns - 2) * 3.28084)**0.802) * 7.05)
+        self.eq_ColCost[...] = self.v_ColCost == (self.MS / 280) * (101.9 * (self.Dcol_max**1.066) * ((0.7315 * (self.Ns - 2) * 3.28084)**0.802) * 7.05)
 
         self.eq_TrayCost = gp.Equation(self.m, name="eq_TrayCost")
-        self.eq_TrayCost[...] = self.v_TrayCost == (self.MS / 280) * (4.7 * ((self.Dcol*3.28084)**1.55) * (self.ht*1.2* (self.Ns - 2) * 3.28084) * 2.7)
+        self.eq_TrayCost[...] = self.v_TrayCost == (self.MS / 280) * (4.7 * (self.Dcol_max**1.55) * (0.7315 * (self.Ns - 2) * 3.28084) * 2.7)
 
         self.eq_CondCost = gp.Equation(self.m, name="eq_CondCost")
         self.eq_CondCost[...] = self.v_CondCost == (self.Qc * self.FH_factor / 60 / (150 / 0.17611 * (10 / gmath.log((self.Tcond - 303.15) / (self.Tcond - 313.15)))) * 10.7639)**0.65 * 1709.8394439285714
@@ -554,6 +449,7 @@ class ReactiveDistillationModel:
         
         self.dummy_x = gp.Equation(self.m, name="dummy_x", domain=[i, j])
         self.dummy_x[i, j].where[cond_inactive] = self.x[i, j] == 0.25
+
 
     def _initialize_bounds_and_scales(self):
         #  ============================================================================ *
@@ -688,23 +584,11 @@ class ReactiveDistillationModel:
         # ---------------------------------------------------------------------------- #
         # Equipment & Costing Bounds
         # ---------------------------------------------------------------------------- #
-        self.Mw_mix_V.lo[self.j] = 46.069; self.Mw_mix_V.up[self.j] = 102.177; self.Mw_mix_V.scale[self.j] = 10
-        self.Mw_mix_L.lo[self.j] = 46.069; self.Mw_mix_L.up[self.j] = 102.177; self.Mw_mix_L.scale[self.j] = 10
+        self.Mw_mix.lo[self.j] = 45; self.Mw_mix.up[self.j] = 103; self.Mw_mix.scale[self.j] = 10
 
-        self.Dcol.lo = 0.01; self.Dcol.up = 2; self.Dcol.l = 0.1; self.Dcol.scale = 0.1
-        
-        self.CF.lo[self.j] = 1e-2
-        self.CF.up[self.j] = 2
-        self.uf.lo[self.j] = 0.01
-        self.uf.up[self.j] = 20
-        self.ufl.lo[self.j] = 0.01
-        self.ufl.up[self.j] = 20
-        self.Flv.lo[self.j] = 0.001
-        self.Flv.up[self.j] = 20
-        self.CF.l[self.j] = 0.2
-        self.uf.l[self.j] = 0.5
-        self.ufl.l[self.j] = 0.7
-        self.Flv.l[self.j] = 0.1
+        self.D_col.lo[self.j] = 0.001; self.D_col.up[self.j] = 2; self.D_col.l[self.j] = 0.03; self.D_col.scale[self.j] = 0.1
+        self.Dcol_max.lo[...] = 0.001; self.Dcol_max.up[...] = 2
+
         # ============================================================================ #
         # CRITICAL INITIALIZATIONS: Mimicking GAMS Default States
         # ============================================================================ #
@@ -735,8 +619,7 @@ class ReactiveDistillationModel:
         self.Zvi.l[self.i, self.j] = 0.9
         self.v_mol.l[self.j] = 0.003
         self.v_mol_i.l[self.i, self.j] = 0.003
-        self.Mw_mix_V.l[self.j] = 60.0
-        self.Mw_mix_L.l[self.j] = 60.0
+        self.Mw_mix.l[self.j] = 60.0
 
         # 4. Kinetics
         self.K_eq.l[self.j] = 10.0
@@ -758,11 +641,6 @@ class ReactiveDistillationModel:
         """
         Updates the superstructure parameters instantly. No compilation required.
         """
-        # # Count start in 0 - this was to adapt the solution for starting at stage-0
-        # NFE = NFE+1
-        # NFB = NFB+1
-        # reactive_trays = [x+1 for x in reactive_trays]
-        
         self.NFE = NFE
         self.Ns_d = Ns # I am already using Ns for gamspy
         self.NFB = NFB
@@ -778,7 +656,7 @@ class ReactiveDistillationModel:
         for rt in reactive_trays:
             self.is_reactive[str(rt)] = 1
 
-    def solve(self, solver="CONOPT", export = False, dataframe = False):
+    def solve(self, solver="CONOPT"):
         NR_string = ['NR1','NR2','NR3','NR4','NR5','NR6']
         text_NRx = ", ".join(
             f"{name} = {value}"
@@ -792,9 +670,23 @@ class ReactiveDistillationModel:
             f"NFB={self.NFB}, "
             f"{text_NRx}"
         )
-        
-        if (self.reactive_trays[0] == 1 or self.NFE == 1) or (self.NFB == self.Ns_d or self.reactive_trays[-1] == self.Ns_d):
+
+        if (self.reactive_trays[0] == 1 or self.NFE == 1) or (self.NFB >= self.Ns_d-1 or self.reactive_trays[-1] >= self.Ns_d-1):
             print('Violated the discrete bounds')
+            return {
+                "Status": 'fail',
+                "Profit": 1e5
+            }
+            
+        if (self.reactive_trays[0] == 1 or self.NFE == 1) or (self.NFB == self.Ns_d or self.reactive_trays[-1] == self.Ns_d) or (self.NFB==self.Ns_d-1 or self.reactive_trays[-1] == self.Ns_d-1) or (self.NFB==self.Ns_d-1 or self.reactive_trays[-1] == self.Ns_d-1):
+            print('Violated the discrete bounds')
+            return {
+                "Status": 'fail',
+                "Profit": 1e5
+            }
+        is_increasing = all(self.reactive_trays[i] < self.reactive_trays[i+1] for i in range(len(self.reactive_trays)-1))
+        if not is_increasing:
+            print('Violated the discrete bounds - NR problem')
             return {
                 "Status": 'fail',
                 "Profit": 1e5
@@ -802,39 +694,26 @@ class ReactiveDistillationModel:
         
         self.model.solve(
             solver=solver,
-            options=gp.Options(time_limit=160,
+            options=gp.Options(time_limit=600,
                                enable_scaling=True,
                                relative_optimality_gap=1e-4,
-                               threads=10
+                               threads=10,
+                            #    savepoint=1
                                ),
             # output=sys.stdout #for debuging
         )
+        self.m.write("solution.gdx")
     
         # 3. Access elapsed time
         total_elapsed = self.model.total_solve_time
         solver_only_elapsed = self.model.solve_model_time
-
-        if export:
-            self.m.write('results.gdx')
-        if dataframe:
-            rows = []
-            for var in self.m.data.values():
-                if hasattr(var, "records"):
-                    try:
-                        if var.dimension >= 1:
-                            df = var.records.copy()
-                            df["variable"] = var.name
-                            rows.append(df)
-                    except Exception:
-                        pass
-            self.df_results = pd.concat(rows, ignore_index=True)
 
         print(f"Total solve statement time: {total_elapsed} seconds")
         print(f"Solver execution time: {solver_only_elapsed} seconds")
         print(self.model.status)
 
         if self.model.status.value == 1 or self.model.status.value == 2:
-            print(f'Solver success. Fobj = {self.obj.toValue():.4e}')
+            print(f'Solver success. Fobj = {self.obj.toValue():.2e}')
             return {
                 "Status": self.model.status,
                 "Profit": self.obj.toValue()

@@ -1,0 +1,76 @@
+first point line search: [12, 6, 11, 5, 8]
+linesearch start
+y = [11, 7, 10, 4, 9]; 
+d = [-1, 1, -1, -1, 1];
+first point line search: [12, 5, 10, 4, 9]
+linesearch start
+y = [12, 4, 9, 3, 10]; 
+d = [0, -1, -1, -1, 1];
+first point line search: [12, 6, 9, 5, 9]
+linesearch start
+y = [12, 7, 8, 6, 9]; 
+d = [0, 1, -1, 1, 0];
+first point line search: [11, 6, 8, 6, 8]
+linesearch start
+y = [10, 6, 7, 7, 7]; 
+d = [-1, 0, -1, 1, -1];
+first point line search: [10, 5, 7, 5, 7]
+linesearch start
+y = [9, 4, 6, 4, 6]; 
+d = [-1, -1, -1, -1, -1];
+first point line search: [10, 5, 7, 4, 7]
+linesearch start
+y = [10, 5, 7, 3, 7]; 
+d = [0, 0, 0, -1, 0];
+first point line search: [9, 4, 6, 3, 6]
+linesearch start
+y = [8, 3, 5, 2, 5]; 
+d = [-1, -1, -1, -1, -1];
+first point line search: [8, 4, 5, 3, 5]
+linesearch start
+y = [9, 4, 5, 3, 5]; 
+d = [1, 0, 0, 0, 0];
+first point line search: [9, 4, 6, 3, 6]
+linesearch start
+y = [10, 4, 7, 3, 7]; 
+d = [1, 0, 1, 0, 1];
+first point line search: [7, 4, 5, 3, 5]
+linesearch start
+y = [8, 3, 5, 2, 5]; 
+d = [1, -1, 0, -1, 0];
+linesearch start
+y = [9, 2, 5, 1, 5]; 
+d = [1, -1, 0, -1, 0];
+first point line search: [9, 4, 6, 3, 6]
+linesearch start
+y = [10, 5, 7, 4, 7]; 
+d = [1, 1, 1, 1, 1];
+first point line search: [14, 10, 11, 10, 11]
+linesearch start
+y = [15, 9, 10, 11, 11]; 
+d = [1, -1, -1, 1, 0];
+first point line search: [14, 9, 11, 9, 11]
+linesearch start
+y = [14, 8, 11, 8, 11]; 
+d = [0, -1, 0, -1, 0];
+linesearch start
+y = [14, 7, 11, 7, 11]; 
+d = [0, -1, 0, -1, 0];
+first point line search: [13, 7, 10, 7, 10]
+linesearch start
+y = [12, 6, 9, 6, 9]; 
+d = [-1, -1, -1, -1, -1];
+linesearch start
+y = [11, 5, 8, 5, 8]; 
+d = [-1, -1, -1, -1, -1];
+linesearch start
+y = [10, 4, 7, 4, 7]; 
+d = [-1, -1, -1, -1, -1];
+first point line search: [10, 5, 7, 4, 7]
+linesearch start
+y = [9, 5, 6, 3, 6]; 
+d = [-1, 0, -1, -1, -1];
+first point line search: [9, 4, 6, 3, 6]
+linesearch start
+y = [8, 3, 5, 2, 5]; 
+d = [-1, -1, -1, -1, -1];
