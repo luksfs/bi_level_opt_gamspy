@@ -1,6 +1,7 @@
 import random
 import statistics
 from functions.comb_manager import CombinationManager
+from functions.invalid_check import check_bounds
 from gamspy_model.meshr_class_without_cat_res import ReactiveDistillationModel
 import numpy as np
 import time
@@ -31,16 +32,17 @@ fobj_global_list    = []
 initial_y_list      = []
 line_search_list    = []
 
-for i in range(2):
+for i in range(1):
     # count time
     start_time = time.perf_counter()
 
-    Ns  = random.randint(6, 12)
-    NFE = random.randint(2, Ns-1)
-    NFB = random.randint(NFE, Ns-1)
-    NR1 = random.randint(2, Ns-3)
-    NR2 = random.randint(NR1+1, Ns-2)
-    NR3 = random.randint(NR2+1, Ns-1)
+    Ns = int((22-6)/2)
+    NFE = int(Ns/2)
+    NFB = int(Ns/2)
+    NR1 = int(Ns/2-2)
+    NR2 = NR1+1
+    NR3 = NR2+1
+    # NR4 = NR3+1
     
     print(
         'Ns  = {Ns}; ' \
@@ -69,7 +71,7 @@ for i in range(2):
         NFB=NFB,
         reactive_trays=[NR1,NR2,NR3]
     )
-    i = 0 # number of times solver is called
+    i = 1 # number of times solver is called
     fobj_best  = meshr.solve(solver="BARON")['Profit']
 
     # Initialize the combination manager 
@@ -87,6 +89,13 @@ for i in range(2):
 
         fobj_list = []
         for y_d in batch:
+
+            if check_bounds(y_d):
+                print('Violated geometry Fobj=1e5\n')
+                Fobj = 1e5
+                fobj_list.append(Fobj)
+                continue
+
             [Ns, NFE, NFB, NR1, NR2, NR3] = y_d
             meshr.update_config(
                 Ns=Ns,
@@ -120,6 +129,15 @@ for i in range(2):
                 line_search_list.append(f"y = {y_new}; ")
                 line_search_list.append(f"d = {d};")
                 [Ns, NFE, NFB, NR1, NR2, NR3] = y_new
+
+                # Geometry violation
+                if check_bounds(y_new):
+                    print('Violated geometry Fobj=1e5\n')
+                    Fobj = 1e5
+                    fobj_list.append(Fobj)
+                    line_search = False
+                    continue
+
                 meshr.update_config(
                     Ns=Ns,
                     NFE=NFE,
@@ -128,6 +146,7 @@ for i in range(2):
                 )
                 Sol = meshr.solve(solver="BARON")
                 fobj = Sol['Profit']
+                manager.history_set.update([tuple(y_new)])
                 print('line_search\n')
                 print(y_best,fobj_best,i)
                 i+=1 #counting solver calls
@@ -146,10 +165,16 @@ for i in range(2):
     end_time = time.perf_counter()
     time_list.append(end_time - start_time)
 
-fobj_calls_mean = statistics.mean(counter_list)
-fobj_calls_std = statistics.stdev(counter_list)
-time_mean = statistics.mean(time_list)
-time_std = statistics.stdev(time_list)
+# fobj_calls_mean = statistics.mean(counter_list)
+# fobj_calls_std = statistics.stdev(counter_list)
+# time_mean = statistics.mean(time_list)
+# time_std = statistics.stdev(time_list)
+
+fobj_calls_mean = counter_list[0]
+fobj_calls_std = 0
+time_mean = time_list[0]
+time_std = 0
+
 
 print("\n--- Final Results ---")
 end_time = time.perf_counter()
@@ -172,11 +197,11 @@ with open("result/D-SDA_6D_optimization_results.txt", "a") as f:
     f.write(f"Best Discrete X found: {y_best}\n")
     f.write(f"Minimum Objective Value: {fobj_best}\n")
     f.write(f"All values: \n")
-    for i, (f_val, g_val, h_val, j_val) in enumerate(zip(fobj_global_list, y_global_list, counter_list, initial_y_list), start=1):
-        f.write(f"fobj_{i} = {f_val:.4e}; ")
-        f.write(f"y_{i} = {g_val}; ")
-        f.write(f"fobj_eval_{i} = {h_val}; ")
-        f.write(f"initial_y_{i} = {j_val} \n")
+    # for i, (f_val, g_val, h_val, j_val) in enumerate(zip(fobj_global_list, y_global_list, counter_list, initial_y_list), start=1):
+    #     f.write(f"fobj_{i} = {f_val:.4e}; ")
+    #     f.write(f"y_{i} = {g_val}; ")
+    #     f.write(f"fobj_eval_{i} = {h_val}; ")
+    #     f.write(f"initial_y_{i} = {j_val} \n")
 
 with open("result/all_resultsD-SDA_6D_optimization_results.txt", "a") as file:
     for txt in line_search_list:

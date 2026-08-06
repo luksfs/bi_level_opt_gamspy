@@ -1,7 +1,6 @@
 import random
 import statistics
 from functions.comb_manager import CombinationManager
-from functions.invalid_check import check_bounds
 from gamspy_model.meshr_class_without_cat_res import ReactiveDistillationModel
 import numpy as np
 import time
@@ -32,26 +31,27 @@ fobj_global_list    = []
 initial_y_list      = []
 line_search_list    = []
 
-for i in range(1):
+for i in range(2):
     # count time
     start_time = time.perf_counter()
 
-    Ns = int((22-6)/2)
-    NFE = int(Ns/2)
-    NFB = int(Ns/2)
-    NR1 = int(Ns/2-3)
-    NR2 = NR1+1
-    NR3 = NR2+1
-    NR4 = NR3+1
+    # Ns  = random.randint(6, 22)
+    Ns=7
+    NFE = random.randint(2, Ns-1)
+    NFE = 6
+    # NFB = random.randint(NFE, Ns-1)
+    NFB = 3
+    NR1 = random.randint(2, Ns-1)
+    NR1 = 3
+    # NR2 = random.randint(NR1+1, Ns-1)
+    # NR3 = random.randint(NR2+1, Ns-1)
     
     print(
         'Ns  = {Ns}; ' \
         'NFE = {NFE}; '\
         'NFB = {NFB}; '\
         'NR1 = {NR1}; '\
-        'NR2 = {NR2}; '\
-        'NR3 = {NR3}; '\
-        'NR4 = {NR4}; '\
+        # 'NR2 = {NR2}; '\
     )
 
     # # Adding missing values
@@ -63,17 +63,18 @@ for i in range(1):
     # Ns = 6
     # NFE = 1
 
-    y = [Ns, NFE, NFB, NR1, NR2, NR3,NR4]
+    y = [NFE, NR1]
     initial_y_list.append(y)
 
     meshr.update_config(
         Ns=Ns,
         NFE=NFE,
         NFB=NFB,
-        reactive_trays=[NR1,NR2,NR3,NR4]
+        reactive_trays=[NR1]
     )
-    i = 1 # number of times solver is called
+    
     fobj_best  = meshr.solve(solver="BARON")['Profit']
+    i = 1 # number of times solver is called
 
     # Initialize the combination manager 
     manager = CombinationManager()
@@ -90,25 +91,23 @@ for i in range(1):
 
         fobj_list = []
         for y_d in batch:
-
-            # Geometry violation
-            if check_bounds(y_d):
+            [NFE, NR1] = y_d
+            if (NFE==1 or NR1==1 or NFE==Ns or NR1 == Ns):
                 print('Violated geometry Fobj=1e5\n')
                 Fobj = 1e5
                 fobj_list.append(Fobj)
                 continue
-
-            [Ns, NFE, NFB, NR1, NR2, NR3,NR4] = y_d
             meshr.update_config(
                 Ns=Ns,
                 NFE=NFE,
                 NFB=NFB,
-                reactive_trays=[NR1,NR2,NR3,NR4]
+                reactive_trays=[NR1]
             )
             Sol = meshr.solve(solver="BARON")
             Fobj = Sol['Profit']
             fobj_list.append(Fobj)
             i+=1 #counting solver calls
+            print(y_d,Fobj,i)
 
         fobj_challenger = min(fobj_list)
         challenger_idx =  fobj_list.index(fobj_challenger)
@@ -123,30 +122,22 @@ for i in range(1):
             # line search
             d = [b-a for a,b in zip(y_old,y)]
             line_search = True
-            line_search_list.append(y_old)
+            line_search_list.append(f"first point line search: {y}")
             while line_search:
                 y_old = y
                 y_new = [a+b for a,b in zip(y,d)]
                 line_search_list.append('linesearch start')
-                line_search_list.append(y_new)
-                line_search_list.append(d)
-                [Ns, NFE, NFB, NR1, NR2, NR3, NR4] = y_new
-
-                # Geometry violation
-                if check_bounds(y_new):
-                    print('Violated geometry Fobj=1e5\n')
-                    Fobj = 1e5
-                    fobj_list.append(Fobj)
-                    line_search = False
-                    continue
-
+                line_search_list.append(f"y = {y_new}; ")
+                line_search_list.append(f"d = {d};")
+                [NFE, NR1] = y_new
                 meshr.update_config(
                     Ns=Ns,
                     NFE=NFE,
                     NFB=NFB,
-                    reactive_trays=[NR1,NR2,NR3,NR4]
+                    reactive_trays=[NR1]
                 )
                 Sol = meshr.solve(solver="BARON")
+                manager.history_set.add((NFE,NR1))
                 fobj = Sol['Profit']
                 print('line_search\n')
                 print(y_best,fobj_best,i)
@@ -166,15 +157,10 @@ for i in range(1):
     end_time = time.perf_counter()
     time_list.append(end_time - start_time)
 
-# fobj_calls_mean = statistics.mean(counter_list)
-# fobj_calls_std = statistics.stdev(counter_list)
-# time_mean = statistics.mean(time_list)
-# time_std = statistics.stdev(time_list)
-
-fobj_calls_mean = counter_list[0]
-fobj_calls_std = 0
-time_mean = time_list[0]
-time_std = 0
+fobj_calls_mean = statistics.mean(counter_list)
+fobj_calls_std = statistics.stdev(counter_list)
+time_mean = statistics.mean(time_list)
+time_std = statistics.stdev(time_list)
 
 print("\n--- Final Results ---")
 end_time = time.perf_counter()
@@ -187,7 +173,7 @@ print(f"Best Discrete X found: {y_best}")
 print(f"Minimum Objective Value: {fobj_best:.4e}")
 print(f"Objective function evaluations: {fobj_calls_mean}")
 
-with open("result/D-SDA_7D_optimization_results.txt", "a") as f:
+with open("result/D-SDA_2D_optimization_results.txt", "a") as f:
     f.write(f"\n{'='*50}\n")
     f.write(f"Run date: {datetime.now()}\n")
     f.write(f"Mean Execution time: {time_mean:.6f} seconds\n")
@@ -197,12 +183,12 @@ with open("result/D-SDA_7D_optimization_results.txt", "a") as f:
     f.write(f"Best Discrete X found: {y_best}\n")
     f.write(f"Minimum Objective Value: {fobj_best}\n")
     f.write(f"All values: \n")
-    # for i, (f_val, g_val, h_val, j_val) in enumerate(zip(fobj_global_list, y_global_list, counter_list, initial_y_list), start=1):
-    #     f.write(f"fobj_{i} = {f_val:.4e}; ")
-    #     f.write(f"y_{i} = {g_val}; ")
-    #     f.write(f"fobj_eval_{i} = {h_val}; ")
-    #     f.write(f"initial_y_{i} = {j_val} \n")
+    for i, (f_val, g_val, h_val, j_val) in enumerate(zip(fobj_global_list, y_global_list, counter_list, initial_y_list), start=1):
+        f.write(f"fobj_{i} = {f_val:.4e}; ")
+        f.write(f"y_{i} = {g_val}; ")
+        f.write(f"fobj_eval_{i} = {h_val}; ")
+        f.write(f"initial_y_{i} = {j_val} \n")
 
-with open("result/all_resultsD-SDA_7D_optimization_results.txt", "a") as file:
+with open("result/all_resultsD-SDA_2D_optimization_results.txt", "a") as file:
     for txt in line_search_list:
         file.write(f"{txt}\n")

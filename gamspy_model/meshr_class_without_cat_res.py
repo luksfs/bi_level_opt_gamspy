@@ -637,6 +637,30 @@ class ReactiveDistillationModel:
         self.Hli.l[self.i, self.j] = -180000.0
         self.Hl.l[self.j] = -1
 
+    def check_bounds(self, y):
+        # 1. Unpack FIRST so Ns is defined
+        Ns, NFE, NFB, *NR = y
+        NR = NR[0]
+
+        # 2. Robust boundary check: True if outside [2, Ns-1]
+        out_of_bounds = lambda x: x < 2 or x >= Ns-2
+
+        # 3. Check for NR1 < NR2 < NR3 < NR4
+        ordering_invalid = any(
+            NR[i] >= NR[i + 1]
+            for i in range(len(NR) - 1)
+        )
+
+        # 4. Consolidate all invalid triggers
+        invalid = (
+            out_of_bounds(NFE)
+            or out_of_bounds(NFB)
+            or any(out_of_bounds(r) for r in NR)
+            or NFB < NFE
+            or ordering_invalid
+        )
+        
+        return invalid
     def update_config(self, Ns, NFE, NFB, reactive_trays):
         """
         Updates the superstructure parameters instantly. No compilation required.
@@ -645,6 +669,11 @@ class ReactiveDistillationModel:
         self.Ns_d = Ns # I am already using Ns for gamspy
         self.NFB = NFB
         self.reactive_trays = reactive_trays
+
+        # Check if configurarion is valid
+        self.is_invalid = self.check_bounds([Ns, NFE, NFB, reactive_trays])
+        if self.is_invalid:
+            return self.is_invalid
         
         self.Ns[...] = Ns
         self.is_FE[...] = 0
@@ -657,6 +686,7 @@ class ReactiveDistillationModel:
             self.is_reactive[str(rt)] = 1
 
     def solve(self, solver="CONOPT"):
+
         NR_string = ['NR1','NR2','NR3','NR4','NR5','NR6']
         text_NRx = ", ".join(
             f"{name} = {value}"
@@ -670,27 +700,33 @@ class ReactiveDistillationModel:
             f"NFB={self.NFB}, "
             f"{text_NRx}"
         )
+        if self.is_invalid:
+            print('Invalid configuration - Violated discrete bounds')
+            return {
+                "Status": 0,
+                "Profit": 1e5
+            }
 
-        if (self.reactive_trays[0] == 1 or self.NFE == 1) or (self.NFB >= self.Ns_d-1 or self.reactive_trays[-1] >= self.Ns_d-1):
-            print('Violated the discrete bounds')
-            return {
-                "Status": 'fail',
-                "Profit": 1e5
-            }
+        # if (self.reactive_trays[0] == 1 or self.NFE == 1) or (self.NFB >= self.Ns_d-1 or self.reactive_trays[-1] >= self.Ns_d-1):
+        #     print('Violated the discrete bounds')
+        #     return {
+        #         "Status": 'fail',
+        #         "Profit": 1e5
+        #     }
             
-        if (self.reactive_trays[0] == 1 or self.NFE == 1) or (self.NFB == self.Ns_d or self.reactive_trays[-1] == self.Ns_d) or (self.NFB==self.Ns_d-1 or self.reactive_trays[-1] == self.Ns_d-1) or (self.NFB==self.Ns_d-1 or self.reactive_trays[-1] == self.Ns_d-1):
-            print('Violated the discrete bounds')
-            return {
-                "Status": 'fail',
-                "Profit": 1e5
-            }
-        is_increasing = all(self.reactive_trays[i] < self.reactive_trays[i+1] for i in range(len(self.reactive_trays)-1))
-        if not is_increasing:
-            print('Violated the discrete bounds - NR problem')
-            return {
-                "Status": 'fail',
-                "Profit": 1e5
-            }
+        # if (self.reactive_trays[0] == 1 or self.NFE == 1) or (self.NFB == self.Ns_d or self.reactive_trays[-1] == self.Ns_d) or (self.NFB==self.Ns_d-1 or self.reactive_trays[-1] == self.Ns_d-1) or (self.NFB==self.Ns_d-1 or self.reactive_trays[-1] == self.Ns_d-1):
+        #     print('Violated the discrete bounds')
+        #     return {
+        #         "Status": 'fail',
+        #         "Profit": 1e5
+        #     }
+        # is_increasing = all(self.reactive_trays[i] < self.reactive_trays[i+1] for i in range(len(self.reactive_trays)-1))
+        # if not is_increasing:
+        #     print('Violated the discrete bounds - NR problem')
+        #     return {
+        #         "Status": 'fail',
+        #         "Profit": 1e5
+        #     }
         
         self.model.solve(
             solver=solver,
@@ -702,7 +738,7 @@ class ReactiveDistillationModel:
                                ),
             # output=sys.stdout #for debuging
         )
-        self.m.write("solution.gdx")
+        # self.m.write("solution.gdx")
     
         # 3. Access elapsed time
         total_elapsed = self.model.total_solve_time
@@ -715,13 +751,13 @@ class ReactiveDistillationModel:
         if self.model.status.value == 1 or self.model.status.value == 2:
             print(f'Solver success. Fobj = {self.obj.toValue():.2e}')
             return {
-                "Status": self.model.status,
+                "Status": self.model.status.value,
                 "Profit": self.obj.toValue()
             }
         else:
             print('solver failed')
             return {
-                "Status": self.model.status,
+                "Status": self.model.status.value,
                 "Profit": 1e5
             }
         

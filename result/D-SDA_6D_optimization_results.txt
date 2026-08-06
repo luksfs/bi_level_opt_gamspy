@@ -75,3 +75,12 @@ Minimum Objective Value: 0.01667415638781854
 All values: 
 fobj_1 = 1.6674e-02; y_1 = [10, 5, 7, 3, 5, 7]; fobj_eval_1 = 2044; initial_y_1 = [9, 3, 4, 2, 7, 8] 
 fobj_2 = 1.6674e-02; y_2 = [10, 5, 7, 3, 5, 7]; fobj_eval_2 = 1976; initial_y_2 = [10, 3, 8, 2, 5, 9] 
+
+==================================================
+Run date: 2026-07-28 19:03:10.907227
+Mean Execution time: 2902.094409 seconds
+Mean of objective functions calls: 703
+STD of objective functions calls: 0
+Best Discrete X found: [10, 5, 7, 3, 5, 7]
+Minimum Objective Value: 0.016674156387819123
+All values: 

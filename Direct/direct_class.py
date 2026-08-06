@@ -6,7 +6,8 @@
 # import pandas as pd
 # import matplotlib.pyplot as plt
 import numpy as np
-from gamspy_model.meshr_class import ReactiveDistillationModel
+# from gamspy_model.meshr_class import ReactiveDistillationModel
+from gamspy_model.meshr_class_without_cat_res import ReactiveDistillationModel
 
 # 1. We keep the custom exception outside the class (standard Python practice)
 class EarlyStopException(Exception):
@@ -54,7 +55,7 @@ class DiscreteDirectWrapper:
             # Execute the real objective and save it
             self.meshr.update_config(Ns, NFE, NFB, reactive_trays)
             sol = self.meshr.solve(solver="BARON")
-            if sol['Status'].value == 1 or sol['Status'].value == 2:
+            if sol['Status'] == 1 or sol['Status'] == 2:
                 base_obj = sol['Profit']
                 
                 # Fixed the format specifier, fixed typo (Fobj), 
@@ -108,9 +109,9 @@ class DiscreteDirectWrapper:
             # Execute the real objective and save it
             self.meshr.update_config(Ns, NFE, NFB, reactive_trays)
             sol = self.meshr.solve(solver="BARON")
-            if sol['Status'].value == 1 or sol['Status'].value == 2:
+            # base_obj = 1e5
+            if sol['Status'] == 1 or sol['Status'] == 2:
                 base_obj = sol['Profit']
-                
                 # Fixed the format specifier, fixed typo (Fobj), 
                 # and added 'base_obj' to fill the 6th placeholder.
                 print(
@@ -130,7 +131,7 @@ class DiscreteDirectWrapper:
                     'NR2 = {:d}, '.format(NFE, NFB, NR1, NR2)
                 )
                 base_obj = 1e5
-                
+                    
             self.cache[discrete_key] = base_obj
         return base_obj #+ distance_penalty
 
@@ -165,7 +166,7 @@ class DiscreteDirectWrapper:
             # Execute the real objective and save it
             self.meshr.update_config(Ns, NFE, NFB, reactive_trays)
             sol = self.meshr.solve(solver="BARON")
-            if sol['Status'].value == 1 or sol['Status'].value == 2:
+            if sol['Status'] == 1 or sol['Status'] == 2:
                 base_obj = sol['Profit']
                 
                 # Fixed the format specifier, fixed typo (Fobj), 
@@ -216,6 +217,7 @@ class DiscreteDirectWrapper:
         NR3 = int( np.round( NR2 + 1 + NR3_c * (Ns - 4 - NR2) ) )
         NR4 = int( np.round( NR3 + 1 + NR4_c * (Ns - 3 - NR3) ) )
 
+
         x_discrete = [Ns, NFE, NFB, NR1, NR2, NR3, NR4]
         reactive_trays = [NR1, NR2, NR3, NR4]
             
@@ -227,7 +229,7 @@ class DiscreteDirectWrapper:
             # Execute the real objective and save it
             self.meshr.update_config(Ns, NFE, NFB, reactive_trays)
             sol = self.meshr.solve(solver="BARON")
-            if sol['Status'].value == 1 or sol['Status'].value == 2:
+            if sol['Status'] == 1 or sol['Status'] == 2:
                 base_obj = sol['Profit']
                 
                 # Fixed the format specifier, fixed typo (Fobj), 

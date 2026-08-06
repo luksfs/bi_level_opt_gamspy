@@ -1,12 +1,29 @@
 import random
 import statistics
 from functions.comb_manager import CombinationManager
+from functions.invalid_check import check_bounds
 from gamspy_model.meshr_class_without_cat_res import ReactiveDistillationModel
 import numpy as np
 import time
 from datetime import datetime
 
+# def check_bounds(y):
+#     boundary = lambda x: x in (1, Ns)
+#     Ns, NFE, NFB, *NR = y
 
+#     ordering_invalid = any(
+#         NR[i] > NR[i + 1]
+#         for i in range(len(NR) - 1)
+#     )
+
+#     invalid = (
+#         boundary(NFE)
+#         or boundary(NFB)
+#         or any(boundary(r) for r in NR)
+#         or NFB < NFE
+#         or ordering_invalid
+#     )
+#     return invalid
 
 try:
     del manager
@@ -39,6 +56,13 @@ for i in range(2):
     NFE = random.randint(2, Ns-1)
     NFB = random.randint(NFE, Ns-1)
     NR1 = random.randint(2, Ns-1)
+    Ns = int((22-6)/2)
+    NFE = int(Ns/2)
+    NFB = int(Ns/2)
+    NR1 = int(Ns/2)
+    # NR2 = NR1+1
+    # NR3 = NR2+1
+    # NR4 = NR3+1
     # NR2 = random.randint(NR1+1, Ns-1)
     # NR3 = random.randint(NR2+1, Ns-1)
     
@@ -68,8 +92,9 @@ for i in range(2):
         NFB=NFB,
         reactive_trays=[NR1]
     )
-    i = 0 # number of times solver is called
+
     fobj_best  = meshr.solve(solver="BARON")['Profit']
+    i = 1 # number of times solver is called
 
     # Initialize the combination manager 
     manager = CombinationManager()
@@ -86,6 +111,13 @@ for i in range(2):
 
         fobj_list = []
         for y_d in batch:
+            # Geometry violation
+            if check_bounds(y_d):
+                print('Violated geometry Fobj=1e5\n')
+                Fobj = 1e5
+                fobj_list.append(Fobj)
+                continue
+
             [Ns, NFE, NFB, NR1] = y_d
             meshr.update_config(
                 Ns=Ns,
@@ -119,6 +151,15 @@ for i in range(2):
                 line_search_list.append(f"y = {y_new}; ")
                 line_search_list.append(f"d = {d};")
                 [Ns, NFE, NFB, NR1] = y_new
+
+                # Geometry violation
+                if check_bounds(y_new):
+                    print('Violated geometry Fobj=1e5\n')
+                    Fobj = 1e5
+                    fobj_list.append(Fobj)
+                    line_search = False
+                    continue
+
                 meshr.update_config(
                     Ns=Ns,
                     NFE=NFE,
@@ -126,6 +167,7 @@ for i in range(2):
                     reactive_trays=[NR1]
                 )
                 Sol = meshr.solve(solver="BARON")
+                manager.history_set.update([tuple(y_new)])
                 fobj = Sol['Profit']
                 print('line_search\n')
                 print(y_best,fobj_best,i)
@@ -145,10 +187,16 @@ for i in range(2):
     end_time = time.perf_counter()
     time_list.append(end_time - start_time)
 
-fobj_calls_mean = statistics.mean(counter_list)
-fobj_calls_std = statistics.stdev(counter_list)
-time_mean = statistics.mean(time_list)
-time_std = statistics.stdev(time_list)
+
+# fobj_calls_mean = statistics.mean(counter_list)
+# fobj_calls_std = statistics.stdev(counter_list)
+# time_mean = statistics.mean(time_list)
+# time_std = statistics.stdev(time_list)
+
+fobj_calls_mean = counter_list
+fobj_calls_std = 0
+time_mean = time_list
+time_std = 0
 
 print("\n--- Final Results ---")
 end_time = time.perf_counter()

@@ -20,3 +20,47 @@ Minimum Objective Value: 0.019466525632614126
 All values: 
 fobj_1 = 1.9467e-02; y_1 = [7, 4, 4, 4]; fobj_eval_1 = 208; initial_y_1 = [6, 5, 5, 2] 
 fobj_2 = 1.9467e-02; y_2 = [7, 4, 4, 4]; fobj_eval_2 = 154; initial_y_2 = [9, 3, 4, 4] 
+
+==================================================
+Run date: 2026-07-28 15:02:18.708973
+Mean Execution time: 33.476921 seconds
+Mean of objective functions calls: 42
+STD of objective functions calls: 0.0
+Best Discrete X found: [8, 10, 10, 10]
+Minimum Objective Value: 100000.0
+All values: 
+fobj_1 = 1.0000e+05; y_1 = [8, 10, 10, 10]; fobj_eval_1 = 42; initial_y_1 = [8, 10, 10, 10] 
+fobj_2 = 1.0000e+05; y_2 = [8, 10, 10, 10]; fobj_eval_2 = 42; initial_y_2 = [8, 10, 10, 10] 
+
+==================================================
+Run date: 2026-07-28 15:27:11.239075
+Mean Execution time: 1.154055 seconds
+Mean of objective functions calls: 1
+STD of objective functions calls: 0.0
+Best Discrete X found: [8, 10, 10, 10]
+Minimum Objective Value: 100000.0
+All values: 
+fobj_1 = 1.0000e+05; y_1 = [8, 10, 10, 10]; fobj_eval_1 = 1; initial_y_1 = [8, 10, 10, 10] 
+fobj_2 = 1.0000e+05; y_2 = [8, 10, 10, 10]; fobj_eval_2 = 1; initial_y_2 = [8, 10, 10, 10] 
+
+==================================================
+Run date: 2026-07-28 15:28:04.754559
+Mean Execution time: 0.825918 seconds
+Mean of objective functions calls: 1
+STD of objective functions calls: 0.0
+Best Discrete X found: [8, 10, 10, 10]
+Minimum Objective Value: 100000.0
+All values: 
+fobj_1 = 1.0000e+05; y_1 = [8, 10, 10, 10]; fobj_eval_1 = 1; initial_y_1 = [8, 10, 10, 10] 
+fobj_2 = 1.0000e+05; y_2 = [8, 10, 10, 10]; fobj_eval_2 = 1; initial_y_2 = [8, 10, 10, 10] 
+
+==================================================
+Run date: 2026-07-28 15:37:40.883293
+Mean Execution time: 266.939535 seconds
+Mean of objective functions calls: 72
+STD of objective functions calls: 0.0
+Best Discrete X found: [7, 4, 4, 4]
+Minimum Objective Value: 0.019466525641591258
+All values: 
+fobj_1 = 1.9467e-02; y_1 = [7, 4, 4, 4]; fobj_eval_1 = 72; initial_y_1 = [8, 4, 4, 4] 
+fobj_2 = 1.9467e-02; y_2 = [7, 4, 4, 4]; fobj_eval_2 = 72; initial_y_2 = [8, 4, 4, 4] 

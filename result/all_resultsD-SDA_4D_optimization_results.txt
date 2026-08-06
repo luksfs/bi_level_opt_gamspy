@@ -87,3 +87,11 @@ first point line search: [7, 4, 4, 4]
 linesearch start
 y = [6, 4, 4, 4]; 
 d = [-1, 0, 0, 0];
+first point line search: [7, 4, 4, 4]
+linesearch start
+y = [6, 4, 4, 4]; 
+d = [-1, 0, 0, 0];
+first point line search: [7, 4, 4, 4]
+linesearch start
+y = [6, 4, 4, 4]; 
+d = [-1, 0, 0, 0];

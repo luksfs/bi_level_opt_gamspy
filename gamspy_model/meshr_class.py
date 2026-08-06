@@ -835,12 +835,14 @@ class ReactiveDistillationModel:
 
         if self.model.status.value == 1 or self.model.status.value == 2:
             print(f'Solver success. Fobj = {self.obj.toValue():.4e}')
+            self.col_diameter = self.Dcol.toValue()
             return {
                 "Status": self.model.status,
                 "Profit": self.obj.toValue()
             }
         else:
             print('solver failed')
+            self.col_diameter = np.nan
             return {
                 "Status": self.model.status,
                 "Profit": 1e5

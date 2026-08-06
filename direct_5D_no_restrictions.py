@@ -25,7 +25,7 @@ try:
         callback=optimizer_wrapper.callback,
         maxiter=20000,
         maxfun=20000,
-        len_tol=1/22.1
+        len_tol=2/20.1
     )
 
     Ns_c, NFE_c, NFB_c, NR1_c, NR2_c = result.x

@@ -1,0 +1,96 @@
+first point line search: [3, 3]
+linesearch start
+y = [4, 3]; 
+d = [1, 0];
+first point line search: [4, 5]
+linesearch start
+y = [5, 4]; 
+d = [1, -1];
+first point line search: [4, 4]
+linesearch start
+y = [4, 3]; 
+d = [0, -1];
+first point line search: [3, 3]
+linesearch start
+y = [2, 2]; 
+d = [-1, -1];
+first point line search: [4, 4]
+linesearch start
+y = [3, 3]; 
+d = [-1, -1];
+linesearch start
+y = [2, 2]; 
+d = [-1, -1];
+first point line search: [4, 4]
+linesearch start
+y = [3, 3]; 
+d = [-1, -1];
+linesearch start
+y = [2, 2]; 
+d = [-1, -1];
+first point line search: [4, 4]
+linesearch start
+y = [3, 3]; 
+d = [-1, -1];
+linesearch start
+y = [2, 2]; 
+d = [-1, -1];
+first point line search: [4, 4]
+linesearch start
+y = [3, 3]; 
+d = [-1, -1];
+linesearch start
+y = [2, 2]; 
+d = [-1, -1];
+first point line search: [4, 4]
+linesearch start
+y = [3, 3]; 
+d = [-1, -1];
+linesearch start
+y = [2, 2]; 
+d = [-1, -1];
+first point line search: [4, 4]
+linesearch start
+y = [3, 3]; 
+d = [-1, -1];
+linesearch start
+y = [2, 2]; 
+d = [-1, -1];
+first point line search: [4, 4]
+linesearch start
+y = [5, 3]; 
+d = [1, -1];
+first point line search: [3, 3]
+linesearch start
+y = [2, 2]; 
+d = [-1, -1];
+first point line search: [4, 4]
+linesearch start
+y = [5, 3]; 
+d = [1, -1];
+first point line search: [3, 3]
+linesearch start
+y = [2, 2]; 
+d = [-1, -1];
+first point line search: [5, 3]
+linesearch start
+y = [4, 4]; 
+d = [-1, 1];
+linesearch start
+y = [3, 5]; 
+d = [-1, 1];
+first point line search: [3, 3]
+linesearch start
+y = [2, 2]; 
+d = [-1, -1];
+first point line search: [5, 3]
+linesearch start
+y = [4, 4]; 
+d = [-1, 1];
+linesearch start
+y = [3, 5]; 
+d = [-1, 1];
+first point line search: [3, 3]
+linesearch start
+y = [2, 2]; 
+d = [-1, -1];
