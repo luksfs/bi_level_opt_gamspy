@@ -45,3 +45,23 @@ Solved candidates: 101
 Solved candidates %: 75.93984962406014
 Minimum Objective Value and design variables: 
 Ns=6; NFE=3; NFB=3; NR1=3; NR2=None; NR3=None; NR4=None; Status=ModelStatus.OptimalGlobal; Profit=0.02075477316155864; Dcol=0.09820666249400813
+
+==================================================
+Run date: 2026-08-07 06:50:57.624512
+Execution time: 561.265019 seconds
+Nsmax: 10
+Total combinatory space: 461
+Solved candidates: 460
+Solved candidates %: 99.78308026030369
+Minimum Objective Value and design variables: 
+Ns=6; NFE=3; NFB=3; NR1=3; NR2=None; NR3=None; NR4=None; Status=ModelStatus.OptimalGlobal; Profit=0.02075477316155864; Dcol=0.09820666249400813
+
+==================================================
+Run date: 2026-08-13 08:14:32.673165
+Execution time: 2175.122542 seconds
+Nsmax: 12
+Total combinatory space: 1154
+Solved candidates: 1143
+Solved candidates %: 99.04679376083189
+Minimum Objective Value and design variables: 
+Ns=7; NFE=4; NFB=4; NR1=4; NR2=None; NR3=None; NR4=None; Status=ModelStatus.OptimalGlobal; Profit=0.02201234324694384; Dcol=0.07932910367840094

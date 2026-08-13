@@ -3,9 +3,10 @@ import pandas as pd
 from concurrent.futures import ProcessPoolExecutor
 # from gamspy_model.meshr_class_without_cat_res import ReactiveDistillationModel # without restriction
 from gamspy_model.meshr_class import ReactiveDistillationModel  # new model
-from functions.exhuaustive_comb import generate_scenarios
+from functions.exhuaustive_comb import generate_scenarios_optimized
 import time
 from datetime import datetime
+import os
 
 def solve_scenario(config):
 
@@ -39,10 +40,11 @@ def solve_scenario(config):
 # import pandas as pd
 
 if __name__ == "__main__":
-    Nsmax = 7
+    Nsmax = 12
+    NRx = 1
     start_time = time.perf_counter()
 
-    scenarios = generate_scenarios(Nsmax, 1)
+    scenarios = generate_scenarios_optimized(Nsmax, NRx)
 
     with ProcessPoolExecutor(max_workers=10) as executor:
 
@@ -54,13 +56,14 @@ if __name__ == "__main__":
     df.loc[df["Profit"] == 100000, "Profit"] = np.nan
     df = df.sort_values("Profit")
 
-    df.to_csv("result/exhaustive_4D.csv", index=False,sep=';')
+    ex_txt = f"exhaustive_{NRx+3}D"
+    df.to_csv(os.path.join("result", ex_txt + ".csv"), index=False, sep=';')
 
     total_comb = len(scenarios)
     solved_space = df['Profit'].count()
     solved_space_perc = solved_space/total_comb*100
     best_sol = df.iloc[0,:]
-    with open("result/exhaustive_4D.txt", "a") as f:
+    with open(os.path.join("result", ex_txt + ".txt"), "a") as f:
         f.write(f"\n{'='*50}\n")
         f.write(f"Run date: {datetime.now()}\n")
         f.write(f"Execution time: {time:.6f} seconds\n")

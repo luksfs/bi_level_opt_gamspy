@@ -61,7 +61,7 @@ class ReactiveDistillationModel:
         self.P = gp.Parameter(self.m, name="P", domain=[self.j])
         self.P[...] = 9.5e5
         
-        self.m_cat = 0.4
+        self.m_cat = 0.2
         self.R = 8.314463
         self.Tmin = 330
         self.Tmax = 410
@@ -529,7 +529,7 @@ class ReactiveDistillationModel:
         self.eq_RebCost[...] = self.v_RebCost == (self.MS / 280 * 101.3 * ((self.Qr * self.FH_factor / 60 / ((250 / 0.17611) * (433.15 - self.Treb)) * 10.7639)**0.65 * 7.3525))
 
         self.eq_CAP_cost = gp.Equation(self.m, name="eq_CAP_cost")
-        self.eq_CAP_cost[...] = self.CAP_cost == (1 / 3) * (self.v_TrayCost + self.v_ColCost + self.v_CondCost + self.v_RebCost + (7.7 * gp.Sum(j, self.is_reactive[j]) * 0.4))
+        self.eq_CAP_cost[...] = self.CAP_cost == (1 / 3) * (self.v_TrayCost + self.v_ColCost + self.v_CondCost + self.v_RebCost + (7.7 * gp.Sum(j, self.is_reactive[j]) * self.m_cat))
 
         self.eq_OP_cost = gp.Equation(self.m, name="eq_OP_cost")
         self.eq_OP_cost[...] = self.OP_cost == ((0.378e-9 * self.Qc + self.c_steam * self.Qr) * 8150 * 60 * self.FH_factor + (self.FE * self.CostEth + self.FB * self.CostBut - self.CostETBE * self.Breb) * self.F_factor * 8150 * 60)

@@ -1,0 +1,20 @@
+
+==================================================
+Run date: 2026-08-07 09:54:57.325250
+Execution time: 5815.242532 seconds
+Nsmax: 12
+Total combinatory space: 3762
+Solved candidates: 3744
+Solved candidates %: 99.52153110047847
+Minimum Objective Value and design variables: 
+Ns=8; NFE=4; NFB=5; NR1=5; NR2=3; NR3=None; NR4=None; Status=ModelStatus.OptimalGlobal; Profit=0.019310941877295186; Dcol=0.09820666249400813
+
+==================================================
+Run date: 2026-08-12 23:09:03.802686
+Execution time: 6832.688101 seconds
+Nsmax: 12
+Total combinatory space: 3762
+Solved candidates: 3732
+Solved candidates %: 99.20255183413079
+Minimum Objective Value and design variables: 
+Ns=8; NFE=4; NFB=5; NR1=3; NR2=5; NR3=None; NR4=None; Status=ModelStatus.OptimalGlobal; Profit=0.020586685842192927; Dcol=0.08950844632584753

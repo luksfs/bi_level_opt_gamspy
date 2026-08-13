@@ -103,7 +103,7 @@ SCALAR
 
 PARAMETER
  v_i(i)   "Stoichiometric coefficients" /1 0, 2 -1, 3 -1, 4 1/
- m_cat    "Catalyst mass (kg)" /0.4/  
+ m_cat    "Catalyst mass (kg)" /0.2/  
  zE(i)    "Molar fraction of ethanol" /1 0, 2 1, 3 0, 4 0/
  FB       "Butenes molar flowrate (mol/min)" 
  zB(i)    "Molar fraction of butenes" /1 0.7, 2 0, 3 0.3, 4 0/  
@@ -777,7 +777,7 @@ eq_RebCost ..
     v_RebCost =E= (MS/280*101.3*(( Qr*FH_factor/60/((250/0.17611)*(433.15-Treb))*10.7639)**.65*7.3525));
 
 eq_CAP_cost .. 
-    CAP_cost =E= (1/3) * (v_TrayCost + v_ColCost + v_CondCost + v_RebCost + (7.7*3*0.4));
+    CAP_cost =E= (1/3) * (v_TrayCost + v_ColCost + v_CondCost + v_RebCost + (7.7*3*m_cat));
 
 * Operational Costs
 eq_OP_cost .. 
@@ -1085,22 +1085,22 @@ Display   Elapsed_time
 option NLP = Baron;
 SOLVE MESHR_Rigorous USING NLP MINIMIZING obj;
 
-Ns = 14;
-NFE = 4;
-NFB = 12;
-NR1 = 4;
-NR2 = 11;
-NR3 = 13;
-
-option NLP = CONOPT;
-SOLVE MESHR_Rigorous USING NLP MINIMIZING obj;
-
-Elapsed_time = timeElapsed;
-Display   Elapsed_time
-
-
-option NLP = Baron;
-SOLVE MESHR_Rigorous USING NLP MINIMIZING obj;
+*Ns = 14;
+*NFE = 4;
+*NFB = 12;
+*NR1 = 4;
+*NR2 = 11;
+*NR3 = 13;
+*
+*option NLP = CONOPT;
+*SOLVE MESHR_Rigorous USING NLP MINIMIZING obj;
+*
+*Elapsed_time = timeElapsed;
+*Display   Elapsed_time
+*
+*
+*option NLP = Baron;
+*SOLVE MESHR_Rigorous USING NLP MINIMIZING obj;
 
 *  Calculate derived values
 X_ETOH(j)$(ord(j) = Ns) = (FE.l - D.l*x.l['2','1'] - L.l[j]*x.l['2',j])/FE.l;
