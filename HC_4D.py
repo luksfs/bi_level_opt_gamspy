@@ -7,7 +7,6 @@ from gamspy_model.meshr_class import ReactiveDistillationModel
 import numpy as np
 import time
 from datetime import datetime
-import csv
 
 # def check_bounds(y):
 #     boundary = lambda x: x in (1, Ns)
@@ -55,7 +54,7 @@ for i in range(10):
     # count time
     start_time = time.perf_counter()
 
-    Ns  = random.randint(5, 22)
+    Ns  = random.randint(5, 23)
     NFE = random.randint(2, Ns-1)
     NFB = random.randint(NFE, Ns-1)
     NR1 = random.randint(2, Ns-1)
@@ -97,7 +96,7 @@ for i in range(10):
     )
 
     fobj_best  = meshr.solve(solver="BARON")['Profit']
-    counter+=meshr.flag_solver # number of times solver is called
+    i = 1 # number of times solver is called
 
     # Initialize the combination manager 
     manager = CombinationManager()
@@ -131,7 +130,7 @@ for i in range(10):
             Sol = meshr.solve(solver="BARON")
             Fobj = Sol['Profit']
             fobj_list.append(Fobj)
-            counter+=meshr.flag_solver # number of times solver is called
+            i+=1 #counting solver calls
 
         fobj_challenger = min(fobj_list)
         challenger_idx =  fobj_list.index(fobj_challenger)
@@ -174,7 +173,7 @@ for i in range(10):
                 fobj = Sol['Profit']
                 print('line_search\n')
                 print(y_best,fobj_best,i)
-                counter +=meshr.flag_solver # number of times solver is called
+                i+=1 #counting solver calls
                 if fobj < fobj_best:
                     fobj_best = fobj
                     y_best = y_new
@@ -186,13 +185,10 @@ for i in range(10):
     print(y_best,fobj_best,i)
     y_global_list.append(y_best)
     fobj_global_list.append(fobj_best)
-    counter_list.append(counter)
+    counter_list.append(i)
     end_time = time.perf_counter()
     time_list.append(end_time - start_time)
-    with open('result/D-SDA_4D.csv', mode='a', newline='') as file:
-        writer = csv.writer(file)
-        new_row = [initial_y_list[i], y_best, fobj_best,time_list[i], counter]
-        writer.writerow(new_row)
+
 
 fobj_calls_mean = statistics.mean(counter_list)
 fobj_calls_std = statistics.stdev(counter_list)
@@ -209,7 +205,6 @@ end_time = time.perf_counter()
 
 
 print(f"Mean Execution time: {time_mean:.6f} seconds\n")
-print(f"STD Execution time: {time_std:.6f} seconds\n")
 print(f"Mean of objective functions calls: {fobj_calls_mean}\n")
 print(f"STD of objective functions calls: {fobj_calls_std}\n")
 print(f"Best Discrete X found: {y_best}")
@@ -220,7 +215,6 @@ with open("result/D-SDA_4D_optimization_results.txt", "a") as f:
     f.write(f"\n{'='*50}\n")
     f.write(f"Run date: {datetime.now()}\n")
     f.write(f"Mean Execution time: {time_mean:.6f} seconds\n")
-    f.write(f"STD Execution time:: {time_std}\n")
     # f.write(f"Status: {status}\n")
     f.write(f"Mean of objective functions calls: {fobj_calls_mean}\n")
     f.write(f"STD of objective functions calls: {fobj_calls_std}\n")

@@ -779,6 +779,7 @@ class ReactiveDistillationModel:
             self.is_reactive[str(rt)] = 1
 
     def solve(self, solver="CONOPT", export = False, dataframe = False):
+        self.flag_solver = 0
         NR_string = ['NR1','NR2','NR3','NR4','NR5','NR6']
         text_NRx = ", ".join(
             f"{name} = {value}"
@@ -793,18 +794,19 @@ class ReactiveDistillationModel:
             f"{text_NRx}"
         )
         
-        if (self.reactive_trays[0] == 1 or self.NFE == 1) or (self.NFB == self.Ns_d or self.reactive_trays[-1] == self.Ns_d):
+        if (self.reactive_trays[0] == 1 or self.NFE == 1) or (self.NFB == self.Ns_d or self.reactive_trays[-1] == self.Ns_d) or (self.Ns_d > 22) :
             print('Violated the discrete bounds')
             return {
                 "Status": 'fail',
                 "Profit": 1e5
             }
-        
+
+        self.flag_solver = 1
         self.model.solve(
             solver=solver,
             options=gp.Options(time_limit=160,
                                enable_scaling=True,
-                               relative_optimality_gap=1e-4,
+                               relative_optimality_gap=1e-9,
                                threads=10
                                ),
             # output=sys.stdout #for debuging

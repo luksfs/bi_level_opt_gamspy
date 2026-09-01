@@ -1,0 +1,18 @@
+
+==================================================
+Run date: 2026-08-18 13:42:16.578561
+Execution time: 289.884256 seconds
+Objective functions calls: 43
+Best Discrete X found: [7, 4, 4, 4]
+Minimum Objective Value: 0.0220123432566835
+All values: 
+fobj_1 = 2.2012e-02; y_1 = [7, 4, 4, 4]; fobj_eval_1 = 43; initial_y_1 = [6, 4, 4, 4] 
+
+==================================================
+Run date: 2026-08-18 14:06:58.863345
+Execution time: 1140.711947 seconds
+Objective functions calls: 170
+Best Discrete X found: [8, 4, 5, 3, 5]
+Minimum Objective Value: 0.020586685843291708
+All values: 
+fobj_1 = 2.0587e-02; y_1 = [8, 4, 5, 3, 5]; fobj_eval_1 = 170; initial_y_1 = [7, 4, 4, 4, 5] 

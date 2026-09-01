@@ -1,0 +1,21 @@
+
+==================================================
+Run date: 2026-08-19 13:42:05.528854
+Execution time D-Direct + D-SDA: 5338.547067 seconds
+Objective functions calls: 340
+Best Discrete X found: [8, 4, 5, 3, 5]
+Minimum Objective Value: 0.020586685851930114
+
+Direct Results
+Execution time: 4429.022298 seconds
+Status: The side length measure of the hyperrectangle containing the lowest function value found is below len_tol=0.04975124378109452
+Cache size (unique evaluations): 495
+Best Discrete X found: [8, 4, 5, 4, 5]
+Minimum Objective Value: 0.02068638591992326
+Objective function evaluations: 203
+
+D-SDA Results
+Execution time: 908.435791 seconds
+Objective functions calls: 137
+Best Discrete X found:8,  [4, 5, 3, 5]
+Minimum Objective Value: 0.020586685851930114

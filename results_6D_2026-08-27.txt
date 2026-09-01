@@ -1,0 +1,5 @@
+Local Minima Results for 6D
+Date: 2026-08-27
+Total points analyzed: 7323
+==================================================
+Indices: (9, 5, 6, 3, 5, 6) | Profit: 0.0192028723504254

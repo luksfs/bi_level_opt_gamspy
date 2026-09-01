@@ -1,15 +1,16 @@
 # testing the class
 # from meshr_class import ReactiveDistillationModel
 from gamspy_model.meshr_class import ReactiveDistillationModel
+# from gamspy_model.meshr_class_without_cat_res import ReactiveDistillationModel
 
 # 1. Initialize the class (Builds the 22-stage matrix once)
 meshr = ReactiveDistillationModel(max_stages=22)
 
 # 2. Define the different column configurations you want to test
 scenarios = [
-    {"Ns": 10, "NFE": 3, "NFB": 6, "reactive": [2, 4, 6]},      # 3 reactive trays
-    {"Ns": 6, "NFE": 4, "NFB": 4, "reactive": [4]},            # 1 reactive tray, taller column
-    # {"Ns": 15, "NFE": 7, "NFB": 9, "reactive": [4, 5, 6, 7]}    # 4 reactive trays, even taller
+    {"Ns": 12, "NFE": 3, "NFB": 6, "reactive": [2, 4, 6]},      # 3 reactive trays
+    {"Ns": 12, "NFE": 4, "NFB": 4, "reactive": [4]},            # 1 reactive tray, taller column  
+     {"Ns": 15, "NFE": 7, "NFB": 9, "reactive": [4, 5, 6, 7]}    # 4 reactive trays, even taller
 ]
 # Ns  = 10
 # NFE = 5
@@ -29,7 +30,7 @@ for config in scenarios:
     )
     
     # Solve and print results
-    result = meshr.solve(solver="BARON",export=True)
+    result = meshr.solve(solver="BARON")
     print(f"Result: {result['Status']} | Profit: {result['Profit']}")
     # result = meshr.solve(solver="BARON")
     # print(f"Result: {result['Status']} | Profit: {result['Profit']}")

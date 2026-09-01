@@ -686,7 +686,7 @@ class ReactiveDistillationModel:
             self.is_reactive[str(rt)] = 1
 
     def solve(self, solver="CONOPT"):
-
+        self.flag_solver = 0
         NR_string = ['NR1','NR2','NR3','NR4','NR5','NR6']
         text_NRx = ", ".join(
             f"{name} = {value}"
@@ -728,6 +728,7 @@ class ReactiveDistillationModel:
         #         "Profit": 1e5
         #     }
         
+        self.flag_solver = 1
         self.model.solve(
             solver=solver,
             options=gp.Options(time_limit=600,

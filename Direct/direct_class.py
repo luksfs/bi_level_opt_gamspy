@@ -6,8 +6,8 @@
 # import pandas as pd
 # import matplotlib.pyplot as plt
 import numpy as np
-# from gamspy_model.meshr_class import ReactiveDistillationModel
-from gamspy_model.meshr_class_without_cat_res import ReactiveDistillationModel
+from gamspy_model.meshr_class import ReactiveDistillationModel
+# from gamspy_model.meshr_class_without_cat_res import ReactiveDistillationModel
 
 # 1. We keep the custom exception outside the class (standard Python practice)
 class EarlyStopException(Exception):
@@ -32,7 +32,7 @@ class DiscreteDirectWrapper:
         self.meshr = ReactiveDistillationModel(max_stages=22)
 
     def evaluate_4D(self, x_c):
-        """The continuous wrapper method passed to SciPy."""
+        """The connuous wrapper method passed to SciPy."""
         # Round to integers
         # x_continuous[0] is in range [5.5, 20.4]
         Ns_c, NFE_c, NFB_c, NR1_c = x_c
@@ -51,13 +51,15 @@ class DiscreteDirectWrapper:
         discrete_key = tuple(x_discrete)
         if discrete_key in self.cache:
             base_obj = self.cache[discrete_key]
+            return base_obj
         else:
             # Execute the real objective and save it
             self.meshr.update_config(Ns, NFE, NFB, reactive_trays)
             sol = self.meshr.solve(solver="BARON")
-            if sol['Status'] == 1 or sol['Status'] == 2:
+            self.counter +=self.meshr.flag_solver
+            print('Fobj call iter = {:d}'.format(self.counter))
+            if sol['Status'].value == 1 or sol['Status'].value == 2:
                 base_obj = sol['Profit']
-                
                 # Fixed the format specifier, fixed typo (Fobj), 
                 # and added 'base_obj' to fill the 6th placeholder.
                 print(
@@ -66,7 +68,7 @@ class DiscreteDirectWrapper:
                     'NR1 = {:d},\n'
                     'Fobj = {:.4f}'.format(NFE, NFB, NR1, base_obj)
                 )
-                self.counter +=1
+                
             else:
                 print(
                     'Failed solution: '
@@ -105,12 +107,15 @@ class DiscreteDirectWrapper:
         discrete_key = tuple(x_discrete)
         if discrete_key in self.cache:
             base_obj = self.cache[discrete_key]
+            return base_obj
         else:
             # Execute the real objective and save it
             self.meshr.update_config(Ns, NFE, NFB, reactive_trays)
             sol = self.meshr.solve(solver="BARON")
             # base_obj = 1e5
-            if sol['Status'] == 1 or sol['Status'] == 2:
+            self.counter +=self.meshr.flag_solver
+            print('Fobj call iter = {:d}'.format(self.counter))
+            if sol['Status'].value == 1 or sol['Status'].value == 2:
                 base_obj = sol['Profit']
                 # Fixed the format specifier, fixed typo (Fobj), 
                 # and added 'base_obj' to fill the 6th placeholder.
@@ -121,7 +126,7 @@ class DiscreteDirectWrapper:
                     'NR2 = {:d},\n'
                     'Fobj = {:.4f}'.format(NFE, NFB, NR1, NR2, base_obj)
                 )
-                self.counter +=1
+                # self.counter +=1
             else:
                 print(
                     'Failed solution: '
@@ -162,10 +167,13 @@ class DiscreteDirectWrapper:
         discrete_key = tuple(x_discrete)
         if discrete_key in self.cache:
             base_obj = self.cache[discrete_key]
+            return base_obj
         else:
             # Execute the real objective and save it
             self.meshr.update_config(Ns, NFE, NFB, reactive_trays)
             sol = self.meshr.solve(solver="BARON")
+            self.counter +=self.meshr.flag_solver
+            print('Fobj call iter = {:d}'.format(self.counter))
             if sol['Status'] == 1 or sol['Status'] == 2:
                 base_obj = sol['Profit']
                 
@@ -179,7 +187,6 @@ class DiscreteDirectWrapper:
                     'NR3 = {:d},\n'
                     'Fobj = {:.4f}'.format(NFE, NFB, NR1, NR2, NR3, base_obj)
                 )
-                self.counter +=1
             else:
                 print(
                     'Failed solution: '
@@ -225,11 +232,14 @@ class DiscreteDirectWrapper:
         discrete_key = tuple(x_discrete)
         if discrete_key in self.cache:
             base_obj = self.cache[discrete_key]
+            return base_obj
         else:
             # Execute the real objective and save it
             self.meshr.update_config(Ns, NFE, NFB, reactive_trays)
             sol = self.meshr.solve(solver="BARON")
-            if sol['Status'] == 1 or sol['Status'] == 2:
+            self.counter +=self.meshr.flag_solver
+            print('Fobj call iter = {:d}'.format(self.counter))
+            if sol['Status'].value == 1 or sol['Status'].value == 2:
                 base_obj = sol['Profit']
                 
                 # Fixed the format specifier, fixed typo (Fobj), 
@@ -243,7 +253,6 @@ class DiscreteDirectWrapper:
                     'NR4 = {:d},\n'
                     'Fobj = {:.4f}'.format(NFE, NFB, NR1, NR2, NR3, NR4, base_obj)
                 )
-                self.counter +=1
             else:
                 print(
                     'Failed solution: '

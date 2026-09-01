@@ -1,0 +1,4 @@
+Local Minima Results for 6D array
+Date: 2026-08-27
+==================================================
+Indices: (np.int64(9), np.int64(5), np.int64(6), np.int64(3), np.int64(5), np.int64(6)) | Value: 0.0192028723504254

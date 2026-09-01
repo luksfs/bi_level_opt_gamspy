@@ -1,0 +1,5 @@
+Local Minima Results for 4D
+Date: 2026-08-27
+Total points analyzed: 1143
+==================================================
+Indices: (7, 4, 4, 4) | Profit: 0.0220123432469438

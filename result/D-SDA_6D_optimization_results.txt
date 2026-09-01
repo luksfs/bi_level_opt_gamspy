@@ -84,3 +84,93 @@ STD of objective functions calls: 0
 Best Discrete X found: [10, 5, 7, 3, 5, 7]
 Minimum Objective Value: 0.016674156387819123
 All values: 
+
+==================================================
+Run date: 2026-08-28 01:13:45.272091
+
+D-SDA Results
+Execution time: 53730.294286 seconds
+Objective functions calls: 2306
+Best Discrete X found: [9, 5, 6, 3, 5, 6]
+Minimum Objective Value: 0.019202872350432054
+
+==================================================
+Run date: 2026-08-28 10:26:00.349996
+
+D-SDA Results
+Execution time: 14308.495203 seconds
+Objective functions calls: 1121
+Best Discrete X found: [9, 5, 6, 3, 5, 6]
+Minimum Objective Value: 0.019202872350425716
+
+==================================================
+Run date: 2026-08-28 10:26:01.617565
+
+D-SDA Results
+Execution time: 0.059917 seconds
+Objective functions calls: 0
+Best Discrete X found: [20, 13, 19, 2, 12, 9]
+Minimum Objective Value: 100000.0
+
+==================================================
+Run date: 2026-08-28 21:14:10.139052
+
+D-SDA Results
+Execution time: 38887.419861 seconds
+Objective functions calls: 1358
+Best Discrete X found: [9, 5, 6, 3, 5, 6]
+Minimum Objective Value: 0.019202872350460306
+
+==================================================
+Run date: 2026-08-29 02:52:20.482176
+
+D-SDA Results
+Execution time: 20289.272633 seconds
+Objective functions calls: 1696
+Best Discrete X found: [9, 5, 6, 3, 5, 6]
+Minimum Objective Value: 0.01920287235042337
+
+==================================================
+Run date: 2026-08-29 14:23:46.446226
+
+D-SDA Results
+Execution time: 3633.333017 seconds
+Objective functions calls: 436
+Best Discrete X found: [9, 5, 6, 3, 5, 6]
+Minimum Objective Value: 0.019202872350460306
+
+==================================================
+Run date: 2026-08-29 15:28:49.170353
+
+D-SDA Results
+Execution time: 3901.397697 seconds
+Objective functions calls: 463
+Best Discrete X found: [9, 5, 6, 3, 5, 6]
+Minimum Objective Value: 0.019202872350460306
+
+==================================================
+Run date: 2026-08-29 21:11:32.950814
+
+D-SDA Results
+Execution time: 20562.484391 seconds
+Objective functions calls: 1475
+Best Discrete X found: [9, 5, 6, 3, 5, 6]
+Minimum Objective Value: 0.019202872350408767
+
+==================================================
+Run date: 2026-08-30 00:41:10.966067
+
+D-SDA Results
+Execution time: 12576.784466 seconds
+Objective functions calls: 940
+Best Discrete X found: [9, 5, 6, 3, 5, 6]
+Minimum Objective Value: 0.01920287235043204
+
+==================================================
+Run date: 2026-08-30 01:42:24.304823
+
+D-SDA Results
+Execution time: 3672.362186 seconds
+Objective functions calls: 629
+Best Discrete X found: [9, 5, 6, 3, 5, 6]
+Minimum Objective Value: 0.019202872350429206

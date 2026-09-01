@@ -1,0 +1,5 @@
+Local Minima Results for 5D array
+Date: 2026-08-27
+==================================================
+Indices: (np.int64(8), np.int64(4), np.int64(5), np.int64(3), np.int64(5)) | Value: 0.0205866858421929
+Indices: (np.int64(9), np.int64(5), np.int64(6), np.int64(5), np.int64(6)) | Value: 0.0206570261286791

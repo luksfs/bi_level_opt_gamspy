@@ -1,0 +1,6 @@
+Local Minima Results for 5D
+Date: 2026-08-27
+Total points analyzed: 3732
+==================================================
+Indices: (8, 4, 5, 3, 5) | Profit: 0.0205866858421929
+Indices: (9, 5, 6, 5, 6) | Profit: 0.0206570261286791

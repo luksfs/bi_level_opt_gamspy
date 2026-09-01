@@ -14,6 +14,8 @@ optimizer_wrapper = DiscreteDirectWrapper(
 bounds = Bounds([4.9 , 0, 0, 0, 0, 0, 0],
                 [23.1, 1, 1, 1, 1, 1, 1])
 
+vol_tol_spec = (5*2*2*2)/22**4
+
 print("Starting OOP DIRECT optimization...")
 
 try:
@@ -25,7 +27,8 @@ try:
         callback=optimizer_wrapper.callback,
         maxiter=20000,
         maxfun=200000,
-        len_tol=1/30
+        len_tol=1/22.1,
+        vol_tol=vol_tol_spec
     )
 
     Ns_c, NFE_c, NFB_c, NR1_c, NR2_c, NR3_c, NR4_c = result.x

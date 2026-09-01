@@ -40,8 +40,8 @@ def solve_scenario(config):
 # import pandas as pd
 
 if __name__ == "__main__":
-    Nsmax = 12
-    NRx = 1
+    Nsmax = 22
+    NRx = 4
     start_time = time.perf_counter()
 
     scenarios = generate_scenarios_optimized(Nsmax, NRx)

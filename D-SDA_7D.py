@@ -2,11 +2,12 @@ import random
 import statistics
 from functions.comb_manager import CombinationManager
 from functions.invalid_check import check_bounds
-from gamspy_model.meshr_class_without_cat_res import ReactiveDistillationModel
+# from gamspy_model.meshr_class_without_cat_res import ReactiveDistillationModel
+from gamspy_model.meshr_class import ReactiveDistillationModel
 import numpy as np
 import time
 from datetime import datetime
-
+import csv
 
 
 try:
@@ -32,9 +33,10 @@ fobj_global_list    = []
 initial_y_list      = []
 line_search_list    = []
 
-for i in range(1):
+for i in range(10):
     # count time
     start_time = time.perf_counter()
+    counter = 0
 
     Ns = int((22-6)/2)
     NFE = int(Ns/2)
@@ -43,6 +45,14 @@ for i in range(1):
     NR2 = NR1+1
     NR3 = NR2+1
     NR4 = NR3+1
+
+    Ns  = random.randint(7, 22)
+    NFE = random.randint(2, Ns-1)
+    NFB = random.randint(NFE, Ns-1)
+    NR1 = random.randint(2, Ns-4)
+    NR2 = random.randint(NR1, Ns-3)
+    NR3 = random.randint(NR2, Ns-2)
+    NR4 = random.randint(NR3, Ns-2)
     
     print(
         'Ns  = {Ns}; ' \
@@ -72,7 +82,7 @@ for i in range(1):
         NFB=NFB,
         reactive_trays=[NR1,NR2,NR3,NR4]
     )
-    i = 1 # number of times solver is called
+    counter+=meshr.flag_solver #counting solver calls
     fobj_best  = meshr.solve(solver="BARON")['Profit']
 
     # Initialize the combination manager 
@@ -108,7 +118,7 @@ for i in range(1):
             Sol = meshr.solve(solver="BARON")
             Fobj = Sol['Profit']
             fobj_list.append(Fobj)
-            i+=1 #counting solver calls
+            counter+=meshr.flag_solver #counting solver calls
 
         fobj_challenger = min(fobj_list)
         challenger_idx =  fobj_list.index(fobj_challenger)
@@ -150,7 +160,7 @@ for i in range(1):
                 fobj = Sol['Profit']
                 print('line_search\n')
                 print(y_best,fobj_best,i)
-                i+=1 #counting solver calls
+                counter+=meshr.flag_solver #counting solver calls
                 if fobj < fobj_best:
                     fobj_best = fobj
                     y_best = y_new
@@ -165,16 +175,20 @@ for i in range(1):
     counter_list.append(i)
     end_time = time.perf_counter()
     time_list.append(end_time - start_time)
+    with open('result/D-SDA_7D.csv', mode='a', newline='') as file:
+        writer = csv.writer(file)
+        new_row = [initial_y_list[i], y_best, fobj_best,time_list[i], counter]
+        writer.writerow(new_row)
 
-# fobj_calls_mean = statistics.mean(counter_list)
-# fobj_calls_std = statistics.stdev(counter_list)
-# time_mean = statistics.mean(time_list)
-# time_std = statistics.stdev(time_list)
+fobj_calls_mean = statistics.mean(counter_list)
+fobj_calls_std = statistics.stdev(counter_list)
+time_mean = statistics.mean(time_list)
+time_std = statistics.stdev(time_list)
 
-fobj_calls_mean = counter_list[0]
-fobj_calls_std = 0
-time_mean = time_list[0]
-time_std = 0
+# fobj_calls_mean = counter_list[0]
+# fobj_calls_std = 0
+# time_mean = time_list[0]
+# time_std = 0
 
 print("\n--- Final Results ---")
 end_time = time.perf_counter()

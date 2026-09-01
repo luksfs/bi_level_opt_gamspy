@@ -1,0 +1,4 @@
+Local Minima Results for 4D array
+Date: 2026-08-27
+==================================================
+Indices: (np.int64(7), np.int64(4), np.int64(4), np.int64(4)) | Value: 0.0220123432469438

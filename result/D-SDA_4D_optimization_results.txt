@@ -64,3 +64,78 @@ Minimum Objective Value: 0.019466525641591258
 All values: 
 fobj_1 = 1.9467e-02; y_1 = [7, 4, 4, 4]; fobj_eval_1 = 72; initial_y_1 = [8, 4, 4, 4] 
 fobj_2 = 1.9467e-02; y_2 = [7, 4, 4, 4]; fobj_eval_2 = 72; initial_y_2 = [8, 4, 4, 4] 
+
+==================================================
+Run date: 2026-08-17 21:29:18.734812
+Mean Execution time: 3916.303938 seconds
+Mean of objective functions calls: 160.6
+STD of objective functions calls: 80.32323587992595
+Best Discrete X found: [7, 4, 4, 4]
+Minimum Objective Value: 0.022012343256683328
+All values: 
+fobj_1 = 2.2012e-02; y_1 = [7, 4, 4, 4]; fobj_eval_1 = 243; initial_y_1 = [21, 15, 15, 3] 
+fobj_2 = 2.2012e-02; y_2 = [7, 4, 4, 4]; fobj_eval_2 = 135; initial_y_2 = [18, 13, 14, 15] 
+fobj_3 = 2.2012e-02; y_3 = [7, 4, 4, 4]; fobj_eval_3 = 75; initial_y_3 = [8, 7, 7, 2] 
+fobj_4 = 2.2012e-02; y_4 = [7, 4, 4, 4]; fobj_eval_4 = 87; initial_y_4 = [8, 3, 3, 6] 
+fobj_5 = 2.2012e-02; y_5 = [7, 4, 4, 4]; fobj_eval_5 = 112; initial_y_5 = [22, 18, 18, 21] 
+fobj_6 = 2.2012e-02; y_6 = [7, 4, 4, 4]; fobj_eval_6 = 130; initial_y_6 = [12, 8, 11, 11] 
+fobj_7 = 2.2012e-02; y_7 = [7, 4, 4, 4]; fobj_eval_7 = 66; initial_y_7 = [8, 4, 4, 5] 
+fobj_8 = 2.2012e-02; y_8 = [7, 4, 4, 4]; fobj_eval_8 = 264; initial_y_8 = [19, 4, 13, 3] 
+fobj_9 = 2.2012e-02; y_9 = [7, 4, 4, 4]; fobj_eval_9 = 249; initial_y_9 = [19, 9, 15, 14] 
+fobj_10 = 2.2012e-02; y_10 = [7, 4, 4, 4]; fobj_eval_10 = 245; initial_y_10 = [21, 13, 20, 17] 
+
+==================================================
+Run date: 2026-08-23 00:54:06.919942
+Mean Execution time: 2586.274676 seconds
+STD Execution time:: 1472.2336477856882
+Mean of objective functions calls: 174.7
+STD of objective functions calls: 60.05192197867886
+Best Discrete X found: [7, 4, 4, 4]
+Minimum Objective Value: 0.022012343246899917
+All values: 
+fobj_1 = 2.2012e-02; y_1 = [7, 4, 4, 4]; fobj_eval_1 = 50; initial_y_1 = [6, 4, 5, 3] 
+fobj_2 = 2.2012e-02; y_2 = [7, 4, 4, 4]; fobj_eval_2 = 178; initial_y_2 = [17, 7, 15, 15] 
+fobj_3 = 2.2012e-02; y_3 = [7, 4, 4, 4]; fobj_eval_3 = 233; initial_y_3 = [21, 4, 15, 4] 
+fobj_4 = 2.2012e-02; y_4 = [7, 4, 4, 4]; fobj_eval_4 = 254; initial_y_4 = [19, 12, 17, 9] 
+fobj_5 = 2.2012e-02; y_5 = [7, 4, 4, 4]; fobj_eval_5 = 159; initial_y_5 = [18, 17, 17, 5] 
+fobj_6 = 2.2012e-02; y_6 = [7, 4, 4, 4]; fobj_eval_6 = 155; initial_y_6 = [15, 13, 13, 7] 
+fobj_7 = 2.2012e-02; y_7 = [7, 4, 4, 4]; fobj_eval_7 = 158; initial_y_7 = [11, 9, 10, 3] 
+fobj_8 = 2.2012e-02; y_8 = [7, 4, 4, 4]; fobj_eval_8 = 177; initial_y_8 = [11, 3, 5, 8] 
+fobj_9 = 2.2012e-02; y_9 = [7, 4, 4, 4]; fobj_eval_9 = 245; initial_y_9 = [19, 2, 10, 6] 
+fobj_10 = 2.2012e-02; y_10 = [7, 4, 4, 4]; fobj_eval_10 = 138; initial_y_10 = [9, 2, 7, 8] 
+
+==================================================
+Run date: 2026-08-25 17:56:42.295141
+
+D-SDA Results
+Execution time: 2006.780062 seconds
+Objective functions calls: 232
+Best Discrete X found: [9, 5, 6, 5, 6]
+Minimum Objective Value: 0.020657026128678462
+
+==================================================
+Run date: 2026-08-25 18:23:33.101331
+
+D-SDA Results
+Execution time: 1031.180390 seconds
+Objective functions calls: 169
+Best Discrete X found: [8, 4, 5, 3, 5]
+Minimum Objective Value: 0.020586685851883772
+
+==================================================
+Run date: 2026-08-26 09:12:55.433682
+
+D-SDA Results
+Execution time: 1961.278425 seconds
+Objective functions calls: 279
+Best Discrete X found: [8, 4, 5, 3, 5]
+Minimum Objective Value: 0.0205866858519302
+
+==================================================
+Run date: 2026-08-26 16:17:35.804221
+
+D-SDA Results
+Execution time: 9585.545767 seconds
+Objective functions calls: 558
+Best Discrete X found: [9, 5, 6, 5, 6]
+Minimum Objective Value: 0.02065702612870982

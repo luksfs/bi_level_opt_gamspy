@@ -1,0 +1,8 @@
+first point line search: [7, 4, 4, 4]
+linesearch start
+y = [8, 4, 4, 4]; 
+d = [1, 0, 0, 0];
+first point line search: [8, 4, 5, 3, 5]
+linesearch start
+y = [9, 4, 6, 2, 5]; 
+d = [1, 0, 1, -1, 0];

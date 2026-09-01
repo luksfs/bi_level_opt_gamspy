@@ -25,7 +25,8 @@ try:
         callback=optimizer_wrapper.callback,
         maxiter=20000,
         maxfun=20000,
-        len_tol=2/19.1
+        len_tol=2/22.1,
+        # vol_tol=vol_tol_spec
     )
 
     Ns_c, NFE_c, NFB_c, NR1_c, NR2_c, NR3_c = result.x
