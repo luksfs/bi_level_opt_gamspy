@@ -806,7 +806,7 @@ class ReactiveDistillationModel:
             solver=solver,
             options=gp.Options(time_limit=160,
                                enable_scaling=True,
-                               relative_optimality_gap=1e-9,
+                               relative_optimality_gap=1e-4,
                                threads=10
                                ),
             # output=sys.stdout #for debuging

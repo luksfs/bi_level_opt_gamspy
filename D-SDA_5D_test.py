@@ -7,7 +7,8 @@ from functions.d_sda import DiscreteOptimizer
 import csv
 import random
 
-for i in range(10):
+
+for i in range(1):
     start_time = time.perf_counter()
 
     # Instantiate the optimizer once
@@ -22,14 +23,15 @@ for i in range(10):
     print("\n--- Direct into  D-SDA ---")
     # print("\n Initial D-SDA {final_x}")
 
-    Ns  = random.randint(5, 22)
-    NFE = random.randint(2, Ns-1)
-    NFB = random.randint(NFE, Ns-1)
-    NR1 = random.randint(2, Ns-3)
-    NR2 = random.randint(NR1+1, Ns-2)
+    # Ns  = random.randint(5, 22)
+    # NFE = random.randint(2, Ns-1)
+    # NFB = random.randint(NFE, Ns-1)
+    # NR1 = random.randint(2, Ns-3)
+    # NR2 = random.randint(NR1+1, Ns-2)
+    # initial_y = [Ns, NFE, NFB, NR1, NR2]
 
-    initial_y = [Ns, NFE, NFB, NR1, NR2]
-    # initial_y = [9, 4, 6, 3, 6]
+    # initial_y = initial_list[i]
+    initial_y = [9, 5, 5, 4, 5]
     # Run the optimization
     result = optimizer.optimize(initial_y=initial_y, cache={})
 
@@ -61,13 +63,13 @@ for i in range(10):
         new_row = [initial_y, y_best, fobj_best, execution_time_Agg, fobj_calls]
         writer.writerow(new_row)
 
-    with open("result/D-SDA_5D_optimization_results.txt", "a") as f:
-        f.write(f"\n{'='*50}\n")
-        f.write(f"Run date: {datetime.now()}\n")
-        # D-SDA
-        f.write(f"\n")
-        f.write(f"D-SDA Results\n")
-        f.write(f"Execution time: {time_spent:.6f} seconds\n")
-        f.write(f"Objective functions calls: {fobj_calls}\n")
-        f.write(f"Best Discrete X found: {y_best}\n")
-        f.write(f"Minimum Objective Value: {fobj_best}\n")
+    # with open("result/D-SDA_5D_optimization_results.txt", "a") as f:
+    #     f.write(f"\n{'='*50}\n")
+    #     f.write(f"Run date: {datetime.now()}\n")
+    #     # D-SDA
+    #     f.write(f"\n")
+    #     f.write(f"D-SDA Results\n")
+    #     f.write(f"Execution time: {time_spent:.6f} seconds\n")
+    #     f.write(f"Objective functions calls: {fobj_calls}\n")
+    #     f.write(f"Best Discrete X found: {y_best}\n")
+    #     f.write(f"Minimum Objective Value: {fobj_best}\n")

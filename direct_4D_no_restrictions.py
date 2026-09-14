@@ -27,17 +27,18 @@ try:
         callback=optimizer_wrapper.callback,
         maxiter=20000,
         maxfun=20000,
-        len_tol=1/22.1,
+        len_tol=1/18.1*0.5,
         # vol_tol=vol_tol_spec
     )
 
     Ns_c, NFE_c, NFB_c, NR1_c = result.x
     # If it finishes naturally without triggering the early stop:
-    Ns = int(np.round(Ns_c))
+
+    Ns = int(np.floor(Ns_c + 0.5))
+    NFE = int(np.floor(2 + NFE_c * (Ns - 4) + 0.5))
+    NFB = int(np.floor(NFE + NFB_c * (Ns - 2 - NFE) + 0.5))
+    NR1 = int(np.floor(2 + NR1_c * (Ns - 4) + 0.5))
     
-    NFE = int( np.round( 2 + NFE_c * (Ns - 4)) )
-    NFB = int( np.round( NFE + NFB_c * (Ns - 2 - NFE) ) )
-    NR1 = int( np.round( 2 + NR1_c * (Ns - 4) ) )
 
     final_x = [Ns,NFE, NFB, NR1]
     # final_x = np.round(result.x).astype(int)

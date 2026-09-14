@@ -7,7 +7,7 @@ from functions.d_sda import DiscreteOptimizer
 import csv
 import random
 
-for i in range(7):
+for i in range(1):
     start_time = time.perf_counter()
 
     # Instantiate the optimizer once
@@ -30,8 +30,8 @@ for i in range(7):
     NR3 = random.randint(NR2+1, Ns-3)
     NR4 = random.randint(NR3+1, Ns-2)
 
-    initial_y = [Ns, NFE, NFB, NR1, NR2, NR3, NR4]
-    # initial_y = [9, 4, 6, 3, 6]
+    # initial_y = [Ns, NFE, NFB, NR1, NR2, NR3, NR4]
+    initial_y = [9, 5, 5, 3, 4, 5, 6]
     # Run the optimization
     result = optimizer.optimize(initial_y=initial_y, cache={})
 
@@ -63,13 +63,13 @@ for i in range(7):
         new_row = [initial_y, y_best, fobj_best, execution_time_Agg, fobj_calls]
         writer.writerow(new_row)
 
-    with open("result/D-SDA_7D_optimization_results.txt", "a") as f:
-        f.write(f"\n{'='*50}\n")
-        f.write(f"Run date: {datetime.now()}\n")
-        # D-SDA
-        f.write(f"\n")
-        f.write(f"D-SDA Results\n")
-        f.write(f"Execution time: {time_spent:.6f} seconds\n")
-        f.write(f"Objective functions calls: {fobj_calls}\n")
-        f.write(f"Best Discrete X found: {y_best}\n")
-        f.write(f"Minimum Objective Value: {fobj_best}\n")
+    # with open("result/D-SDA_7D_optimization_results.txt", "a") as f:
+    #     f.write(f"\n{'='*50}\n")
+    #     f.write(f"Run date: {datetime.now()}\n")
+    #     # D-SDA
+    #     f.write(f"\n")
+    #     f.write(f"D-SDA Results\n")
+    #     f.write(f"Execution time: {time_spent:.6f} seconds\n")
+    #     f.write(f"Objective functions calls: {fobj_calls}\n")
+    #     f.write(f"Best Discrete X found: {y_best}\n")
+    #     f.write(f"Minimum Objective Value: {fobj_best}\n")

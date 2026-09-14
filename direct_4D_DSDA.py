@@ -4,6 +4,7 @@ import numpy as np
 import time
 from datetime import datetime
 from functions.d_sda import DiscreteOptimizer
+import pandas as pd 
 
 start_time = time.perf_counter()
 # Instantiate the class
@@ -12,8 +13,8 @@ optimizer_wrapper = DiscreteDirectWrapper(
 )
 
 # Set bounds
-bounds = Bounds([4.9 , 0, 0, 0],
-                [22.1, 1, 1, 1])
+bounds = Bounds([5 , 0, 0, 0],
+                [23, 1, 1, 1])
 
 # vol_tol_spec = 1/17*1/18
 
@@ -28,18 +29,13 @@ try:
         callback=optimizer_wrapper.callback,
         maxiter=20000,
         maxfun=20000,
-        len_tol=1/20.1,
+        len_tol=1/19,
         # vol_tol=vol_tol_spec
     )
 
-    Ns_c, NFE_c, NFB_c, NR1_c = result.x
-    # If it finishes naturally without triggering the early stop:
-    Ns = int(np.round(Ns_c))
-    
-    NFE = int( np.round( 2 + NFE_c * (Ns - 4)) )
-    NFB = int( np.round( NFE + NFB_c * (Ns - 2 - NFE) ) )
-    NR1 = int( np.round( 2 + NR1_c * (Ns - 4) ) )
-
+    [
+        Ns, NFE, NFB, NR1
+    ], total_distance = optimizer_wrapper.map_discrete_variables(result.x)
     final_x = [Ns,NFE, NFB, NR1]
     # final_x = np.round(result.x).astype(int)
     final_fun = result.fun
@@ -54,6 +50,18 @@ except EarlyStopException as e:
 # End Direcct - Calc exc time
 end_time = time.perf_counter()
 execution_time_Direct = end_time - start_time
+
+# You can persist this dictionary if you run multiple times or save it to a pickle file
+shared_cache = optimizer_wrapper.cache
+
+# Load into a Series and flatten the tuple index
+df = pd.Series(shared_cache).reset_index()
+
+# Rename the columns so they have proper headers
+df.columns = ['Ns', 'NFE', 'NFB', 'NR1','Profit']
+
+# Save to CSV
+df.to_csv('output_pandas_Direct_4D.csv', index=False, sep=';')
 
 # You can persist this dictionary if you run multiple times or save it to a pickle file
 shared_cache = optimizer_wrapper.cache
@@ -81,6 +89,15 @@ fobj_best = result['fobj_best']
 fobj_calls = result['evaluations']
 time_spent = result['exec_time']
 logs = result['line_search_log']
+
+# Load into a Series and flatten the tuple index
+df = pd.Series(optimizer.cache_D_SDA).reset_index()
+
+# Rename the columns so they have proper headers
+df.columns = ['Ns', 'NFE', 'NFB', 'NR1', 'Profit']
+
+# Save to CSV
+df.to_csv('output_pandas_DSDA_4D.csv', index=False, sep=';')
 
 
 print("\n--- Final Results ---")

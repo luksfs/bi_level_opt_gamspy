@@ -55,3 +55,45 @@ Execution time: 317.637731 seconds
 Objective functions calls: 55
 Best Discrete X found: [7, 4, 4, 4]
 Minimum Objective Value: 0.022012343246902776
+
+==================================================
+Run date: 2026-09-03 22:08:16.831352
+Execution time D-Direct + D-SDA: 973.459198 seconds
+Objective functions calls: 112
+Best Discrete X found: [7, 4, 4, 4]
+Minimum Objective Value: 0.022012343246902776
+
+Direct Results
+Execution time: 656.400740 seconds
+Status: The side length measure of the hyperrectangle containing the lowest function value found is below len_tol=0.055248618784530384
+Cache size (unique evaluations): 186
+Best Discrete X found: [6, 3, 3, 3]
+Minimum Objective Value: 0.022020149151706248
+Objective function evaluations: 57
+
+D-SDA Results
+Execution time: 316.159001 seconds
+Objective functions calls: 55
+Best Discrete X found: [7, 4, 4, 4]
+Minimum Objective Value: 0.022012343246902776
+
+==================================================
+Run date: 2026-09-13 10:49:07.968228
+Execution time D-Direct + D-SDA: 1127.952560 seconds
+Objective functions calls: 121
+Best Discrete X found: [7, 4, 4, 4]
+Minimum Objective Value: 0.022012343246902776
+
+Direct Results
+Execution time: 785.300219 seconds
+Status: The side length measure of the hyperrectangle containing the lowest function value found is below len_tol=0.05263157894736842
+Cache size (unique evaluations): 195
+Best Discrete X found: [6, 3, 3, 3]
+Minimum Objective Value: 0.022020149161523953
+Objective function evaluations: 60
+
+D-SDA Results
+Execution time: 341.607559 seconds
+Objective functions calls: 61
+Best Discrete X found: [7, 4, 4, 4]
+Minimum Objective Value: 0.022012343246902776

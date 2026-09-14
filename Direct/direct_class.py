@@ -30,19 +30,143 @@ class DiscreteDirectWrapper:
         self.counter = 0
         # 1. Initialize the class (Builds the 22-stage matrix once)
         self.meshr = ReactiveDistillationModel(max_stages=22)
+        self.max_Ns=22
+        self.penalty_weight = 1e-4
+
+    def map_discrete_variables_penalty(self, x_c, max_Ns=22):
+        """
+        Generalized mapping for [Ns, NFE, NFB, NR1, ..., NRk]
+        Assumes x_c[0] is bounded like [5.0, 23.0] and the rest [0.0, 1.0].
+        Returns the mapped discrete tuple and the distance penalty to avoid plateaus.
+        """
+        n_vars = len(x_c)
+        k_nr = n_vars - 3  # Number of NR variables
+        total_distance = 0.0
+
+        # Map Ns
+        Ns_idx = int(np.floor(x_c[0]))
+        Ns = min(Ns_idx, max_Ns)
+        
+        # Distance from center of Ns bin (center is Ns + 0.5)
+        total_distance += abs(x_c[0] - (Ns + 0.5))
+
+        # Map NFE
+        min_NFE = 2
+        max_NFE = Ns - 2
+        options_NFE = max_NFE - min_NFE + 1
+        
+        idx_NFE = int(np.floor(x_c[1] * options_NFE))
+        idx_NFE = min(idx_NFE, options_NFE - 1)  # Clamp for x=1.0 edge case
+        NFE = min_NFE + idx_NFE
+        
+        position_NFE = x_c[1] * options_NFE
+        total_distance += abs(position_NFE - (idx_NFE + 0.5))
+        
+        # Map NFB
+        min_NFB = NFE
+        max_NFB = Ns - 2
+        options_NFB = max_NFB - min_NFB + 1
+        
+        idx_NFB = int(np.floor(x_c[2] * options_NFB))
+        idx_NFB = min(idx_NFB, options_NFB - 1)
+        NFB = min_NFB + idx_NFB
+        
+        position_NFB = x_c[2] * options_NFB
+        total_distance += abs(position_NFB - (idx_NFB + 0.5))
+        
+        # Map NR1 through NRk dynamically
+        mapped_vars = [Ns, NFE, NFB]
+        last_NR = None
+        
+        for i in range(k_nr):
+            c_val = x_c[3 + i]  # The continuous [0,1] input for this specific NR
+            current_step = i + 1  # 1-based index (1 to k_nr)
+            
+            # Minimum depends on the previous NR
+            if current_step == 1:
+                min_NR = 2
+            else:
+                min_NR = last_NR + 1
+                
+            # Maximum leaves exactly enough room for the remaining NR variables
+            # e.g., if total is 4, NR4 max is Ns-2, NR3 max is Ns-3, NR2 max is Ns-4, etc.
+            max_NR = Ns - 2 - (k_nr - current_step)
+            
+            # Map using the unbiased floor logic
+            options_NR = max_NR - min_NR + 1
+            idx_NR = int(np.floor(c_val * options_NR))
+            idx_NR = min(idx_NR, options_NR - 1)
+            NR = min_NR + idx_NR
+            
+            position_NR = c_val * options_NR
+            total_distance += abs(position_NR - (idx_NR + 0.5))
+            
+            mapped_vars.append(NR)
+            last_NR = NR
+        
+        return tuple(mapped_vars), total_distance
+
+    def map_discrete_variables(self, x_c, max_Ns=22):
+        """
+        Generalized mapping for [Ns, NFE, NFB, NR1, ..., NRk]
+        Assumes x_c[0] is bounded like [5.0, 23.0] and the rest are [0.0, 1.0].
+        """
+        n_vars = len(x_c)
+        k_nr = n_vars - 3  # Number of NR variables (e.g., 4 for a 7-var array)
+        
+        # 1. Map Ns
+        Ns = int(np.floor(x_c[0]))
+        Ns = min(Ns, max_Ns)  # Clamp just in case the optimizer tests the absolute upper bound
+        
+        # 2. Map NFE
+        min_NFE = 2
+        max_NFE = Ns - 2
+        options_NFE = max_NFE - min_NFE + 1
+        NFE = min_NFE + int(np.floor(x_c[1] * options_NFE))
+        NFE = min(NFE, max_NFE) # Clamp for x=1.0 edge case
+        
+        # 3. Map NFB
+        min_NFB = NFE
+        max_NFB = Ns - 2
+        options_NFB = max_NFB - min_NFB + 1
+        NFB = min_NFB + int(np.floor(x_c[2] * options_NFB))
+        NFB = min(NFB, max_NFB)
+        
+        # 4. Map NR1 through NRk dynamically
+        mapped_vars = [Ns, NFE, NFB]
+        last_NR = None
+        
+        for i in range(k_nr):
+            c_val = x_c[3 + i] # The continuous [0,1] input for this specific NR
+            current_step = i + 1  # 1-based index (1 to k_nr)
+            
+            # Minimum depends on the previous NR
+            if current_step == 1:
+                min_NR = 2
+            else:
+                min_NR = last_NR + 1
+                
+            # Maximum leaves exactly enough room for the remaining NR variables
+            # e.g., if total is 4, NR4 max is Ns-2, NR3 max is Ns-3, NR2 max is Ns-4, etc.
+            max_NR = Ns - 2 - (k_nr - current_step)
+            
+            # Map using the unbiased floor logic
+            options_NR = max_NR - min_NR + 1
+            NR = min_NR + int(np.floor(c_val * options_NR))
+            NR = min(NR, max_NR)
+            
+            mapped_vars.append(NR)
+            last_NR = NR
+        total_distance = 0
+        return tuple(mapped_vars), total_distance
+
 
     def evaluate_4D(self, x_c):
         """The connuous wrapper method passed to SciPy."""
-        # Round to integers
-        # x_continuous[0] is in range [5.5, 20.4]
-        Ns_c, NFE_c, NFB_c, NR1_c = x_c
-        # print(x_c)
 
-        Ns = int(np.round(Ns_c))
-        
-        NFE = int( np.round( 2 + NFE_c * (Ns - 4)) )
-        NFB = int( np.round( NFE + NFB_c * (Ns - 2 - NFE) ) )
-        NR1 = int( np.round( 2 + NR1_c * (Ns - 4) ) )
+        mapped_vars, total_distance = self.map_discrete_variables(x_c, max_Ns=self.max_Ns)
+
+        [Ns, NFE, NFB, NR1]= mapped_vars
 
         x_discrete = [Ns, NFE, NFB, NR1]
         reactive_trays = [NR1]
@@ -79,26 +203,16 @@ class DiscreteDirectWrapper:
                 base_obj = 1e5
                 
             self.cache[discrete_key] = base_obj
+
+            distance_penalty = total_distance*self.penalty_weight
         return base_obj #+ distance_penalty
 
     def evaluate_5D(self, x_c):
         """The continuous wrapper method passed to SciPy."""
-        # Round to integers
-        # x_continuous[0] is in range [5.5, 20.4]
-        Ns_c, NFE_c, NFB_c, NR1_c, NR2_c = x_c
-        # print(x_c)
 
-        Ns = int(np.round(Ns_c))
-        
-        # NFE = int( np.round( 1 + NFE_c * (Ns - 3)) )
-        # NFB = int( np.round( NFE + NFB_c * (Ns - 2 - NFE) ) )
-        # NR1 = int( np.round( 1 + NR1_c * (Ns - 4) ) )
-        # NR2 = int( np.round( NR1 + 1 + NR2_c * (Ns - 3 - NR1) ) )
+        mapped_vars, total_distance = self.map_discrete_variables(x_c, max_Ns=self.max_Ns)
 
-        NFE = int( np.round( 2 + NFE_c * (Ns - 4)) )
-        NFB = int( np.round( NFE + NFB_c * (Ns - 2 - NFE) ) )
-        NR1 = int( np.round( 2 + NR1_c * (Ns - 5) ) )
-        NR2 = int( np.round( NR1 + 1 + NR2_c * (Ns - 3 - NR1) ) )
+        [Ns, NFE, NFB, NR1, NR2]= mapped_vars
 
         x_discrete = [Ns, NFE, NFB, NR1, NR2]
         reactive_trays = [NR1, NR2]
@@ -138,27 +252,18 @@ class DiscreteDirectWrapper:
                 base_obj = 1e5
                     
             self.cache[discrete_key] = base_obj
+            distance_penalty = total_distance*self.penalty_weight
         return base_obj #+ distance_penalty
 
     def evaluate_6D(self, x_c):
         """The continuous wrapper method passed to SciPy."""
         # Round to integers
         # x_continuous[0] is in range [5.5, 20.4]
-        Ns_c, NFE_c, NFB_c, NR1_c, NR2_c, NR3_c = x_c
-        # print(x_c)
+        # Ns_c, NFE_c, NFB_c, NR1_c, NR2_c, NR3_c, NR4_c = x_c
 
-        Ns = int(np.round(Ns_c))
-        
-        # NFE = int( np.round( 1 + NFE_c * (Ns - 3)) )
-        # NFB = int( np.round( NFE + NFB_c * (Ns - 2 - NFE) ) )
-        # NR1 = int( np.round( 1 + NR1_c * (Ns - 5) ) )
-        # NR2 = int( np.round( NR1 + 1 + NR2_c * (Ns - 4 - NR1) ) )
-        # NR3 = int( np.round( NR2 + 1 + NR3_c * (Ns - 3 - NR2) ) )
-        NFE = int( np.round( 2 + NFE_c * (Ns - 4)) )
-        NFB = int( np.round( NFE + NFB_c * (Ns - 2 - NFE) ) )
-        NR1 = int( np.round( 2 + NR1_c * (Ns - 6) ) )
-        NR2 = int( np.round( NR1 + 1 + NR2_c * (Ns - 4 - NR1) ) )
-        NR3 = int( np.round( NR2 + 1 + NR3_c * (Ns - 3 - NR2) ) )
+        mapped_vars, total_distance = self.map_discrete_variables(x_c, max_Ns=self.max_Ns)
+
+        [Ns, NFE, NFB, NR1, NR2, NR3]= mapped_vars
 
         x_discrete = [Ns, NFE, NFB, NR1, NR2, NR3]
         reactive_trays = [NR1, NR2, NR3]
@@ -174,7 +279,7 @@ class DiscreteDirectWrapper:
             sol = self.meshr.solve(solver="BARON")
             self.counter +=self.meshr.flag_solver
             print('Fobj call iter = {:d}'.format(self.counter))
-            if sol['Status'] == 1 or sol['Status'] == 2:
+            if sol['Status'].value == 1 or sol['Status'].value == 2:
                 base_obj = sol['Profit']
                 
                 # Fixed the format specifier, fixed typo (Fobj), 
@@ -199,31 +304,19 @@ class DiscreteDirectWrapper:
                 base_obj = 1e5
                 
             self.cache[discrete_key] = base_obj
+            print('xc = ', x_c)
+            distance_penalty = total_distance*self.penalty_weight
         return base_obj #+ distance_penalty
 
     def evaluate_7D(self, x_c):
         """The continuous wrapper method passed to SciPy."""
         # Round to integers
         # x_continuous[0] is in range [5.5, 20.4]
-        Ns_c, NFE_c, NFB_c, NR1_c, NR2_c, NR3_c, NR4_c = x_c
-        # print(x_c)
+        # Ns_c, NFE_c, NFB_c, NR1_c, NR2_c, NR3_c, NR4_c = x_c
 
-        Ns = int(np.round(Ns_c))
-        
-        # NFE = int( np.round( 1 + NFE_c * (Ns - 3)) )
-        # NFB = int( np.round( NFE + NFB_c * (Ns - 2 - NFE) ) )
-        # NR1 = int( np.round( 1 + NR1_c * (Ns - 6) ) )
-        # NR2 = int( np.round( NR1 + 1 + NR2_c * (Ns - 5 - NR1) ) )
-        # NR3 = int( np.round( NR2 + 1 + NR3_c * (Ns - 4 - NR2) ) )
-        # NR4 = int( np.round( NR3 + 1 + NR4_c * (Ns - 3 - NR3) ) )
+        mapped_vars, total_distance = self.map_discrete_variables(x_c, max_Ns=self.max_Ns)
 
-        NFE = int( np.round( 2 + NFE_c * (Ns - 4)) )
-        NFB = int( np.round( NFE + NFB_c * (Ns - 2 - NFE) ) )
-        NR1 = int( np.round( 2 + NR1_c * (Ns - 7) ) )
-        NR2 = int( np.round( NR1 + 1 + NR2_c * (Ns - 5 - NR1) ) )
-        NR3 = int( np.round( NR2 + 1 + NR3_c * (Ns - 4 - NR2) ) )
-        NR4 = int( np.round( NR3 + 1 + NR4_c * (Ns - 3 - NR3) ) )
-
+        [Ns, NFE, NFB, NR1, NR2, NR3, NR4]= mapped_vars
 
         x_discrete = [Ns, NFE, NFB, NR1, NR2, NR3, NR4]
         reactive_trays = [NR1, NR2, NR3, NR4]
@@ -266,8 +359,10 @@ class DiscreteDirectWrapper:
                 base_obj = 1e5
                 
             self.cache[discrete_key] = base_obj
+            print('xc = ', x_c)
+            distance_penalty = total_distance*self.penalty_weight
         return base_obj #+ distance_penalty
-
+    
     def callback(self, xk):
         """The callback method passed to SciPy."""
         current_best_discrete = tuple(np.round(xk).astype(int))

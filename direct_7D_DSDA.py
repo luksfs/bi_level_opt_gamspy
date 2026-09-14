@@ -4,6 +4,7 @@ import numpy as np
 import time
 from datetime import datetime
 from functions.d_sda import DiscreteOptimizer
+import pandas as pd
 
 start_time = time.perf_counter()
 # Instantiate the class
@@ -12,10 +13,10 @@ optimizer_wrapper = DiscreteDirectWrapper(
 )
 
 # Set bounds
-bounds = Bounds([4.9 , 0, 0, 0, 0, 0, 0],
-                [23.1, 1, 1, 1, 1, 1, 1])
+bounds = Bounds([7, 0, 0, 0, 0, 0, 0],
+                [23, 1, 1, 1, 1, 1, 1])
 
-vol_tol_spec = (5*2*2*2)/22**4
+# vol_tol_spec = (5*2*2*2)/22**4
 
 print("Starting OOP DIRECT optimization...")
 
@@ -28,20 +29,25 @@ try:
         callback=optimizer_wrapper.callback,
         maxiter=20000,
         maxfun=200000,
-        len_tol=1/20.1,
+        len_tol=1/19,
        # vol_tol=vol_tol_spec
     )
 
     Ns_c, NFE_c, NFB_c, NR1_c, NR2_c, NR3_c, NR4_c = result.x
     # If it finishes naturally without triggering the early stop:
-    Ns = int(np.round(Ns_c))
-    
-    NFE = int( np.round( 2 + NFE_c * (Ns - 4)) )
-    NFB = int( np.round( NFE + NFB_c * (Ns - 2 - NFE) ) )
-    NR1 = int( np.round( 2 + NR1_c * (Ns - 7) ) )
-    NR2 = int( np.round( NR1 + 1 + NR2_c * (Ns - 5 - NR1) ) )
-    NR3 = int( np.round( NR2 + 1 + NR3_c * (Ns - 4 - NR2) ) )
-    NR4 = int( np.round( NR3 + 1 + NR4_c * (Ns - 3 - NR3) ) )
+
+    # Ns = int(np.floor(Ns_c + 0.5))
+
+    # NFE = int(np.floor(2 + NFE_c * (Ns - 4) + 0.5))
+    # NFB = int(np.floor(NFE + NFB_c * (Ns - 2 - NFE) + 0.5))
+    # NR1 = int(np.floor(2 + NR1_c * (Ns - 7) + 0.5))
+    # NR2 = int(np.floor(NR1 + 1 + NR2_c * (Ns - 5 - NR1) + 0.5))
+    # NR3 = int(np.floor(NR2 + 1 + NR3_c * (Ns - 4 - NR2) + 0.5))
+    # NR4 = int(np.floor(NR3 + 1 + NR4_c * (Ns - 3 - NR3) + 0.5))
+
+    [
+        Ns, NFE, NFB, NR1, NR2, NR3, NR4
+    ], total_distance = optimizer_wrapper.map_discrete_variables(result.x)
     
     final_x = [Ns, NFE, NFB, NR1, NR2, NR3, NR4]
     # final_x = np.round(result.x).astype(int)
@@ -60,6 +66,15 @@ execution_time_Direct = end_time - start_time
 
 # You can persist this dictionary if you run multiple times or save it to a pickle file
 shared_cache = optimizer_wrapper.cache
+
+# Load into a Series and flatten the tuple index
+df = pd.Series(shared_cache).reset_index()
+
+# Rename the columns so they have proper headers
+df.columns = ['Ns', 'NFE', 'NFB', 'NR1', 'NR2', 'NR3', 'NR4', 'Profit']
+
+# Save to CSV
+df.to_csv('output_pandas_Direct_7D.csv', index=False, sep=';')
 
 # Instantiate the optimizer once
 optimizer = DiscreteOptimizer(max_stages=22)
@@ -84,6 +99,15 @@ fobj_best = result['fobj_best']
 fobj_calls = result['evaluations']
 time_spent = result['exec_time']
 logs = result['line_search_log']
+
+# Load into a Series and flatten the tuple index
+df = pd.Series(optimizer.cache_D_SDA).reset_index()
+
+# Rename the columns so they have proper headers
+df.columns = ['Ns', 'NFE', 'NFB', 'NR1', 'NR2', 'NR3', 'NR4', 'Profit']
+
+# Save to CSV
+df.to_csv('output_pandas_DSDA_7D.csv', index=False, sep=';')
 
 
 print("\n--- Final Results ---")

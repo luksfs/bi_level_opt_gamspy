@@ -25,6 +25,7 @@ class DiscreteOptimizer:
         self.eval_calls = 0
         self.cache = {}
         self.line_search_log = []
+        self.cache_D_SDA = {}
         
     def evaluate(self, y):
         """
@@ -35,7 +36,9 @@ class DiscreteOptimizer:
         
         # 1. Check cache to avoid duplicate runs
         if discrete_key in self.cache:
-            return self.cache[discrete_key]
+            fobj = self.cache[discrete_key]
+            self.cache_D_SDA[discrete_key] = fobj
+            return fobj
 
         # 2. Check geometry/bounds
         if check_bounds(y):
@@ -60,6 +63,7 @@ class DiscreteOptimizer:
 
         # Save result to cache before returning
         self.cache[discrete_key] = fobj
+        self.cache_D_SDA[discrete_key] = fobj
         return fobj
 
     def optimize(self, initial_y, cache=None):
