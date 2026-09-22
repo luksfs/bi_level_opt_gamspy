@@ -14,7 +14,7 @@ optimizer_wrapper = DiscreteDirectWrapper(
 
 # Set bounds
 bounds = Bounds([7, 0, 0, 0, 0, 0, 0],
-                [23, 1, 1, 1, 1, 1, 1])
+                [13, 1, 1, 1, 1, 1, 1])
 
 # vol_tol_spec = (5*2*2*2)/22**4
 
@@ -27,9 +27,9 @@ try:
         bounds=bounds,
         args=(),
         callback=optimizer_wrapper.callback,
-        maxiter=20000,
-        maxfun=200000,
-        len_tol=1/19,
+        maxiter=200000,
+        maxfun=2000000,
+        len_tol=1/37,
        # vol_tol=vol_tol_spec
     )
 
@@ -74,7 +74,7 @@ df = pd.Series(shared_cache).reset_index()
 df.columns = ['Ns', 'NFE', 'NFB', 'NR1', 'NR2', 'NR3', 'NR4', 'Profit']
 
 # Save to CSV
-df.to_csv('output_pandas_Direct_7D.csv', index=False, sep=';')
+df.to_csv('output_pandas_Direct_7D_short.csv', index=False, sep=';')
 
 # Instantiate the optimizer once
 optimizer = DiscreteOptimizer(max_stages=22)
@@ -107,7 +107,7 @@ df = pd.Series(optimizer.cache_D_SDA).reset_index()
 df.columns = ['Ns', 'NFE', 'NFB', 'NR1', 'NR2', 'NR3', 'NR4', 'Profit']
 
 # Save to CSV
-df.to_csv('output_pandas_DSDA_7D.csv', index=False, sep=';')
+df.to_csv('output_pandas_DSDA_7D_short.csv', index=False, sep=';')
 
 
 print("\n--- Final Results ---")

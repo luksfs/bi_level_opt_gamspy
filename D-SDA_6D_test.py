@@ -30,7 +30,7 @@ for i in range(1):
     NR3 = random.randint(NR2+1, Ns-2)
 
     # initial_y = [Ns, NFE, NFB, NR1, NR2, NR3]
-    initial_y = [9, 5, 5, 3, 4, 5]
+    initial_y = [14, 8, 8, 7, 8, 9]
     # Run the optimization
     result = optimizer.optimize(initial_y=initial_y, cache={})
 

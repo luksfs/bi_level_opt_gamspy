@@ -1,3 +1,5 @@
+python D-SDA_4D_test.py
+if %errorlevel% neq 0 exit /b %errorlevel%
 python D-SDA_5D_test.py
 if %errorlevel% neq 0 exit /b %errorlevel%
 python D-SDA_6D_test.py

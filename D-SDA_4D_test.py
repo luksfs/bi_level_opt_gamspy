@@ -31,7 +31,7 @@ for i in range(1):
     # initial_y = [Ns, NFE, NFB, NR1, NR2]
 
     # initial_y = initial_list[i]
-    initial_y = [9, 5, 5, 5]
+    initial_y = [14, 8, 8, 8]
     # Run the optimization
     result = optimizer.optimize(initial_y=initial_y, cache={})
 

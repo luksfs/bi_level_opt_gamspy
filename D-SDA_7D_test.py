@@ -31,7 +31,8 @@ for i in range(1):
     NR4 = random.randint(NR3+1, Ns-2)
 
     # initial_y = [Ns, NFE, NFB, NR1, NR2, NR3, NR4]
-    initial_y = [9, 5, 5, 3, 4, 5, 6]
+
+    initial_y = [15, 8, 8, 7, 8, 9, 10]
     # Run the optimization
     result = optimizer.optimize(initial_y=initial_y, cache={})
 
