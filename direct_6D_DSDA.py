@@ -14,7 +14,7 @@ optimizer_wrapper = DiscreteDirectWrapper(
 
 # Set bounds
 bounds = Bounds([6 , 0, 0, 0, 0, 0],
-                [23, 1, 1, 1, 1, 1])
+                [13, 1, 1, 1, 1, 1])
 
 print("Starting OOP DIRECT optimization...")
 
@@ -27,7 +27,8 @@ try:
         callback=optimizer_wrapper.callback,
         maxiter=200000,
         maxfun=200000,
-        len_tol=1/37,
+        # len_tol=1/9,
+        len_tol=1/17,
        # vol_tol=vol_tol_spec
     )
 
@@ -64,7 +65,7 @@ df = pd.Series(shared_cache).reset_index()
 df.columns = ['Ns', 'NFE', 'NFB', 'NR1', 'NR2', 'NR3','Profit']
 
 # Save to CSV
-df.to_csv('output_pandas_Direct_6D.csv', index=False, sep=';')
+df.to_csv('output_pandas_Direct_6D_short_NS12_Direct_DSDA.csv', index=False, sep=';')
 
 # You can persist this dictionary if you run multiple times or save it to a pickle file
 shared_cache = optimizer_wrapper.cache
@@ -100,7 +101,7 @@ df = pd.Series(optimizer.cache_D_SDA).reset_index()
 df.columns = ['Ns', 'NFE', 'NFB', 'NR1', 'NR2', 'NR3', 'Profit']
 
 # Save to CSV
-df.to_csv('output_pandas_DSDA_6D.csv', index=False, sep=';')
+df.to_csv('output_pandas_DSDA_6D_short.csv', index=False, sep=';')
 
 
 

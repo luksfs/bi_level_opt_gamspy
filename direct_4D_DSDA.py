@@ -14,7 +14,7 @@ optimizer_wrapper = DiscreteDirectWrapper(
 
 # Set bounds
 bounds = Bounds([5 , 0, 0, 0],
-                [23, 1, 1, 1])
+                [13, 1, 1, 1])
 
 # vol_tol_spec = 1/17*1/18
 
@@ -29,7 +29,10 @@ try:
         callback=optimizer_wrapper.callback,
         maxiter=20000,
         maxfun=20000,
-        len_tol=1/37,
+        # len_tol=1/9,
+        len_tol = 1/17
+        # 1/ ( (Ns-4)+1 )/2
+
         # vol_tol=vol_tol_spec
     )
 
@@ -61,7 +64,7 @@ df = pd.Series(shared_cache).reset_index()
 df.columns = ['Ns', 'NFE', 'NFB', 'NR1','Profit']
 
 # Save to CSV
-df.to_csv('output_pandas_Direct_4D.csv', index=False, sep=';')
+df.to_csv('output_pandas_Direct_4D_short_NS12_Direct_DSDA.csv', index=False, sep=';')
 
 # You can persist this dictionary if you run multiple times or save it to a pickle file
 shared_cache = optimizer_wrapper.cache
@@ -97,7 +100,7 @@ df = pd.Series(optimizer.cache_D_SDA).reset_index()
 df.columns = ['Ns', 'NFE', 'NFB', 'NR1', 'Profit']
 
 # Save to CSV
-df.to_csv('output_pandas_DSDA_4D.csv', index=False, sep=';')
+df.to_csv('output_pandas_DSDA_4D_short.csv', index=False, sep=';')
 
 
 print("\n--- Final Results ---")

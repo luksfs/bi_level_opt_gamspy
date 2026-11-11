@@ -15,6 +15,8 @@ optimizer_wrapper = DiscreteDirectWrapper(
 # Set bounds
 bounds = Bounds([7, 0, 0, 0, 0, 0, 0],
                 [13, 1, 1, 1, 1, 1, 1])
+#10-2+1=9
+#8*2+1 = 17
 
 # vol_tol_spec = (5*2*2*2)/22**4
 
@@ -29,9 +31,11 @@ try:
         callback=optimizer_wrapper.callback,
         maxiter=200000,
         maxfun=2000000,
-        len_tol=1/37,
+        # len_tol=1/9,
+        len_tol=1/17,
        # vol_tol=vol_tol_spec
     )
+
 
     Ns_c, NFE_c, NFB_c, NR1_c, NR2_c, NR3_c, NR4_c = result.x
     # If it finishes naturally without triggering the early stop:
@@ -74,7 +78,7 @@ df = pd.Series(shared_cache).reset_index()
 df.columns = ['Ns', 'NFE', 'NFB', 'NR1', 'NR2', 'NR3', 'NR4', 'Profit']
 
 # Save to CSV
-df.to_csv('output_pandas_Direct_7D_short.csv', index=False, sep=';')
+df.to_csv('output_pandas_Direct_7D_short_NS12_Direct_DSDA.csv', index=False, sep=';')
 
 # Instantiate the optimizer once
 optimizer = DiscreteOptimizer(max_stages=22)

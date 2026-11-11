@@ -30,7 +30,7 @@ class DiscreteDirectWrapper:
         self.counter = 0
         # 1. Initialize the class (Builds the 22-stage matrix once)
         self.meshr = ReactiveDistillationModel(max_stages=22)
-        self.max_Ns=22
+        self.max_Ns=13
         self.penalty_weight = 1e-4
 
     def map_discrete_variables_penalty(self, x_c, max_Ns=22):
