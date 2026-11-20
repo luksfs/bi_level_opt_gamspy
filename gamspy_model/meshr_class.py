@@ -62,7 +62,7 @@ class ReactiveDistillationModel:
         self.P[...] = 9.5e5
         
         self.m_cat = 0.2
-        self.R = 8.314463
+        self.R = 8.314463 # m3⋅Pa⋅K−1⋅mol−1
         self.Tmin = 330
         self.Tmax = 410
 
@@ -311,7 +311,9 @@ class ReactiveDistillationModel:
         self.dadT_ii_eq[i, j].where[cond_active] = self.dadT_ii[i, j] == -(self.ac[i] * self.kappa[i]) * gmath.sqrt(self.alpha_ij[i, j] * ( self.T[j] / self.Tc[i] )) / self.T[j]
 
         self.dadT_eq = gp.Equation(self.m, name="dadT_eq", domain=[j])
-        self.dadT_eq[j].where[cond_active] = self.dadT[j] == -gp.Sum(i, gp.Sum(k, self.y[i, j] * self.y[k, j] * gmath.sqrt(self.dadT_ii[i, j] * self.dadT_ii[k, j])))
+        self.dadT_eq[j].where[cond_active] = (
+            self.dadT[j] == gmath.sqrt(self.a[j]) * gp.Sum(i, self.y[i, j] * self.dadT_ii[i, j] / gmath.sqrt(self.aii[i, j]))
+        )
 
         self.enthalpy_eq = gp.Equation(self.m, name="enthalpy_eq", domain=[j])
         self.enthalpy_eq[j].where[cond_active] = self.HR[j] == self.R * self.T[j] * (self.Z[j] - 1 + (self.T[j] * self.dadT[j] - self.a[j]) / (self.b[j] * self.R * self.T[j]) * gmath.log((self.v_mol[j] + self.b[j]) / self.v_mol[j]))
@@ -458,11 +460,10 @@ class ReactiveDistillationModel:
 
         self.flooding_vel_eq[j].where[cond_interior] = (
             self.ufl[j]
-            ==
-            (self.sigma_g / 20) ** 0.2
+            == (self.sigma_g / 20) ** 0.2
             * gmath.sqrt(
-                (self.Mw_mix_V[j] / self.v_mol[j])
-                / (self.rhoL - self.Mw_mix_V[j] / self.v_mol[j])
+                (self.rhoL - self.Mw_mix_V[j] / self.v_mol[j])
+                / (self.Mw_mix_V[j] / self.v_mol[j])
             )
             * self.CF[j]
             * 0.3048
@@ -476,15 +477,16 @@ class ReactiveDistillationModel:
         # )
         self.def_Dcol[j].where[cond_interior] = (
             self.uf[j]
-            ==
-            4*self.V[j]*self.v_mol[j]/(np.pi*gmath.sqr(self.Dcol)*0.88)
+            == 4 * (self.V[j] * self.F_factor) * self.v_mol[j]
+            / (np.pi * gmath.sqr(self.Dcol) * 0.88)
         )
+        
         self.uf_res_1[j].where[cond_interior] = (
             self.uf[j] <= 0.8 * self.ufl[j]
         )
 
         self.uf_res_2[j].where[cond_interior] = (
-            self.uf[j] >= 0.4 * self.ufl[j]
+            self.uf[j] >= 0.25 * self.ufl[j]
         )   
 
         self.def_catal_vol[...] = (
@@ -523,7 +525,7 @@ class ReactiveDistillationModel:
         self.eq_TrayCost[...] = self.v_TrayCost == (self.MS / 280) * (4.7 * ((self.Dcol*3.28084)**1.55) * (self.ht*1.2* (self.Ns - 2) * 3.28084) * 2.7)
 
         self.eq_CondCost = gp.Equation(self.m, name="eq_CondCost")
-        self.eq_CondCost[...] = self.v_CondCost == (self.Qc * self.FH_factor / 60 / (150 / 0.17611 * (10 / gmath.log((self.Tcond - 303.15) / (self.Tcond - 313.15)))) * 10.7639)**0.65 * 1709.8394439285714
+        self.eq_CondCost[...] = self.v_CondCost == ( (self.MS / 280 * 101.3) * (self.Qc * self.FH_factor / 60 / (150 / 0.17611 * (10 / gmath.log((self.Tcond - 303.15) / (self.Tcond - 313.15)))) * 10.7639)**0.65)
 
         self.eq_RebCost = gp.Equation(self.m, name="eq_RebCost")
         self.eq_RebCost[...] = self.v_RebCost == (self.MS / 280 * 101.3 * ((self.Qr * self.FH_factor / 60 / ((250 / 0.17611) * (433.15 - self.Treb)) * 10.7639)**0.65 * 7.3525))
@@ -598,7 +600,7 @@ class ReactiveDistillationModel:
 
         self.alpha_ij.lo[self.i, self.j] = 0.5;    self.alpha_ij.up[self.i, self.j] = 2
         self.aii.lo[self.i, self.j] = 1;           self.aii.up[self.i, self.j] = 4
-        self.a.lo[self.j] = 1;                     self.a.up[self.j] = 3
+        self.a.lo[self.j] = 1;                     self.a.up[self.j] = 4.5
         self.b.lo[self.j] = 1e-5;                  self.b.up[self.j] = 1e-3;             self.b.scale[self.j] = 1e-5
         self.dadT_ii.lo[self.i, self.j] = -0.009;  self.dadT_ii.up[self.i, self.j] = -0.001; self.dadT_ii.scale[self.i, self.j] = 1e-3
         self.dadT.lo[self.j] = -0.009;             self.dadT.up[self.j] = -0.001;        self.dadT.scale[self.j] = 1e-3
@@ -621,7 +623,7 @@ class ReactiveDistillationModel:
         self.Hvi.up[self.i, self.j] = self.DH_ig.up[self.i, self.j] + self.Hform[self.i]
         self.Hvi.scale[self.i, self.j] = 1e5
 
-        self.HR.lo[self.j] = -2500;  self.HR.up[self.j] = -1100;  self.HR.scale[self.j] = 1e3
+        self.HR.lo[self.j] = -4000;  self.HR.up[self.j] = -1100;  self.HR.scale[self.j] = 1e3
 
         # GAMS smin/smax translate to gp.Smin/gp.Smax
         self.Hv.lo[self.j] = (gp.Smin(self.i, self.Hvi.lo[self.i, self.j]) + self.HR.lo[self.j]) * self.H_factor
@@ -650,13 +652,13 @@ class ReactiveDistillationModel:
         self.Hli.scale[self.i, self.j] = 1e5
 
         # Following the original code logic (using Hvi for Hl bounds)
-        self.Hl.lo[self.j] = gp.Smin(self.i, self.Hvi.lo[self.i, self.j]) * self.H_factor
-        self.Hl.up[self.j] = gp.Smax(self.i, self.Hvi.up[self.i, self.j]) * self.H_factor
+        self.Hl.lo[self.j] = gp.Smin(self.i, self.Hli.lo[self.i, self.j]) * self.H_factor
+        self.Hl.up[self.j] = gp.Smax(self.i, self.Hli.up[self.i, self.j]) * self.H_factor
 
         # ---------------------------------------------------------------------------- #
         # Molar Volume & Compressibility
         # ---------------------------------------------------------------------------- #
-        self.Z.lo[self.j] = 0.75; self.Z.up[self.j] = 0.9; self.Z.l[self.j] = 0.822
+        self.Z.lo[self.j] = 0.6; self.Z.up[self.j] = 0.9; self.Z.l[self.j] = 0.822
         self.v_mol.lo[self.j] = self.Z.lo[self.j] * self.R * self.Tmin / 9.5e5
         self.v_mol.up[self.j] = self.Z.up[self.j] * self.R * self.Tmax / 9.5e5
         self.v_mol.scale[self.j] = 1e-3
@@ -691,16 +693,19 @@ class ReactiveDistillationModel:
         self.Mw_mix_V.lo[self.j] = 46.069; self.Mw_mix_V.up[self.j] = 102.177; self.Mw_mix_V.scale[self.j] = 10
         self.Mw_mix_L.lo[self.j] = 46.069; self.Mw_mix_L.up[self.j] = 102.177; self.Mw_mix_L.scale[self.j] = 10
 
-        self.Dcol.lo = 0.01; self.Dcol.up = 2; self.Dcol.l = 0.1; self.Dcol.scale = 0.1
-        
+        self.Dcol.lo[...] = 0.01
+        self.Dcol.up[...] = 2
+        self.Dcol.l[...] = 0.1
+        self.Dcol.scale[...] = 0.1
+
         self.CF.lo[self.j] = 1e-2
         self.CF.up[self.j] = 2
         self.uf.lo[self.j] = 0.01
-        self.uf.up[self.j] = 20
+        self.uf.up[self.j] = 80
         self.ufl.lo[self.j] = 0.01
-        self.ufl.up[self.j] = 20
-        self.Flv.lo[self.j] = 0.001
-        self.Flv.up[self.j] = 20
+        self.ufl.up[self.j] = 100
+        self.Flv.lo[self.j] = 0.02
+        self.Flv.up[self.j] = 1
         self.CF.l[self.j] = 0.2
         self.uf.l[self.j] = 0.5
         self.ufl.l[self.j] = 0.7
@@ -714,7 +719,7 @@ class ReactiveDistillationModel:
 
         self.L.l[self.j] = 0.5
         self.V.l[self.j] = 0.5
-        self.V.l["1"] = 0.1  # Do not start condenser vapor at exact 0
+        #self.V.l["1"] = 0.1  # Do not start condenser vapor at exact 0
         self.x.l[self.i, self.j] = 0.25
         self.y.l[self.i, self.j] = 0.25
 
@@ -754,6 +759,18 @@ class ReactiveDistillationModel:
         self.Hli.l[self.i, self.j] = -180000.0
         self.Hl.l[self.j] = -1
 
+    def _init_temp_and_hr(self, T_top=335.0, T_bot=395.0, HR_init=-1800.0):
+            # Linear profile from condenser (stage 1) to reboiler (stage Ns)
+            self.T.l[self.j].where[gp.Ord(self.j) <= self.Ns] = (
+                T_top + (T_bot - T_top) * (gp.Ord(self.j) - 1) / (self.Ns - 1)
+            )
+            # Match dummy_T on inactive stages
+            self.T.l[self.j].where[gp.Ord(self.j) > self.Ns] = 350.0
+
+            self.Tcond.l[...] = T_top
+            self.Treb.l[...] = T_bot
+            self.HR.l[self.j] = HR_init
+
     def update_config(self, Ns, NFE, NFB, reactive_trays):
         """
         Updates the superstructure parameters instantly. No compilation required.
@@ -777,6 +794,10 @@ class ReactiveDistillationModel:
         self.is_FB[str(NFB)] = 1
         for rt in reactive_trays:
             self.is_reactive[str(rt)] = 1
+
+#      Itiliazing temperature
+        if Ns >= 2:
+            self._init_temp_and_hr()
 
     def solve(self, solver="CONOPT", export = False, dataframe = False):
         self.flag_solver = 0

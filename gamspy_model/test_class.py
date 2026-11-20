@@ -38,7 +38,7 @@ for config in scenarios:
     )
     
     # Solve and print results
-    result = meshr.solve(solver="BARON",dataframe=True,export=True)
+    result = meshr.solve(solver="CONOPT",dataframe=True,export=True)
     print(f"Result: {result['Status']} | Profit: {result['Profit']}")
     # result = meshr.solve(solver="BARON")
     # print(f"Result: {result['Status']} | Profit: {result['Profit']}")
@@ -68,16 +68,26 @@ for config in scenarios:
     RebCost = meshr.v_RebCost.records.level.values/3
     n_rx = np.sum(meshr.is_reactive.records.value.values)
     cat_cost = 7.7 * n_rx * meshr.m_cat/3
-    cap_cost = meshr.CAP_cost.records.level.values/3
+    cap_cost = meshr.CAP_cost.records.level.values
+    
+    
 
     # operational cost
     c_steam = 4.54e-9
     steam_cost = c_steam * Qr * 8150 * 60
     cooling_cost = 0.378e-9 * Qc * 8150 * 60
-    raw_products = FE * meshr.CostEth.toValue() + FB * meshr.CostBut.toValue()
-    op_cost = meshr.OP_cost.records.level.values/3
+    raw_products = (FE * meshr.CostEth.toValue() + FB * meshr.CostBut.toValue()) * 8150 * 60
+    op_cost = meshr.OP_cost.records.level.values
 
-    revenue = Breb * meshr.CostETBE.toValue()
+    revenue = Breb * meshr.CostETBE.toValue() * 8150 * 60
+
+    # hydrodynamics
+    Flv = meshr.Flv.records.level.values
+
+    print("Dcol (m):", meshr.Dcol.toValue())
+    print("def_catal_vol marginal:", meshr.def_catal_vol.records["marginal"].values)
+    print(meshr.uf_res_1.records[["j", "level", "upper", "marginal"]])
+    print(meshr.uf_res_2.records[["j", "level", "lower", "marginal"]])
 
     scenario_dict = {
         "config": config,
