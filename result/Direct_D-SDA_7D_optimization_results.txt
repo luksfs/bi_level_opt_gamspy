@@ -386,3 +386,7 @@ Execution time: 1785.343686 seconds
 Objective functions calls: 250
 Best Discrete X found: [9, 4, 6, 2, 4, 5, 6]
 Minimum Objective Value: 0.018667662239990147
+
+==================================================
+New cost equation
+==================================================

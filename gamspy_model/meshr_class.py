@@ -6,12 +6,12 @@ import sys
 import os
 
 class ReactiveDistillationModel:
-    def __init__(self, max_stages=22):
+    def __init__(self, max_stages=22, working_directory=None):
         """
         Initializes the Container, Sets, and structural Equations.
         max_stages defines the absolute maximum size of the column matrix.
         """
-        self.m = gp.Container()
+        self.m = gp.Container(working_directory=working_directory, debugging_level="delete")
         self.max_stages = max_stages
         
         print("Compiling MESHR Superstructure (This only happens once)...")
@@ -61,7 +61,6 @@ class ReactiveDistillationModel:
         self.P = gp.Parameter(self.m, name="P", domain=[self.j])
         self.P[...] = 9.5e5
         
-        self.m_cat = 0.2
         self.R = 8.314463 # m3⋅Pa⋅K−1⋅mol−1
         self.Tmin = 330
         self.Tmax = 410
@@ -70,18 +69,20 @@ class ReactiveDistillationModel:
         self.rho_cat = 770 # kg/m3
         self.phi_c = 0.3
         # self.h_pack = 0.3048 # m
-        self.ht = gp.Parameter(self.m, "ht", records=0.4572)
+        # --- Tray spacing & flooding (Fixed 9 in, Wankat Table 21.7 - Turton) ---
+        # self.ht = gp.Parameter(self.m, "ht", records=0.2286) # 9 in (pilot/lab scale)
         self.rho_cat = gp.Parameter(self.m, "rho_cat", records=770)
         self.phi_c = gp.Parameter(self.m, "phi_c", records=0.3)
         self.h_pack = gp.Parameter(self.m, "h_pack")
-        self.rhoL =gp.Parameter(self.m, "rhoL", records=580e3)
+        self.rhoL = gp.Parameter(self.m, "rhoL", records=580e3)
         self.sigma_g = gp.Parameter(self.m, "sigma_g", records=7.2)
 
-        self.a1 = gp.Parameter(self.m, "a1", records=1.0262)
-        self.a2 = gp.Parameter(self.m, "a2", records=0.63513)
-        self.a3 = gp.Parameter(self.m, "a3", records=0.20097)
+        # Wankat Table 21.7 constants for 6 in tray spacing
+        # self.a1 = gp.Parameter(self.m, "a1", records=1.1622)
+        # self.a2 = gp.Parameter(self.m, "a2", records=0.56014)
+        # self.a3 = gp.Parameter(self.m, "a3", records=0.18168)
 
-        self.h_pack[...] = self.ht / 2
+        # self.h_pack[...] = self.ht / 2 # 0.0762 m (3 in)
 
         self.v_i = gp.Parameter(self.m, name="v_i", domain=[self.i], records=[("1", 0), ("2", -1), ("3", -1), ("4", 1)])
         self.Tc = gp.Parameter(self.m, name="Tc", domain=[self.i], records=[("1", 419.5), ("2", 514), ("3", 417.9), ("4", 509.4)])
@@ -114,15 +115,52 @@ class ReactiveDistillationModel:
         self.HFB = gp.Parameter(self.m, name="HFB", records=hfb_d_val * self.H_factor)
         self.FB = gp.Parameter(self.m, name="FB", records=5.774 / self.F_factor)
 
-        # Specifications & Costs
+        # --- Specifications & Costs ---
+        # Catalyst mass (matching Bernal et al. 2018 & Linan et al. 2020)
+        self.m_cat = 0.4  # kg per reactive stage
+
+        # Fixed 6-in tray spacing & Wankat Table 21.7 flooding constants
+        
+        self.rho_cat = gp.Parameter(self.m, "rho_cat", records=770)
+        self.phi_c = gp.Parameter(self.m, "phi_c", records=0.3)
+        self.h_pack = gp.Parameter(self.m, "h_pack")
+        self.rhoL = gp.Parameter(self.m, "rhoL", records=580e3)
+        self.sigma_g = gp.Parameter(self.m, "sigma_g", records=7.2)
+
+        self.ht = gp.Parameter(self.m, "ht", records=0.1524) # 6 in
+        self.a1 = gp.Parameter(self.m, "a1", records=1.1977)
+        self.a2 = gp.Parameter(self.m, "a2", records=0.53143)
+        self.a3 = gp.Parameter(self.m, "a3", records=0.18760)
+
+        # self.ht = gp.Parameter(self.m, "ht", records=0.2286) # 9 in (pilot scale)
+        # self.a1 = gp.Parameter(self.m, "a1", records=1.1622)
+        # self.a2 = gp.Parameter(self.m, "a2", records=0.56014)
+        # self.a3 = gp.Parameter(self.m, "a3", records=0.18168)
+
+        self.h_pack[...] = self.ht / 2
+
+        # --- Specifications & 1990s Costs (Douglas explicit CAPEX + 1994 OPEX) ---
         self.Spec_1 = gp.Parameter(self.m, name="Spec_1", records=0.85)
         self.Spec_2 = gp.Parameter(self.m, name="Spec_2", records=0.83)
         self.FF = gp.Parameter(self.m, name="FF", records=1.51 * (0.45359237 / 0.3048)**0.5)
-        self.MS = gp.Parameter(self.m, name="MS", records=1773.4)
-        self.CostETBE = gp.Parameter(self.m, name="CostETBE", records=25.3e-3)
-        self.CostEth = gp.Parameter(self.m, name="CostEth", records=15.0e-3)
-        self.CostBut = gp.Parameter(self.m, name="CostBut", records=8.25e-3)
-        self.c_steam = gp.Parameter(self.m, name="c_steam", records=4.54e-9)
+
+        self.MS = gp.Parameter(self.m, name="MS", records=1050.0)         # 1994 M&S index
+        self.AF = (0.05 * (1.05**5)) / ((1.05**5) - 1.0)                 # 5 yr @ 5% = 0.230975
+        self.SF = 0.15                                                   # 15% extra shell height
+        self.hours_yr = 8000.0                                           # Operating hours/yr
+
+        # Consistent Douglas bare-module factors (9.5 bar, CS shell / SS internals & HX tubes)
+        self.F_BM_shell = 3.33   # 2.18 + 1.0 * 1.15 (CS vessel at 9.5 bar)
+        self.F_BM_tray  = 2.70   # 1.0 (24-in ref) + 0.0 (sieve) + 1.7 (SS)
+        self.F_BM_cond  = 4.04   # 2.29 + 1.0 * 1.75 (CS/SS floating head)
+        self.F_BM_reb   = 4.65   # 2.29 + 1.35 * 1.75 (CS/SS kettle; use 7.3525 for SS/SS)
+
+        self.C_cat    = gp.Parameter(self.m, name="C_cat",    records=7.7)     # $/kg catalyst
+        self.CostETBE = gp.Parameter(self.m, name="CostETBE", records=25.3e-3) # $/mol
+        self.CostEth  = gp.Parameter(self.m, name="CostEth",  records=15.0e-3) # $/mol
+        self.CostBut  = gp.Parameter(self.m, name="CostBut",  records=8.25e-3) # $/mol
+        self.c_steam  = gp.Parameter(self.m, name="c_steam",  records=4.54e-9) # $/J ($4.54/GJ)
+        self.c_cw     = gp.Parameter(self.m, name="c_cw",     records=0.378e-9)# $/J ($0.378/GJ)
 
         # --- Data Tables ---
         self._load_tables()
@@ -205,6 +243,7 @@ class ReactiveDistillationModel:
         
         self.v_ColCost = gp.Variable(self.m, name="v_ColCost")
         self.v_TrayCost = gp.Variable(self.m, name="v_TrayCost")
+        self.v_PackCost = gp.Variable(self.m, name="v_PackCost") # Added for reactive packing
         self.v_CondCost = gp.Variable(self.m, name="v_CondCost")
         self.v_RebCost = gp.Variable(self.m, name="v_RebCost")
         self.CAP_cost = gp.Variable(self.m, name="CAP_cost")
@@ -486,7 +525,7 @@ class ReactiveDistillationModel:
         )
 
         self.uf_res_2[j].where[cond_interior] = (
-            self.uf[j] >= 0.25 * self.ufl[j]
+            self.uf[j] >= 0.15 * self.ufl[j]
         )   
 
         self.def_catal_vol[...] = (
@@ -518,23 +557,68 @@ class ReactiveDistillationModel:
         self.def_Breb = gp.Equation(self.m, name="def_Breb", domain=[j])
         self.def_Breb[j].where[cond_reboiler] = self.Breb == self.L[j]
 
+        # idx_ratio = self.CEPCI / self.CEPCI_base
+        N_rxn = gp.Sum(j, self.is_reactive[j])
+        # N_sep = (self.Ns - 2) - N_rxn  # Non-reactive sieve trays only
+
+        D_col_ft   = self.Dcol * 3.28084
+        H_shell_ft = (1.0 + self.SF) * self.ht * (self.Ns - 2) * 3.28084
+
+        # 1. Column shell (Douglas installed cost)
         self.eq_ColCost = gp.Equation(self.m, name="eq_ColCost")
-        self.eq_ColCost[...] = self.v_ColCost == (self.MS / 280) * (101.9 * ((self.Dcol*3.28084)**1.066) * ((self.ht*1.2 * (self.Ns - 2) * 3.28084)**0.802) * 7.05)
+        self.eq_ColCost[...] = self.v_ColCost == (
+            (self.MS / 280.0) * 101.9 * (D_col_ft**1.066) * (H_shell_ft**0.802) * self.F_BM_shell
+        )
 
+        # 2. Trays (evaluated at 2.0 ft/tray reference so Fs=1.0 -> 2.70 stays valid)
         self.eq_TrayCost = gp.Equation(self.m, name="eq_TrayCost")
-        self.eq_TrayCost[...] = self.v_TrayCost == (self.MS / 280) * (4.7 * ((self.Dcol*3.28084)**1.55) * (self.ht*1.2* (self.Ns - 2) * 3.28084) * 2.7)
+        self.eq_TrayCost[...] = self.v_TrayCost == (
+            (self.MS / 280.0) * 4.7 * (D_col_ft**1.55) * (2.0 * (self.Ns - 2)) * self.F_BM_tray
+        )
 
+        # 3. Condenser (Douglas installed cost — FIXED missing F_BM_cond)
         self.eq_CondCost = gp.Equation(self.m, name="eq_CondCost")
-        self.eq_CondCost[...] = self.v_CondCost == ( (self.MS / 280 * 101.3) * (self.Qc * self.FH_factor / 60 / (150 / 0.17611 * (10 / gmath.log((self.Tcond - 303.15) / (self.Tcond - 313.15)))) * 10.7639)**0.65)
+        self.eq_CondCost[...] = self.v_CondCost == (
+            (self.MS / 280.0) * 101.3 * self.F_BM_cond
+            * (
+                (self.Qc * self.FH_factor / 60.0)
+                / (150.0 / 0.17611 * (10.0 / gmath.log((self.Tcond - 303.15) / (self.Tcond - 313.15))))
+                * 10.7639
+            )**0.65
+        )
 
+        # 4. Reboiler (Douglas installed cost — realistic U_reb=170 and consistent CS/SS F_BM_reb)
         self.eq_RebCost = gp.Equation(self.m, name="eq_RebCost")
-        self.eq_RebCost[...] = self.v_RebCost == (self.MS / 280 * 101.3 * ((self.Qr * self.FH_factor / 60 / ((250 / 0.17611) * (433.15 - self.Treb)) * 10.7639)**0.65 * 7.3525))
+        self.eq_RebCost[...] = self.v_RebCost == (
+            (self.MS / 280.0) * 101.3 * self.F_BM_reb
+            * (
+                (self.Qr * self.FH_factor / 60.0)
+                / ((170.0 / 0.17611) * (433.15 - self.Treb))
+                * 10.7639
+            )**0.65
+        )
 
+        # 5. Annualized CAPEX (5 yr @ 5% via AF)
         self.eq_CAP_cost = gp.Equation(self.m, name="eq_CAP_cost")
-        self.eq_CAP_cost[...] = self.CAP_cost == (1 / 3) * (self.v_TrayCost + self.v_ColCost + self.v_CondCost + self.v_RebCost + (7.7 * gp.Sum(j, self.is_reactive[j]) * self.m_cat))
+        self.eq_CAP_cost[...] = self.CAP_cost == self.AF * (
+            self.v_ColCost
+            + self.v_TrayCost
+            + self.v_CondCost
+            + self.v_RebCost
+            + self.C_cat * self.m_cat * gp.Sum(j, self.is_reactive[j])
+        )
 
+        # 6. Annual OPEX minus ETBE Revenue (8000 h/yr, 1994 prices)
         self.eq_OP_cost = gp.Equation(self.m, name="eq_OP_cost")
-        self.eq_OP_cost[...] = self.OP_cost == ((0.378e-9 * self.Qc + self.c_steam * self.Qr) * 8150 * 60 * self.FH_factor + (self.FE * self.CostEth + self.FB * self.CostBut - self.CostETBE * self.Breb) * self.F_factor * 8150 * 60)
+        self.eq_OP_cost[...] = self.OP_cost == (
+            (self.c_cw * self.Qc + self.c_steam * self.Qr) * self.hours_yr * 60.0 * self.FH_factor
+            + (self.FE * self.CostEth + self.FB * self.CostBut - self.CostETBE * self.Breb)
+            * self.F_factor * self.hours_yr * 60.0
+        )
+
+        # 7. Mechanical L/D <= 20 constraint (Linan Eq. E.3)
+        # self.eq_LD_ratio = gp.Equation(self.m, name="eq_LD_ratio")
+        # self.eq_LD_ratio[...] = (1.0 + self.SF) * self.ht * (self.Ns - 2) <= 20.0 * self.Dcol
 
         self.def_Profit = gp.Equation(self.m, name="def_Profit")
         self.def_Profit[...] = self.Profit * 1e6 == self.CAP_cost + self.OP_cost
@@ -580,7 +664,9 @@ class ReactiveDistillationModel:
 
         self.T.lo[self.j] = self.Tmin;  self.T.up[self.j] = self.Tmax;  self.T.scale[self.j] = self.TF_factor
 
-        self.FE.lo[...] = 0.00075; self.FE.up[...] = 37.43; self.FE.l[...] = 5.774 / self.F_factor
+        self.FE.lo[...] = (0.7 * 1.7322) / self.F_factor
+        self.FE.up[...] = (2.50 * 1.7322) / self.F_factor
+        self.FE.l[...]  = (1.10 * 1.7322) / self.F_factor
 
         # ---------------------------------------------------------------------------- #
         # Thermodynamics & Enthalpy Variables
@@ -693,9 +779,10 @@ class ReactiveDistillationModel:
         self.Mw_mix_V.lo[self.j] = 46.069; self.Mw_mix_V.up[self.j] = 102.177; self.Mw_mix_V.scale[self.j] = 10
         self.Mw_mix_L.lo[self.j] = 46.069; self.Mw_mix_L.up[self.j] = 102.177; self.Mw_mix_L.scale[self.j] = 10
 
-        self.Dcol.lo[...] = 0.01
-        self.Dcol.up[...] = 2
-        self.Dcol.l[...] = 0.1
+        # Start above def_catal_vol minimum diameter (0.1701 m at m_cat=0.4 kg, ht=6 in)
+        self.Dcol.lo[...] = 0.05
+        self.Dcol.up[...] = 2.0
+        self.Dcol.l[...]  = 0.18
         self.Dcol.scale[...] = 0.1
 
         self.CF.lo[self.j] = 1e-2
@@ -758,7 +845,7 @@ class ReactiveDistillationModel:
         self.Hv_Tbi_P.l[self.i, self.j] = -150000.0
         self.Hli.l[self.i, self.j] = -180000.0
         self.Hl.l[self.j] = -1
-
+    
     def _init_temp_and_hr(self, T_top=335.0, T_bot=395.0, HR_init=-1800.0):
             # Linear profile from condenser (stage 1) to reboiler (stage Ns)
             self.T.l[self.j].where[gp.Ord(self.j) <= self.Ns] = (
@@ -771,6 +858,30 @@ class ReactiveDistillationModel:
             self.Treb.l[...] = T_bot
             self.HR.l[self.j] = HR_init
 
+    def reset_levels(self):
+        """Resets only variable starting levels (.l) without recomputing static bounds."""
+        self.L.l[self.j] = 0.5;           self.V.l[self.j] = 0.5;           self.V.l["1"] = 0.0
+        self.x.l[self.i, self.j] = 0.25;  self.y.l[self.i, self.j] = 0.25
+        self.D.l[...] = 0.5748;           self.Qc.l[...] = 0.5451;          self.Qr.l[...] = 0.4592
+        self.Breb.l[...] = 0.24;          self.Dcol.l[...] = 0.18
+        self.FE.l[...] = (1 * 1.7322) / self.F_factor
+        self.CF.l[self.j] = 0.2;          self.uf.l[self.j] = 0.5
+        self.ufl.l[self.j] = 0.7;         self.Flv.l[self.j] = 0.1
+        self.K_part.l[self.i, self.j] = 1.0;  self.logPsat.l[self.i, self.j] = 11.5
+        self.gamma_nrtl.l[self.i, self.j] = 1.0; self.phi.l[self.i, self.j] = 1.0
+        self.alpha_ij.l[self.i, self.j] = 1.0; self.aii.l[self.i, self.j] = 2.0
+        self.a.l[self.j] = 2.0;           self.b.l[self.j] = 1e-4
+        self.dadT_ii.l[self.i, self.j] = -0.005; self.dadT.l[self.j] = -0.005
+        self.Z.l[self.j] = 0.822;         self.Zvi.l[self.i, self.j] = 0.9
+        self.v_mol.l[self.j] = 0.003;     self.v_mol_i.l[self.i, self.j] = 0.003
+        self.Mw_mix_V.l[self.j] = 60.0;   self.Mw_mix_L.l[self.j] = 60.0
+        self.K_eq.l[self.j] = 10.0;       self.k_rate.l[self.j] = 100.0
+        self.k_A.l[self.j] = 10.0;        self.Rxn_Rate.l[self.j] = 0.0
+        self.DH_ig.l[self.i, self.j] = 5000.0; self.Hvi.l[self.i, self.j] = -150000.0
+        self.Hv.l[self.j] = -1.0;         self.DH_liq.l[self.i, self.j] = 1000.0
+        self.HR_pure.l[self.i, self.j] = -2000.0; self.Hv_Tbi_P.l[self.i, self.j] = -150000.0
+        self.Hli.l[self.i, self.j] = -180000.0;   self.Hl.l[self.j] = -1.0
+    
     def update_config(self, Ns, NFE, NFB, reactive_trays):
         """
         Updates the superstructure parameters instantly. No compilation required.
@@ -799,7 +910,7 @@ class ReactiveDistillationModel:
         if Ns >= 2:
             self._init_temp_and_hr()
 
-    def solve(self, solver="CONOPT", export = False, dataframe = False):
+    def solve(self, solver="CONOPT", export=False, dataframe=False, threads=1, time_limit=160):
         self.flag_solver = 0
         NR_string = ['NR1','NR2','NR3','NR4','NR5','NR6']
         text_NRx = ", ".join(
@@ -823,14 +934,24 @@ class ReactiveDistillationModel:
             }
 
         self.flag_solver = 1
+        baron_opts = {
+                    "AllowExternal": 0,
+                    "AllowMinos": 0,
+                    "AllowSnopt": 0,
+                    "NumLoc": 1,        # Avoids ~20 slow IPOPT/FILTERSQP restarts on infeasible configs
+                    "Threads": threads,
+                    "MaxTime": time_limit,
+                } if solver.upper() == "BARON" else None
+
         self.model.solve(
             solver=solver,
-            options=gp.Options(time_limit=160,
-                               enable_scaling=True,
-                               relative_optimality_gap=1e-4,
-                               threads=10
-                               ),
-            # output=sys.stdout #for debuging
+            options=gp.Options(
+                time_limit=time_limit,
+                enable_scaling=True,
+                relative_optimality_gap=1e-4,
+                threads=threads,
+            ),
+            solver_options=baron_opts,
         )
     
         # 3. Access elapsed time

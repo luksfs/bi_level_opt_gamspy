@@ -28,3 +28,34 @@ Solved candidates: 7323
 Solved candidates %: 99.06655844155844
 Minimum Objective Value and design variables: 
 Ns=9; NFE=5; NFB=6; NR1=3; NR2=5; NR3=6; NR4=None; Status=ModelStatus.OptimalGlobal; Profit=0.019202872350425428; Dcol=0.0860746359999694
+
+==================================================
+Run date: 2026-11-20 08:37:58.865370
+Execution time: 17541.651513 seconds
+Nsmax: 12
+Total combinatory space: 7392
+Solved candidates: 2515
+Solved candidates %: 34.0232683982684
+Minimum Objective Value and design variables: 
+Ns=12; NFE=4; NFB=9; NR1=3; NR2=6; NR3=9; NR4=None; Status=ModelStatus.OptimalGlobal; Profit=0.01495623625659575; Dcol=0.17009892908138763
+
+==================================================
+Run date: 2026-11-20 14:28:27.732502
+Execution time: 10432.411963 seconds
+Nsmax: 12
+Total combinatory space: 7392
+Solved candidates: 7067
+Solved candidates %: 95.60335497835499
+Minimum Objective Value and design variables: 
+Ns=12; NFE=5; NFB=9; NR1=3; NR2=6; NR3=9; NR4=None; Status=ModelStatus.OptimalGlobal; Profit=0.014298347744538295; Dcol=0.17009892908138763
+
+==================================================
+Run date: 2026-11-21 14:49:26.166503
+Solver: BARON (workers=10)
+Wall-clock time (this session): 13097.22 s | Mean BARON solve time: 5.299 s
+Nsmax: 14 | NRx: 3
+Total combinatory space: 24882
+Solved candidates: 24119 (96.93%)
+Status counts: {'ModelStatus.OptimalGlobal': 24119, 'ModelStatus.InfeasibleNoSolution': 763}
+Minimum Objective Value and design variables:
+Ns=13; N_int=11; NFE=5; NFB=10; NR1=3; NR2=7; NR3=10; N_rect=3; N_strip=2; N_rxn_sections=3; Status=ModelStatus.OptimalGlobal; Status_Code=1; WarmStart_Time_s=0.5630000000000001; Solve_Time_s=7.24; Total_Time_s=7.520000450313091; Profit=0.0142979239486168; TAC_yr=14297.9239486168; Dcol=0.170098929081389; LD_ratio=11.333757422291333; RR=3.149592966220579; FE_molmin=1.5914962070579606; D_molmin=3.976452064826272; Breb_molmin=1.8511000793289492; Qr_kJmin=237.01640535130267; Qc_kJmin=292.1401807063309; Tcond_K=334.2076379502465; Treb_K=397.3398683902871; X_IB=0.8878559420983365; x_EtOH_top=0.0033144804477851; x_EtOH_bot=0.0218098805059927; Flood_min_pct=14.999999999999952; Flood_max_pct=20.9180538019314; Cat_fill_pct=99.99999999999956; Rxn_min_xEtOH=0.0087149711462656; Rxn_max_T_K=341.2463989754529; Rxn_min_rate=0.2115643001601388; Rxn_total_rate=1.5379440629027388; CAPEX=1884.35855624137; Shell_Cost=692.83973313801; Tray_Cost=97.91392142221444; Cond_Cost=624.6929345638255; Reb_Cost=466.7777599826183; Cat_Cost=2.134207134705196; OPEX_gross=34893.32475574624; Feed_Cost=34323.81269081732; Steam_Cost=516.5061505415587; CW_Cost=53.00591438735668; ETBE_Rev=22479.75936337076; OPEX_net=12413.5653923754

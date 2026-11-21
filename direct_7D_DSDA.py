@@ -14,7 +14,7 @@ optimizer_wrapper = DiscreteDirectWrapper(
 
 # Set bounds
 bounds = Bounds([7, 0, 0, 0, 0, 0, 0],
-                [13, 1, 1, 1, 1, 1, 1])
+                [23, 1, 1, 1, 1, 1, 1])
 #10-2+1=9
 #8*2+1 = 17
 
@@ -32,7 +32,8 @@ try:
         maxiter=200000,
         maxfun=2000000,
         # len_tol=1/9,
-        len_tol=1/17,
+        # len_tol=1/17,
+        len_tol=1/19,
        # vol_tol=vol_tol_spec
     )
 
