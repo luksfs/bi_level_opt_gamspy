@@ -390,3 +390,23 @@ Minimum Objective Value: 0.018667662239990147
 ==================================================
 New cost equation
 ==================================================
+==================================================
+Run date: 2026-11-22 19:27:01.563805
+Execution time D-Direct + D-SDA: 5804.385511 seconds
+Objective functions calls: 1274
+Best Discrete X found: [11, 5, 8, 3, 4, 7, 8]
+Minimum Objective Value: 1.387027e-02
+
+Direct Results
+Execution time: 480.394970 seconds
+Status: The side length measure of the hyperrectangle containing the lowest function value found is below len_tol=0.05263157894736842
+Cache size (unique evaluations): 119
+Best Discrete X found: [11, 6, 8, 4, 6, 7, 8]
+Minimum Objective Value: 1.392893e-02
+Objective function evaluations: 119
+
+D-SDA Results
+Execution time: 5323.990541 seconds
+Objective functions calls: 1155
+Best Discrete X found: [11, 5, 8, 3, 4, 7, 8]
+Minimum Objective Value: 1.387027e-02

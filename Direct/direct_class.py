@@ -160,6 +160,74 @@ class DiscreteDirectWrapper:
         total_distance = 0
         return tuple(mapped_vars), total_distance
 
+    def _evaluate_nd(self, x_c, print_xc=False):
+        """Shared continuous wrapper with CONOPT warm-start and BARON global solve."""
+        mapped_vars, total_distance = self.map_discrete_variables(x_c, max_Ns=self.max_Ns)
+
+        Ns, NFE, NFB, *raw_reactive = mapped_vars
+        reactive_trays = sorted(raw_reactive)
+        discrete_key = (Ns, NFE, NFB, *reactive_trays)
+
+        # Cache Check
+        if discrete_key in self.cache:
+            return self.cache[discrete_key]
+
+        # Reset variable levels so prior solves do not contaminate the warm-start
+        self.meshr.reset_levels()
+        self.meshr.update_config(Ns, NFE, NFB, reactive_trays)
+
+        # 1. Fast CONOPT warm-start
+        ws = self.meshr.solve(solver="CONOPT", threads=1, time_limit=15)
+
+        if self.meshr.flag_solver == 0:
+            # Discrete bounds were violated inside meshr.solve(); skip BARON
+            sol = ws
+        else:
+            ws_ok = getattr(ws["Status"], "value", -1) in (1, 2)
+            if not ws_ok:
+                # Clear diverged CONOPT levels before handing off to BARON
+                self.meshr.reset_levels()
+                self.meshr._init_temp_and_hr()
+
+            # 2. Global solve with BARON
+            sol = self.meshr.solve(solver="BARON", threads=1, time_limit=160)
+            self.counter += self.meshr.flag_solver
+
+        print(f"Fobj call iter = {self.counter:d}")
+        rxn_str = ", ".join(f"NR{k} = {r:d}" for k, r in enumerate(reactive_trays, start=1))
+
+        if getattr(sol["Status"], "value", -1) in (1, 2):
+            base_obj = sol["Profit"]
+            print(
+                f"Ns = {Ns:d}, NFE = {NFE:d}, NFB = {NFB:d}, {rxn_str},\n"
+                f"Fobj = {base_obj:.6f} (${base_obj * 1e6:,.2f}/yr)"
+            )
+        else:
+            print(f"Failed solution: Ns = {Ns:d}, NFE = {NFE:d}, NFB = {NFB:d}, {rxn_str}")
+            base_obj = 1e5
+
+        self.cache[discrete_key] = base_obj
+        if print_xc:
+            print("xc = ", x_c)
+
+        distance_penalty = total_distance * self.penalty_weight
+        return base_obj  # + distance_penalty
+
+    def evaluate_4D(self, x_c):
+        """4D wrapper (Ns, NFE, NFB, NR1) passed to SciPy."""
+        return self._evaluate_nd(x_c, print_xc=False)
+
+    def evaluate_5D(self, x_c):
+        """5D wrapper (Ns, NFE, NFB, NR1, NR2) passed to SciPy."""
+        return self._evaluate_nd(x_c, print_xc=False)
+
+    def evaluate_6D(self, x_c):
+        """6D wrapper (Ns, NFE, NFB, NR1, NR2, NR3) passed to SciPy."""
+        return self._evaluate_nd(x_c, print_xc=True)
+
+    def evaluate_7D(self, x_c):
+        """7D wrapper (Ns, NFE, NFB, NR1, NR2, NR3, NR4) passed to SciPy."""
+        return self._evaluate_nd(x_c, print_xc=True)
 
     def evaluate_4D(self, x_c):
         """The connuous wrapper method passed to SciPy."""
@@ -310,58 +378,60 @@ class DiscreteDirectWrapper:
 
     def evaluate_7D(self, x_c):
         """The continuous wrapper method passed to SciPy."""
-        # Round to integers
-        # x_continuous[0] is in range [5.5, 20.4]
-        # Ns_c, NFE_c, NFB_c, NR1_c, NR2_c, NR3_c, NR4_c = x_c
-
         mapped_vars, total_distance = self.map_discrete_variables(x_c, max_Ns=self.max_Ns)
 
-        [Ns, NFE, NFB, NR1, NR2, NR3, NR4]= mapped_vars
+        Ns, NFE, NFB, NR1, NR2, NR3, NR4 = mapped_vars
+        reactive_trays = sorted([NR1, NR2, NR3, NR4])
+        x_discrete = [Ns, NFE, NFB, *reactive_trays]
 
-        x_discrete = [Ns, NFE, NFB, NR1, NR2, NR3, NR4]
-        reactive_trays = [NR1, NR2, NR3, NR4]
-            
         # Cache Check
         discrete_key = tuple(x_discrete)
         if discrete_key in self.cache:
-            base_obj = self.cache[discrete_key]
-            return base_obj
+            return self.cache[discrete_key]
+
+        # Reset variable levels so prior solves do not contaminate the warm-start
+        self.meshr.reset_levels()
+        self.meshr.update_config(Ns, NFE, NFB, reactive_trays)
+
+        # 1. Fast CONOPT warm-start
+        ws = self.meshr.solve(solver="CONOPT", threads=1, time_limit=15)
+
+        if self.meshr.flag_solver == 0:
+            # Discrete bounds were violated inside meshr.solve(); skip BARON
+            sol = ws
         else:
-            # Execute the real objective and save it
-            self.meshr.update_config(Ns, NFE, NFB, reactive_trays)
-            sol = self.meshr.solve(solver="BARON")
-            self.counter +=self.meshr.flag_solver
-            print('Fobj call iter = {:d}'.format(self.counter))
-            if sol['Status'].value == 1 or sol['Status'].value == 2:
-                base_obj = sol['Profit']
-                
-                # Fixed the format specifier, fixed typo (Fobj), 
-                # and added 'base_obj' to fill the 6th placeholder.
-                print(
-                    'NFE = {:d}, '
-                    'NFB = {:d}, '
-                    'NR1 = {:d}, '
-                    'NR2 = {:d}, '
-                    'NR3 = {:d}, '
-                    'NR4 = {:d},\n'
-                    'Fobj = {:.4f}'.format(NFE, NFB, NR1, NR2, NR3, NR4, base_obj)
-                )
-            else:
-                print(
-                    'Failed solution: '
-                    'NFE = {:d}, '
-                    'NFB = {:d}, '
-                    'NR1 = {:d}, '
-                    'NR2 = {:d}, '
-                    'NR3 = {:d}, '
-                    'NR4 = {:d},'.format(NFE, NFB, NR1, NR2, NR3, NR4)
-                )
-                base_obj = 1e5
-                
-            self.cache[discrete_key] = base_obj
-            print('xc = ', x_c)
-            distance_penalty = total_distance*self.penalty_weight
-        return base_obj #+ distance_penalty
+            ws_ok = getattr(ws["Status"], "value", -1) in (1, 2)
+            if not ws_ok:
+                # Clear diverged CONOPT levels before handing off to BARON
+                self.meshr.reset_levels()
+                self.meshr._init_temp_and_hr()
+
+            # 2. Global solve with BARON
+            sol = self.meshr.solve(solver="BARON", threads=1, time_limit=160)
+            self.counter += self.meshr.flag_solver
+
+        print(f"Fobj call iter = {self.counter:d}")
+
+        if getattr(sol["Status"], "value", -1) in (1, 2):
+            base_obj = sol["Profit"]
+            print(
+                f"Ns = {Ns:d}, NFE = {NFE:d}, NFB = {NFB:d}, "
+                f"NR1 = {reactive_trays[0]:d}, NR2 = {reactive_trays[1]:d}, "
+                f"NR3 = {reactive_trays[2]:d}, NR4 = {reactive_trays[3]:d},\n"
+                f"Fobj = {base_obj:.6f} (${base_obj * 1e6:,.2f}/yr)"
+            )
+        else:
+            print(
+                f"Failed solution: Ns = {Ns:d}, NFE = {NFE:d}, NFB = {NFB:d}, "
+                f"NR1 = {reactive_trays[0]:d}, NR2 = {reactive_trays[1]:d}, "
+                f"NR3 = {reactive_trays[2]:d}, NR4 = {reactive_trays[3]:d}"
+            )
+            base_obj = 1e5
+
+        self.cache[discrete_key] = base_obj
+        print("xc = ", x_c)
+        distance_penalty = total_distance * self.penalty_weight
+        return base_obj  # + distance_penalty
     
     def callback(self, xk):
         """The callback method passed to SciPy."""

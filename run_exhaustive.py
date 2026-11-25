@@ -45,6 +45,21 @@ def count_contiguous_sections(stages):
     return 1 + sum(1 for a, b in zip(s, s[1:]) if b - a > 1)
 
 
+COLUMNS = [
+    "Ns", "N_int", "NFE", "NFB", "NR1", "NR2", "NR3",
+    "N_rect", "N_strip", "N_rxn_sections",
+    "Status", "Status_Code", "WarmStart_Time_s", "Solve_Time_s", "Total_Time_s",
+    "Profit", "TAC_yr", "L1_Repaired",
+    "Dcol", "ht_m", "ht_in", "LD_ratio", "RR",
+    "FE_molmin", "D_molmin", "Breb_molmin", "Qr_kJmin", "Qc_kJmin",
+    "Tcond_K", "Treb_K", "X_IB", "x_EtOH_top", "x_EtOH_bot",
+    "Flood_min_pct", "Flood_max_pct", "Cat_fill_pct",
+    "Rxn_min_xEtOH", "Rxn_max_T_K", "Rxn_min_rate", "Rxn_total_rate",
+    "CAPEX", "Shell_Cost", "Tray_Cost", "Cond_Cost", "Reb_Cost", "Cat_Cost",
+    "OPEX_gross", "Feed_Cost", "Steam_Cost", "CW_Cost", "ETBE_Rev", "OPEX_net",
+]
+
+
 def solve_scenario(config, solver_name="BARON"):
     meshr = _WORKER_MODEL
 
@@ -61,7 +76,6 @@ def solve_scenario(config, solver_name="BARON"):
     if solver_name.upper() == "BARON":
         ws = meshr.solve(solver="CONOPT", threads=1, time_limit=15)
         conopt_time = float(meshr.model.solve_model_time) if meshr.flag_solver else 0.0
-        # If CONOPT diverged, reset levels so BARON starts cleanly
         if getattr(ws["Status"], "value", -1) not in (1, 2):
             meshr.reset_levels()
             meshr._init_temp_and_hr()
@@ -71,6 +85,8 @@ def solve_scenario(config, solver_name="BARON"):
     status = result["Status"]
     status_code = getattr(status, "value", -1)
     solved_ok = status_code in (1, 2)
+    baron_solve_time = float(meshr.model.solve_model_time) if meshr.flag_solver else 0.0
+    baron_total_time = float(meshr.model.total_solve_time) if meshr.flag_solver else 0.0
 
     rec = {
         "Ns": Ns,
@@ -86,10 +102,11 @@ def solve_scenario(config, solver_name="BARON"):
         "Status": str(status),
         "Status_Code": status_code,
         "WarmStart_Time_s": conopt_time,
-        "Solve_Time_s": float(meshr.model.solve_model_time) if meshr.flag_solver else 0.0,
-        "Total_Time_s": float(meshr.model.total_solve_time) if meshr.flag_solver else 0.0,
+        "Solve_Time_s": baron_solve_time,
+        "Total_Time_s": baron_total_time,
         "Profit": result["Profit"] if solved_ok else np.nan,
         "TAC_yr": result["Profit"] * 1e6 if solved_ok else np.nan,
+        "L1_Repaired": False,
     }
 
     if not solved_ok:
@@ -100,6 +117,7 @@ def solve_scenario(config, solver_name="BARON"):
     j_rxn = [str(s) for s in reactive]
 
     L_s   = meshr.L.records.set_index("j").loc[j_act, "level"].values * meshr.F_factor
+    V_2   = float(meshr.V.records.set_index("j").loc["2", "level"]) * meshr.F_factor
     T_s   = meshr.T.records.set_index("j").loc[j_act, "level"].values
     x_df  = meshr.x.records.pivot(index="i", columns="j", values="level")
     rxn_r = meshr.Rxn_Rate.records.set_index("j").loc[j_rxn, "level"].values * meshr.m_cat
@@ -112,6 +130,12 @@ def solve_scenario(config, solver_name="BARON"):
     Qc_Jmin  = meshr.Qc.toValue() * meshr.FH_factor
     Dcol_val = meshr.Dcol.toValue()
     ht_val   = meshr.ht.toValue()
+
+    # Exact guard against GAMS 54.4 / BARON 26.5 Column-1 (L["1"]) readout glitch
+    L1_val = float(L_s[0])
+    if L1_val <= 0.0 or abs(L1_val + D_val - V_2) > 1e-3:
+        L1_val = V_2 - D_val
+        rec["L1_Repaired"] = True
 
     AF_val    = getattr(meshr, "AF", 1.0 / 3.0)
     SF_val    = getattr(meshr, "SF", 0.15)
@@ -146,8 +170,10 @@ def solve_scenario(config, solver_name="BARON"):
 
     rec.update({
         "Dcol": Dcol_val,
+        "ht_m": ht_val,
+        "ht_in": ht_val * 39.3701,
         "LD_ratio": H_shell / Dcol_val,
-        "RR": L_s[0] / D_val,
+        "RR": L1_val / D_val,
         "FE_molmin": FE_val,
         "D_molmin": D_val,
         "Breb_molmin": Breb_val,
@@ -182,14 +208,14 @@ def solve_scenario(config, solver_name="BARON"):
 
 
 if __name__ == "__main__":
-    Nsmax = 14
-    NRx = 3
+    Nsmax = 12
+    NRx = 1
     SOLVER = "BARON"
     MAX_WORKERS = 10
     FLUSH_EVERY = 100
 
     os.makedirs("result", exist_ok=True)
-    ex_txt = f"exhaustive_{NRx+3}D"
+    ex_txt = f"exhaustive_{NRx+3}D_var_ht_Nsmax{Nsmax}"
     csv_path = os.path.join("result", ex_txt + ".csv")
     txt_path = os.path.join("result", ex_txt + ".txt")
 
@@ -232,7 +258,8 @@ if __name__ == "__main__":
                 completed_now += 1
 
                 if len(buffer) >= FLUSH_EVERY or completed_now == len(pending):
-                    pd.DataFrame(buffer).to_csv(
+                # 2. Enforce fixed column order/count on every chunk flush
+                    pd.DataFrame(buffer).reindex(columns=COLUMNS).to_csv(
                         csv_path, mode="a", header=not file_exists, index=False, sep=";"
                     )
                     file_exists = True

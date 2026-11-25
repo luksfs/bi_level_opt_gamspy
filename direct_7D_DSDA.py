@@ -1,159 +1,128 @@
-from Direct.direct_class import DiscreteDirectWrapper, EarlyStopException
-from scipy.optimize import direct, Bounds
-import numpy as np
+import os
 import time
 from datetime import datetime
-from functions.d_sda import DiscreteOptimizer
+import numpy as np
 import pandas as pd
+from scipy.optimize import direct, Bounds
 
-start_time = time.perf_counter()
-# Instantiate the class
-optimizer_wrapper = DiscreteDirectWrapper( 
-    patience=20000
-)
+from Direct.direct_class import DiscreteDirectWrapper, EarlyStopException
+from functions.d_sda import DiscreteOptimizer
 
-# Set bounds
-bounds = Bounds([7, 0, 0, 0, 0, 0, 0],
-                [23, 1, 1, 1, 1, 1, 1])
-#10-2+1=9
-#8*2+1 = 17
 
-# vol_tol_spec = (5*2*2*2)/22**4
+def save_cache_csv(cache_dict, csv_path, cols):
+    if not cache_dict:
+        return
+    df = pd.Series(cache_dict).reset_index()
+    df.columns = cols
+    df.to_csv(csv_path, index=False, sep=";")
 
-print("Starting OOP DIRECT optimization...")
 
-try:
-    # Notice how we pass optimizer_wrapper.evaluate and optimizer_wrapper.callback
-    result = direct(
-        optimizer_wrapper.evaluate_7D,
-        bounds=bounds,
-        args=(),
-        callback=optimizer_wrapper.callback,
-        maxiter=200000,
-        maxfun=2000000,
-        # len_tol=1/9,
-        # len_tol=1/17,
-        len_tol=1/19,
-       # vol_tol=vol_tol_spec
+if __name__ == "__main__":
+    os.makedirs("result", exist_ok=True)
+    COLS_7D = ["Ns", "NFE", "NFB", "NR1", "NR2", "NR3", "NR4", "Profit"]
+
+    # Instantiate once BEFORE timing so compilation time doesn't skew solver runtime
+    optimizer_wrapper = DiscreteDirectWrapper(patience=20000)
+    optimizer = DiscreteOptimizer(max_stages=22, meshr=optimizer_wrapper.meshr)
+
+    bounds = Bounds(
+        [7, 0, 0, 0, 0, 0, 0],
+        [23, 1, 1, 1, 1, 1, 1],
     )
 
+    try:
+        # =====================================================================
+        # Phase 1: DIRECT
+        # =====================================================================
+        print("Starting OOP DIRECT optimization (7D)...")
+        t_direct_start = time.perf_counter()
 
-    Ns_c, NFE_c, NFB_c, NR1_c, NR2_c, NR3_c, NR4_c = result.x
-    # If it finishes naturally without triggering the early stop:
+        try:
+            res_direct = direct(
+                optimizer_wrapper.evaluate_7D,
+                bounds=bounds,
+                args=(),
+                callback=optimizer_wrapper.callback,
+                maxiter=200000,
+                maxfun=2000000,
+                len_tol=1 / 19,
+            )
 
-    # Ns = int(np.floor(Ns_c + 0.5))
+            mapped_vars, total_distance = optimizer_wrapper.map_discrete_variables(
+                res_direct.x, max_Ns=optimizer_wrapper.max_Ns
+            )
+            final_x = [int(v) for v in mapped_vars]
+            final_fun = float(res_direct.fun)
+            status = res_direct.message
 
-    # NFE = int(np.floor(2 + NFE_c * (Ns - 4) + 0.5))
-    # NFB = int(np.floor(NFE + NFB_c * (Ns - 2 - NFE) + 0.5))
-    # NR1 = int(np.floor(2 + NR1_c * (Ns - 7) + 0.5))
-    # NR2 = int(np.floor(NR1 + 1 + NR2_c * (Ns - 5 - NR1) + 0.5))
-    # NR3 = int(np.floor(NR2 + 1 + NR3_c * (Ns - 4 - NR2) + 0.5))
-    # NR4 = int(np.floor(NR3 + 1 + NR4_c * (Ns - 3 - NR3) + 0.5))
+        except EarlyStopException as e:
+            final_x = [int(v) for v in optimizer_wrapper.final_x]
+            final_fun = float(optimizer_wrapper.final_fun)
+            status = f"Stopped early: {e}"
 
-    [
-        Ns, NFE, NFB, NR1, NR2, NR3, NR4
-    ], total_distance = optimizer_wrapper.map_discrete_variables(result.x)
-    
-    final_x = [Ns, NFE, NFB, NR1, NR2, NR3, NR4]
-    # final_x = np.round(result.x).astype(int)
-    final_fun = result.fun
-    status = result.message
-    
-except EarlyStopException as e:
-    # If we catch our controlled crash, pull the results from the class instance
-    final_x = optimizer_wrapper.final_x
-    final_fun = optimizer_wrapper.final_fun
-    status = f"Stopped early: {e}"
+        execution_time_Direct = time.perf_counter() - t_direct_start
+        direct_cache_size = len(optimizer_wrapper.cache)
 
-# End Direcct - Calc exc time
-end_time = time.perf_counter()
-execution_time_Direct = end_time - start_time
+        # Copy cache so D-SDA does not mutate DIRECT's stats
+        shared_cache = dict(optimizer_wrapper.cache)
+        # save_cache_csv(shared_cache, "result/output_pandas_Direct_7D_short.csv", COLS_7D)
 
-# You can persist this dictionary if you run multiple times or save it to a pickle file
-shared_cache = optimizer_wrapper.cache
+        # =====================================================================
+        # Phase 2: D-SDA Warm-Started from DIRECT Best Solution
+        # =====================================================================
+        print("\n--- Direct into D-SDA ---")
+        print(f"Initial D-SDA: {final_x} (Fobj = {final_fun:.6e}, ${final_fun * 1e6:,.2f}/yr)")
 
-# Load into a Series and flatten the tuple index
-df = pd.Series(shared_cache).reset_index()
+        res_dsda = optimizer.optimize(initial_y=final_x, cache=shared_cache)
 
-# Rename the columns so they have proper headers
-df.columns = ['Ns', 'NFE', 'NFB', 'NR1', 'NR2', 'NR3', 'NR4', 'Profit']
+        y_best = res_dsda["y_best"]
+        fobj_best = res_dsda["fobj_best"]
+        fobj_calls = res_dsda["evaluations"]
+        time_spent = res_dsda["exec_time"]
+        logs = res_dsda["line_search_log"]
 
-# Save to CSV
-df.to_csv('output_pandas_Direct_7D_short_NS12_Direct_DSDA.csv', index=False, sep=';')
+        save_cache_csv(optimizer.cache_D_SDA, "result/output_pandas_DSDA_7D_short.csv", COLS_7D)
 
-# Instantiate the optimizer once
-optimizer = DiscreteOptimizer(max_stages=22)
+        # =====================================================================
+        # Aggregate Summary & Logging
+        # =====================================================================
+        execution_time_Agg = execution_time_Direct + time_spent
+        fobj_calls_Agg = optimizer_wrapper.counter + fobj_calls
+        final_y_Agg = y_best
+        final_fun_Agg = fobj_best
 
-# User provides initial variables directly with arbitrary lengths
-# Example 1: 4 Variables
-# initial_y = [14, 7, 10, 7] 
+        print("\n--- Final Results (DIRECT + D-SDA 7D) ---")
+        print(f"Total Execution time       : {execution_time_Agg:.4f} s (DIRECT: {execution_time_Direct:.2f} s | D-SDA: {time_spent:.2f} s)")
+        print(f"DIRECT Status              : {status}")
+        print(f"DIRECT unique evaluations  : {direct_cache_size} (solver calls: {optimizer_wrapper.counter})")
+        print(f"D-SDA new solver calls     : {fobj_calls}")
+        print(f"Total solver calls         : {fobj_calls_Agg}")
+        print(f"Best Discrete X found      : {final_y_Agg}")
+        print(f"Minimum Objective Value    : {final_fun_Agg:.6e} (${final_fun_Agg * 1e6:,.2f}/yr)")
 
-# Example 2: 7 Variables [Ns, NFE, NFB, NR1, NR2, NR3, NR4]
-# initial_y = [7, 4, 4, 4, 5]
-print("\n--- Direct into  D-SDA ---")
-print("\n Initial D-SDA {final_x}")
+        with open("result/Direct_D-SDA_7D_optimization_results.txt", "a") as f:
+            f.write(f"\n{'='*50}\n")
+            f.write(f"Run date: {datetime.now()}\n")
 
-initial_y = final_x
+            f.write(f"Execution time D-Direct + D-SDA: {execution_time_Agg:.6f} seconds\n")
+            f.write(f"Objective functions calls: {fobj_calls_Agg}\n")
+            f.write(f"Best Discrete X found: {final_y_Agg}\n")
+            f.write(f"Minimum Objective Value: {final_fun_Agg:.6e}\n")
 
-# Run the optimization
-result = optimizer.optimize(initial_y=initial_y, cache=shared_cache)
+            f.write("\nDirect Results\n")
+            f.write(f"Execution time: {execution_time_Direct:.6f} seconds\n")
+            f.write(f"Status: {status}\n")
+            f.write(f"Cache size (unique evaluations): {direct_cache_size}\n")
+            f.write(f"Best Discrete X found: {final_x}\n")
+            f.write(f"Minimum Objective Value: {final_fun:.6e}\n")
+            f.write(f"Objective function evaluations: {optimizer_wrapper.counter}\n")
 
-# Extract results
-y_best = result['y_best']
-fobj_best = result['fobj_best']
-fobj_calls = result['evaluations']
-time_spent = result['exec_time']
-logs = result['line_search_log']
-
-# Load into a Series and flatten the tuple index
-df = pd.Series(optimizer.cache_D_SDA).reset_index()
-
-# Rename the columns so they have proper headers
-df.columns = ['Ns', 'NFE', 'NFB', 'NR1', 'NR2', 'NR3', 'NR4', 'Profit']
-
-# Save to CSV
-df.to_csv('output_pandas_DSDA_7D_short.csv', index=False, sep=';')
-
-
-print("\n--- Final Results ---")
-# End Direct + D_SDA
-end_time = time.perf_counter()
-execution_time_Agg = end_time - start_time
-fobj_calls_Agg = optimizer_wrapper.counter + fobj_calls
-final_y_Agg = y_best
-final_fun_Agg = fobj_best
-
-print(f"Execution time: {execution_time_Agg:.6f} seconds")
-# print(f"Status: {status}")
-# print(f"Cache size (unique evaluations): {len(optimizer_wrapper.cache)}")
-print(f"Best Discrete X found: {final_y_Agg}")
-print(f"Minimum Objective Value: {final_fun_Agg}")
-print(f"Objective function evaluations: {fobj_calls_Agg}")
-
-with open("result/Direct_D-SDA_7D_optimization_results.txt", "a") as f:
-    f.write(f"\n{'='*50}\n")
-    f.write(f"Run date: {datetime.now()}\n")
-
-    # Agregate Results D-Direct + D-SDA
-    f.write(f"Execution time D-Direct + D-SDA: {execution_time_Agg:.6f} seconds\n")
-    f.write(f"Objective functions calls: {fobj_calls_Agg}\n")
-    f.write(f"Best Discrete X found: {final_y_Agg}\n")
-    f.write(f"Minimum Objective Value: {final_fun_Agg}\n")
-
-    # Direct
-    f.write(f"\n")
-    f.write(f"Direct Results\n")
-    f.write(f"Execution time: {execution_time_Direct:.6f} seconds\n")
-    f.write(f"Status: {status}\n")
-    f.write(f"Cache size (unique evaluations): {len(optimizer_wrapper.cache)}\n")
-    f.write(f"Best Discrete X found: {final_x}\n")
-    f.write(f"Minimum Objective Value: {final_fun}\n")
-    f.write(f"Objective function evaluations: {optimizer_wrapper.counter}\n")
-
-    # D-SDA
-    f.write(f"\n")
-    f.write(f"D-SDA Results\n")
-    f.write(f"Execution time: {time_spent:.6f} seconds\n")
-    f.write(f"Objective functions calls: {fobj_calls}\n")
-    f.write(f"Best Discrete X found: {y_best}\n")
-    f.write(f"Minimum Objective Value: {fobj_best}\n")
+            f.write("\nD-SDA Results\n")
+            f.write(f"Execution time: {time_spent:.6f} seconds\n")
+            f.write(f"Objective functions calls: {fobj_calls}\n")
+            f.write(f"Best Discrete X found: {y_best}\n")
+            f.write(f"Minimum Objective Value: {fobj_best:.6e}\n")
+    finally:
+        # Clean up GAMSPy temporary working directory
+        if hasattr(optimizer_wrapper, "meshr") and hasattr(optimizer_wrapper.meshr, "m"):
+            optimizer_wrapper.meshr.m.close()

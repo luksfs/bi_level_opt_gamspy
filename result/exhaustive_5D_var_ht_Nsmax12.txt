@@ -1,0 +1,11 @@
+
+==================================================
+Run date: 2026-11-22 10:05:01.207990
+Solver: BARON (workers=10)
+Wall-clock time (this session): 1840.23 s | Mean BARON solve time: 3.875 s
+Nsmax: 12 | NRx: 2
+Total combinatory space: 3762
+Solved candidates: 3755 (99.81%)
+Status counts: {'ModelStatus.OptimalGlobal': 3755, 'ModelStatus.InfeasibleNoSolution': 7}
+Minimum Objective Value and design variables:
+Ns=11; N_int=9; NFE=5; NFB=8; NR1=4; NR2=8; NR3=nan; N_rect=3; N_strip=2; N_rxn_sections=2; Status=ModelStatus.OptimalGlobal; Status_Code=1; WarmStart_Time_s=0.297; Solve_Time_s=2.27; Total_Time_s=2.437000209465623; Profit=0.0151149754807207; TAC_yr=15114.975480720746; L1_Repaired=False; Dcol=0.1316536230933404; ht_m=0.2544031097463016; ht_in=10.01587587102287; LD_ratio=19.999997903646094; RR=3.0460999922103507; FE_molmin=1.4901781028782486; D_molmin=4.113785605516664; Breb_molmin=1.7211938717849615; Qr_kJmin=243.8706817134291; Qc_kJmin=294.9969934088516; Tcond_K=334.2124008074691; Treb_K=397.51052870720935; X_IB=0.8250771421179015; x_EtOH_top=0.0045742203450548; x_EtOH_bot=0.0244958549881123; Flood_min_pct=20.000000298796092; Flood_max_pct=27.747564905039702; Cat_fill_pct=100.00001827203948; Rxn_min_xEtOH=0.0187823175508949; Rxn_max_T_K=340.6929636327475; Rxn_min_rate=0.4454249358484349; Rxn_total_rate=1.4291986255766282; CAPEX=1837.864274879926; Shell_Cost=677.0190299888839; Tray_Cost=53.85520511774715; Cond_Cost=628.5803284163684; Reb_Cost=476.98690660045617; Cat_Cost=1.4228047564701305; OPEX_gross=34179.28958479739; Feed_Cost=33594.32234072339; Steam_Cost=531.4429895899046; CW_Cost=53.52425448410204; ETBE_Rev=20902.17837895657; OPEX_net=13277.111205840822

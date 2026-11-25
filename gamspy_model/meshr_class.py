@@ -63,19 +63,19 @@ class ReactiveDistillationModel:
         
         self.R = 8.314463 # m3⋅Pa⋅K−1⋅mol−1
         self.Tmin = 330
-        self.Tmax = 410
+        self.Tmax = 420
 
         # Catalyst volume calc and flooding velocity
-        self.rho_cat = 770 # kg/m3
-        self.phi_c = 0.3
+        # self.rho_cat = 770 # kg/m3
+        # self.phi_c = 0.3
         # self.h_pack = 0.3048 # m
         # --- Tray spacing & flooding (Fixed 9 in, Wankat Table 21.7 - Turton) ---
         # self.ht = gp.Parameter(self.m, "ht", records=0.2286) # 9 in (pilot/lab scale)
-        self.rho_cat = gp.Parameter(self.m, "rho_cat", records=770)
-        self.phi_c = gp.Parameter(self.m, "phi_c", records=0.3)
-        self.h_pack = gp.Parameter(self.m, "h_pack")
-        self.rhoL = gp.Parameter(self.m, "rhoL", records=580e3)
-        self.sigma_g = gp.Parameter(self.m, "sigma_g", records=7.2)
+        # self.rho_cat = gp.Parameter(self.m, "rho_cat", records=770)
+        # self.phi_c = gp.Parameter(self.m, "phi_c", records=0.3)
+        # self.h_pack = gp.Parameter(self.m, "h_pack")
+        # self.rhoL = gp.Parameter(self.m, "rhoL", records=580e3)
+        # self.sigma_g = gp.Parameter(self.m, "sigma_g", records=7.2)
 
         # Wankat Table 21.7 constants for 6 in tray spacing
         # self.a1 = gp.Parameter(self.m, "a1", records=1.1622)
@@ -117,27 +117,33 @@ class ReactiveDistillationModel:
 
         # --- Specifications & Costs ---
         # Catalyst mass (matching Bernal et al. 2018 & Linan et al. 2020)
-        self.m_cat = 0.4  # kg per reactive stage
+        # Catalyst & tray fluid properties (ht and h_pack are now continuous variables)
+        self.m_cat   = 0.4  # kg per reactive stage
+        self.rho_cat = gp.Parameter(self.m, "rho_cat", records=770)
+        self.phi_c   = gp.Parameter(self.m, "phi_c",   records=0.3)
+        self.rhoL    = gp.Parameter(self.m, "rhoL",    records=580e3)
+        self.sigma_g = gp.Parameter(self.m, "sigma_g", records=7.2)
 
         # Fixed 6-in tray spacing & Wankat Table 21.7 flooding constants
         
-        self.rho_cat = gp.Parameter(self.m, "rho_cat", records=770)
-        self.phi_c = gp.Parameter(self.m, "phi_c", records=0.3)
-        self.h_pack = gp.Parameter(self.m, "h_pack")
-        self.rhoL = gp.Parameter(self.m, "rhoL", records=580e3)
-        self.sigma_g = gp.Parameter(self.m, "sigma_g", records=7.2)
+        # self.rho_cat = gp.Parameter(self.m, "rho_cat", records=770)
+        # self.phi_c = gp.Parameter(self.m, "phi_c", records=0.3)
+        # self.h_pack = gp.Parameter(self.m, "h_pack")
+        # self.rhoL = gp.Parameter(self.m, "rhoL", records=580e3)
+        # self.sigma_g = gp.Parameter(self.m, "sigma_g", records=7.2)
 
-        self.ht = gp.Parameter(self.m, "ht", records=0.1524) # 6 in
-        self.a1 = gp.Parameter(self.m, "a1", records=1.1977)
-        self.a2 = gp.Parameter(self.m, "a2", records=0.53143)
-        self.a3 = gp.Parameter(self.m, "a3", records=0.18760)
+
+        # self.ht = gp.Parameter(self.m, "ht", records=0.1524) # 6 in
+        # self.a1 = gp.Parameter(self.m, "a1", records=1.1977)
+        # self.a2 = gp.Parameter(self.m, "a2", records=0.53143)
+        # self.a3 = gp.Parameter(self.m, "a3", records=0.18760)
 
         # self.ht = gp.Parameter(self.m, "ht", records=0.2286) # 9 in (pilot scale)
         # self.a1 = gp.Parameter(self.m, "a1", records=1.1622)
         # self.a2 = gp.Parameter(self.m, "a2", records=0.56014)
         # self.a3 = gp.Parameter(self.m, "a3", records=0.18168)
 
-        self.h_pack[...] = self.ht / 2
+        # self.h_pack[...] = self.ht / 2
 
         # --- Specifications & 1990s Costs (Douglas explicit CAPEX + 1994 OPEX) ---
         self.Spec_1 = gp.Parameter(self.m, name="Spec_1", records=0.85)
@@ -231,6 +237,8 @@ class ReactiveDistillationModel:
         # self.D_col = gp.Variable(self.m, name="D_col")
         # self.Dcol_max = gp.Variable(self.m, name="Dcol_max")
         self.Dcol = gp.Variable(self.m, "Dcol")
+        self.ht     = gp.Variable(self.m, "ht",     type="Positive")  # tray spacing / stage height (m)
+        self.h_pack = gp.Variable(self.m, "h_pack", type="Positive")  # catalytic bed height (m)
 
         self.Mw_mix_V = gp.Variable(self.m, "Mw_mix_V", domain=self.j)
         self.Mw_mix_L = gp.Variable(self.m, "Mw_mix_L", domain=self.j)
@@ -468,6 +476,9 @@ class ReactiveDistillationModel:
         self.def_Mw_mix_L = gp.Equation(self.m, "def_Mw_mix_L", domain=j)
 
         self.def_catal_vol = gp.Equation(self.m, "def_catal_vol")
+
+        self.def_h_pack = gp.Equation(self.m, "def_h_pack")
+        self.def_h_pack[...] = self.h_pack == 0.5 * self.ht
         
         self.def_Mw_mix_V[j].where[cond_interior]  = (
             self.Mw_mix_V[j]
@@ -489,24 +500,23 @@ class ReactiveDistillationModel:
                 self.Mw_mix_V[j] / self.v_mol[j] / self.rhoL
             )
         )
+
+        # Continuous Fair capacity factor (Lygeros & Magoulas 1986, Perry's Eq. 14-90)
+        # Units: CF [m/s], ht [m]
         self.CF_def[j].where[cond_interior] = (
-            gmath.log10(self.CF[j])
-            ==
-            - self.a1
-            - self.a2 * gmath.log10(self.Flv[j])
-            - self.a3 * gmath.sqr(gmath.log10(self.Flv[j]))
+            self.CF[j]
+            == 0.0105 + 0.1496 * (self.ht ** 0.755) * gmath.exp(-1.463 * (self.Flv[j] ** 0.842))
         )
 
         self.flooding_vel_eq[j].where[cond_interior] = (
             self.ufl[j]
-            == (self.sigma_g / 20) ** 0.2
+            == (self.sigma_g / 20.0) ** 0.2
             * gmath.sqrt(
                 (self.rhoL - self.Mw_mix_V[j] / self.v_mol[j])
                 / (self.Mw_mix_V[j] / self.v_mol[j])
             )
             * self.CF[j]
-            * 0.3048
-            * 60
+            * 60.0
         )
 
         # self.def_Dcol[j].where[cond_interior] = (
@@ -525,7 +535,7 @@ class ReactiveDistillationModel:
         )
 
         self.uf_res_2[j].where[cond_interior] = (
-            self.uf[j] >= 0.15 * self.ufl[j]
+            self.uf[j] >= 0.2 * self.ufl[j]
         )   
 
         self.def_catal_vol[...] = (
@@ -617,8 +627,8 @@ class ReactiveDistillationModel:
         )
 
         # 7. Mechanical L/D <= 20 constraint (Linan Eq. E.3)
-        # self.eq_LD_ratio = gp.Equation(self.m, name="eq_LD_ratio")
-        # self.eq_LD_ratio[...] = (1.0 + self.SF) * self.ht * (self.Ns - 2) <= 20.0 * self.Dcol
+        self.eq_LD_ratio = gp.Equation(self.m, name="eq_LD_ratio")
+        self.eq_LD_ratio[...] = (1.0 + self.SF) * self.ht * (self.Ns - 2) <= 20.0 * self.Dcol
 
         self.def_Profit = gp.Equation(self.m, name="def_Profit")
         self.def_Profit[...] = self.Profit * 1e6 == self.CAP_cost + self.OP_cost
@@ -664,7 +674,7 @@ class ReactiveDistillationModel:
 
         self.T.lo[self.j] = self.Tmin;  self.T.up[self.j] = self.Tmax;  self.T.scale[self.j] = self.TF_factor
 
-        self.FE.lo[...] = (0.7 * 1.7322) / self.F_factor
+        self.FE.lo[...] = (0.2 * 1.7322) / self.F_factor
         self.FE.up[...] = (2.50 * 1.7322) / self.F_factor
         self.FE.l[...]  = (1.10 * 1.7322) / self.F_factor
 
@@ -780,20 +790,41 @@ class ReactiveDistillationModel:
         self.Mw_mix_L.lo[self.j] = 46.069; self.Mw_mix_L.up[self.j] = 102.177; self.Mw_mix_L.scale[self.j] = 10
 
         # Start above def_catal_vol minimum diameter (0.1701 m at m_cat=0.4 kg, ht=6 in)
-        self.Dcol.lo[...] = 0.05
-        self.Dcol.up[...] = 2.0
-        self.Dcol.l[...]  = 0.18
+        # self.Dcol.lo[...] = 0.05
+        # self.Dcol.up[...] = 2.0
+        # self.Dcol.l[...]  = 0.18
+        # self.Dcol.scale[...] = 0.1
+
+        # Stage height / tray spacing bounds (m)
+        self.ht.lo[...]     = 0.15      # lower limit (allows lab/pilot spacing)
+        self.ht.up[...]     = 0.60      #  upper limit
+        self.ht.l[...]      = 0.2286    # 9 in starting guess
+        self.ht.scale[...]  = 0.2
+
+        self.h_pack.lo[...]    = 0.05
+        self.h_pack.up[...]    = 0.30
+        self.h_pack.l[...]     = 0.1143
+        self.h_pack.scale[...] = 0.1
+
+        self.Dcol.lo[...]    = 0.05
+        self.Dcol.up[...]    = 2.0
+        self.Dcol.l[...]     = 0.15
         self.Dcol.scale[...] = 0.1
 
-        self.CF.lo[self.j] = 1e-2
-        self.CF.up[self.j] = 2
+        # CF is now in m/s (~0.015 to 0.13 m/s across 4-24 in)
+        self.CF.lo[self.j] = 0.005
+        self.CF.up[self.j] = 0.50
+        self.CF.l[self.j]  = 0.05
+
+        # self.CF.lo[self.j] = 1e-2
+        # self.CF.up[self.j] = 2
         self.uf.lo[self.j] = 0.01
         self.uf.up[self.j] = 80
         self.ufl.lo[self.j] = 0.01
         self.ufl.up[self.j] = 100
         self.Flv.lo[self.j] = 0.02
         self.Flv.up[self.j] = 1
-        self.CF.l[self.j] = 0.2
+        # self.CF.l[self.j] = 0.2
         self.uf.l[self.j] = 0.5
         self.ufl.l[self.j] = 0.7
         self.Flv.l[self.j] = 0.1
@@ -806,7 +837,8 @@ class ReactiveDistillationModel:
 
         self.L.l[self.j] = 0.5
         self.V.l[self.j] = 0.5
-        #self.V.l["1"] = 0.1  # Do not start condenser vapor at exact 0
+
+        self.V.l["1"] = 0  # Do not start condenser vapor at exact 0
         self.x.l[self.i, self.j] = 0.25
         self.y.l[self.i, self.j] = 0.25
 
@@ -863,9 +895,9 @@ class ReactiveDistillationModel:
         self.L.l[self.j] = 0.5;           self.V.l[self.j] = 0.5;           self.V.l["1"] = 0.0
         self.x.l[self.i, self.j] = 0.25;  self.y.l[self.i, self.j] = 0.25
         self.D.l[...] = 0.5748;           self.Qc.l[...] = 0.5451;          self.Qr.l[...] = 0.4592
-        self.Breb.l[...] = 0.24;          self.Dcol.l[...] = 0.18
+        self.Breb.l[...] = 0.24;          
         self.FE.l[...] = (1 * 1.7322) / self.F_factor
-        self.CF.l[self.j] = 0.2;          self.uf.l[self.j] = 0.5
+        self.uf.l[self.j] = 0.5
         self.ufl.l[self.j] = 0.7;         self.Flv.l[self.j] = 0.1
         self.K_part.l[self.i, self.j] = 1.0;  self.logPsat.l[self.i, self.j] = 11.5
         self.gamma_nrtl.l[self.i, self.j] = 1.0; self.phi.l[self.i, self.j] = 1.0
@@ -881,6 +913,10 @@ class ReactiveDistillationModel:
         self.Hv.l[self.j] = -1.0;         self.DH_liq.l[self.i, self.j] = 1000.0
         self.HR_pure.l[self.i, self.j] = -2000.0; self.Hv_Tbi_P.l[self.i, self.j] = -150000.0
         self.Hli.l[self.i, self.j] = -180000.0;   self.Hl.l[self.j] = -1.0
+        self.ht.l[...] = 0.2286
+        self.h_pack.l[...] = 0.1143
+        self.Dcol.l[...] = 0.15
+        self.CF.l[self.j] = 0.05
     
     def update_config(self, Ns, NFE, NFB, reactive_trays):
         """
@@ -910,7 +946,7 @@ class ReactiveDistillationModel:
         if Ns >= 2:
             self._init_temp_and_hr()
 
-    def solve(self, solver="CONOPT", export=False, dataframe=False, threads=1, time_limit=160):
+    def solve(self, solver="CONOPT", export=False, dataframe=False, threads=1, time_limit=160, verbose = False):
         self.flag_solver = 0
         NR_string = ['NR1','NR2','NR3','NR4','NR5','NR6']
         text_NRx = ", ".join(
@@ -919,12 +955,13 @@ class ReactiveDistillationModel:
         )
         # print(f"\nSolving with Ns={self.Ns.toValue()}, 
         #     NFE={self.is_FE.records[self.is_FE.records['value']==1]['j'].values[0]}")
-        print(
-            f"\nSolving with Ns={self.Ns_d}, "
-            f"NFE={self.NFE}, "
-            f"NFB={self.NFB}, "
-            f"{text_NRx}"
-        )
+        if verbose:
+            print(
+                f"\nSolving with Ns={self.Ns_d}, "
+                f"NFE={self.NFE}, "
+                f"NFB={self.NFB}, "
+                f"{text_NRx}"
+            )
         
         if (self.reactive_trays[0] == 1 or self.NFE == 1) or (self.NFB == self.Ns_d or self.reactive_trays[-1] == self.Ns_d) or (self.Ns_d > 22) :
             print('Violated the discrete bounds')
@@ -973,19 +1010,22 @@ class ReactiveDistillationModel:
                         pass
             self.df_results = pd.concat(rows, ignore_index=True)
 
-        print(f"Total solve statement time: {total_elapsed} seconds")
-        print(f"Solver execution time: {solver_only_elapsed} seconds")
-        print(self.model.status)
+        if verbose:
+            print(f"Total solve statement time: {total_elapsed} seconds")
+            print(f"Solver execution time: {solver_only_elapsed} seconds")
+            print(self.model.status)
 
         if self.model.status.value == 1 or self.model.status.value == 2:
-            print(f'Solver success. Fobj = {self.obj.toValue():.4e}')
+            if verbose:
+                print(f'Solver success. Fobj = {self.obj.toValue():.4e}')
             self.col_diameter = self.Dcol.toValue()
             return {
                 "Status": self.model.status,
                 "Profit": self.obj.toValue()
             }
         else:
-            print('solver failed')
+            if verbose:
+                print('solver failed')
             self.col_diameter = np.nan
             return {
                 "Status": self.model.status,
